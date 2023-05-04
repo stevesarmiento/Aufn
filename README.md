@@ -1,6 +1,6 @@
 <img src="https://github.com/stevesarmiento/Aufn/blob/main/Aufn/Assets.xcassets/AppIcon.appiconset/AppIcon.png" alt="Aufn Logo" align="right" width="120" />
 
-# 🪄 Aufn
+# 🔴 Aufn
 Record, ship, delete.
 
 <div align="left">
