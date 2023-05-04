@@ -35,6 +35,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F34D45802A03729D004EDF1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F3EEBF5C2A03162300DBC761 /* Aufn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aufn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3EEBF5F2A03162300DBC761 /* AufnApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AufnApp.swift; sourceTree = "<group>"; };
 		F3EEBF612A03162300DBC761 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -93,6 +94,7 @@
 		F3EEBF5E2A03162300DBC761 /* Aufn */ = {
 			isa = PBXGroup;
 			children = (
+				F34D45802A03729D004EDF1B /* Info.plist */,
 				F3EEBF722A033B6B00DBC761 /* ActivityView.swift */,
 				F3EEBF7A2A033B6C00DBC761 /* AppSettings.swift */,
 				F3EEBF6F2A033B6B00DBC761 /* AudioFileViewModal.swift */,
@@ -354,8 +356,10 @@
 				DEVELOPMENT_TEAM = GZ2BM4VMQU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Aufn/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Aufn;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -385,8 +389,10 @@
 				DEVELOPMENT_TEAM = GZ2BM4VMQU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Aufn/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Aufn;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
