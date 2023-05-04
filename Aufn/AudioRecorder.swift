@@ -39,9 +39,9 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
     }
 
 
-    func setupAudioSession() {
+     func setupAudioSession() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.defaultToSpeaker, .allowBluetooth, .allowAirPlay, .mixWithOthers])
+            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.allowBluetooth, .allowAirPlay, .mixWithOthers])
             try AVAudioSession.sharedInstance().setActive(true)
             try AVAudioSession.sharedInstance().setMode(.measurement)
             
@@ -57,6 +57,8 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
             print("Failed to set up audio session: \(error)")
         }
     }
+
+
 
     func checkFileSavedSuccessfully(url: URL) -> Bool {
         let fileManager = FileManager.default
@@ -89,74 +91,89 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
         }
     }
 
-    private func createAudioFileOutputNode() -> AVAudioFile? {
-        let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let temporaryAudioFilename = documentPath.appendingPathComponent("temp_recording.\(appSettings.audioFormats[appSettings.selectedAudioFormatIndex].lowercased())")
-        
-        let audioFileFormat = appSettings.audioFormats[appSettings.selectedAudioFormatIndex]
-        let audioFileSettings: [String: Any] = [
-            AVFormatIDKey: audioFileFormat == "WAV" ? kAudioFormatLinearPCM : kAudioFormatMPEG4AAC,
-            AVSampleRateKey: Float(appSettings.sampleRates[appSettings.selectedSampleRateIndex]),
-            AVNumberOfChannelsKey: appSettings.isStereo ? 2 : 1,
-            AVLinearPCMBitDepthKey: 16,
-            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-        ]
-        
-        
-        do {
-            let outputFile = try AVAudioFile(forWriting: temporaryAudioFilename, settings: audioFileSettings)
-            return outputFile
-        } catch {
-            print("Failed to create AVAudioFile: \(error)")
-            return nil
-        }
-    }
-    
-    
-    func startRecording() {
-        print("startRecording called")
-        if audioEngine == nil {
-            setupAudioEngine()
-            setupAudioProcessingNodes()
-        }
-        
-        do {
-            print("Setting audio session active")
-            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [])
-            try AVAudioSession.sharedInstance().setActive(true)
+        private func createAudioFileOutputNode() -> AVAudioFile? {
+            let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let temporaryAudioFilename = documentPath.appendingPathComponent("temp_recording.\(appSettings.audioFormats[appSettings.selectedAudioFormatIndex].lowercased())")
             
-            // Remove the tap on the mainMixerNode if it exists
-            if isRecording {
-                audioEngine.inputNode.removeTap(onBus: 0)
-                audioEngine.mainMixerNode.removeTap(onBus: 0)
-                isRecording = false
+            let audioFileFormat = appSettings.audioFormats[appSettings.selectedAudioFormatIndex]
+            
+            var audioFileSettings: [String: Any] = [
+                AVSampleRateKey: Float(appSettings.sampleRates[appSettings.selectedSampleRateIndex]),
+                AVNumberOfChannelsKey: appSettings.isStereo ? 2 : 1,
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+            ]
+            
+            if audioFileFormat == "WAV" {
+                audioFileSettings[AVFormatIDKey] = kAudioFormatLinearPCM
+                audioFileSettings[AVLinearPCMBitDepthKey] = 16
+                audioFileSettings[AVLinearPCMIsFloatKey] = false
+                audioFileSettings[AVLinearPCMIsNonInterleaved] = false
+            } else {
+                audioFileSettings[AVFormatIDKey] = kAudioFormatMPEG4AAC
             }
             
-            setupTapOnInputNode()
-            audioEngine.prepare()
-            print("Starting audio engine")
-            try audioEngine.start()
-            
-            // Start the AudioProcessingManager engine
-            audioProcessingManager.start()
-            
-            isRecording = true
-            
-            // Add a tap on the mainMixerNode output
-            let format = audioEngine.mainMixerNode.outputFormat(forBus: 0)
-            outputFile = createAudioFileOutputNode()
-            
-            audioEngine.mainMixerNode.installTap(onBus: 0, bufferSize: 4096, format: format) { [weak self] buffer, _ in
+            do {
+                let outputFile = try AVAudioFile(forWriting: temporaryAudioFilename, settings: audioFileSettings)
+                return outputFile
+            } catch {
+                print("Failed to create audio file output node: \(error)")
+                return nil
+            }
+        }
+
+    
+    
+func startRecording() {
+    print("startRecording called")
+    if audioEngine == nil {
+        setupAudioEngine()
+        setupAudioProcessingNodes()
+    }
+    
+    do {
+        print("Setting audio session active")
+        try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [])
+        try AVAudioSession.sharedInstance().setActive(true)
+        
+        // Remove the tap on the mainMixerNode if it exists
+        if isRecording {
+            audioEngine.inputNode.removeTap(onBus: 0)
+            audioEngine.mainMixerNode.removeTap(onBus: 0)
+            isRecording = false
+        }
+        
+        setupTapOnInputNode()
+        audioEngine.prepare()
+        print("Starting audio engine")
+        try audioEngine.start()
+        
+        // Start the AudioProcessingManager engine
+        audioProcessingManager.start()
+        
+        isRecording = true
+        
+        // Add a tap on the mainMixerNode output
+        let format = audioEngine.mainMixerNode.outputFormat(forBus: 0)
+        outputFile = createAudioFileOutputNode()
+        
+        audioEngine.mainMixerNode.installTap(onBus: 0, bufferSize: 4096, format: format) { [weak self] buffer, _ in
+            guard let strongSelf = self else { return }
+            if let audioFile = strongSelf.outputFile {
                 do {
-                    try self?.outputFile?.write(from: buffer)
+                    try audioFile.write(from: buffer)
                 } catch {
-                    print("Failed to write to the output file: \(error)")
+                    print("Failed to write buffer to audio file: \(error)")
                 }
             }
-        } catch {
-            print("Failed to start audio engine: \(error)")
         }
+    } catch {
+        print("Failed to start audio engine: \(error)")
     }
+}
+
+
+
+
     
     func stopRecording() {
         print("stopRecording called")
@@ -168,6 +185,22 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
         
         // Stop the AudioProcessingManager engine
         audioProcessingManager.stop()
+
+        // Move the temporary recording to its final location
+        let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMddHHmmss"
+        let recordingName = "recording_\(dateFormatter.string(from: Date())).\(appSettings.audioFormats[appSettings.selectedAudioFormatIndex].lowercased())"
+        let finalURL = documentPath.appendingPathComponent(recordingName)
+        let temporaryAudioFilename = documentPath.appendingPathComponent("temp_recording.\(appSettings.audioFormats[appSettings.selectedAudioFormatIndex].lowercased())")
+
+        do {
+            try FileManager.default.moveItem(at: temporaryAudioFilename, to: finalURL)
+            NotificationCenter.default.post(name: .newRecordingAdded, object: nil)
+            print("File moved successfully")
+        } catch {
+            print("Failed to move the recorded audio file: \(error)")
+        }
         
         // Close the output file and set the outputFile to nil
         outputFile = nil
@@ -180,25 +213,9 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
         // Reset audio session
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-            try AVAudioSession.sharedInstance().setActive(true)
+            try AVAudioSession.sharedInstance().setActive(false)
         } catch {
             print("Failed to reset audio session: \(error)")
-        }
-        
-        // Move the temporary recording to its final location
-        let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMddHHmmss"
-        let recordingName = "recording_\(dateFormatter.string(from: Date())).\(appSettings.audioFormats[appSettings.selectedAudioFormatIndex].lowercased())"
-        let finalURL = documentPath.appendingPathComponent(recordingName)
-        let temporaryAudioFilename = documentPath.appendingPathComponent("temp_recording.\(appSettings.audioFormats[appSettings.selectedAudioFormatIndex].lowercased())")
-        
-        do {
-            try FileManager.default.moveItem(at: temporaryAudioFilename, to: finalURL)
-            NotificationCenter.default.post(name: .newRecordingAdded, object: nil)
-            print("File moved successfully")
-        } catch {
-            print("Failed to move the recorded audio file: \(error)")
         }
         
         // Stop the audio engine
@@ -240,11 +257,7 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
         // Connect the last plugin node to the main mixer node
         audioEngine.connect(lastNode, to: audioEngine.mainMixerNode, format: audioEngine.mainMixerNode.outputFormat(forBus: 0))
         print("Audio processing nodes set up successfully.")
-    }
-
-
-        
-        
+    }  
         
         
     private func setupAudioEngine() {
@@ -278,6 +291,8 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
                 }
             }
         }
+
+        
         
         // Initialize the audioRecorder
         let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]

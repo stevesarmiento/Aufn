@@ -59,8 +59,16 @@ struct MetronomeSettingsView: View {
 
                 ScrollView {
                     VStack(alignment: .leading) {
-                        Toggle("Metronome", isOn: $metronomeEnabled)
-                            .padding(.vertical)
+                        HStack {
+                            HStack{
+                                    Image(systemName: "metronome").opacity(0.5)
+                                    Toggle("Metronome", isOn: $metronomeEnabled)
+                                }.padding()      
+                            }
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.black.opacity(0.05))
+                            )
 
                         Text("BPM")
                             .font(.headline)

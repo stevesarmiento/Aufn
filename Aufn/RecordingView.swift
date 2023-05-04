@@ -125,19 +125,24 @@ struct RecordingView: View {
             }
         }
         .padding()
-        .gesture(DragGesture()
+        .gesture(
+                DragGesture(minimumDistance: 0)
                     .onChanged({ value in
-                        if value.translation.height > 50 {
-                            withAnimation {
-                                isSecondaryNavVisible = false
-                            }
-                        } else if value.translation.height < -50 {
-                            withAnimation {
-                                isSecondaryNavVisible = true
-                            }
+                        withAnimation {
+                            isSecondaryNavVisible = value.translation.height < 0
                         }
                     })
-        )
-        
-    }
+                    .onEnded({ value in
+                        withAnimation {
+                            isSecondaryNavVisible = value.translation.height < -50
+                        }
+                    })
+                    .simultaneously(with: TapGesture().onEnded {
+                        withAnimation {
+                            isSecondaryNavVisible.toggle()
+                        }
+                    })
+            )
+        }
+
 }

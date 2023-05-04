@@ -43,7 +43,7 @@ struct PluginManagementView: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
     @State private var hasLoadedSettings = false
-    
+    @State private var chainConnectionEnabled = false
     @State private var microphones: [MicrophonePreset] = []
     @State private var plugins = [
         Plugin(name: "Compressor", icon: "rectangle.compress.vertical", isToggled: false),
@@ -124,6 +124,17 @@ struct PluginManagementView: View {
                 .padding()
                 ScrollView {
                     VStack (alignment: .leading) {
+                         HStack {
+                            HStack{
+                                    Image(systemName: "bolt.heart.fill").opacity(0.5)
+                                    Toggle("Connect Audio-chain", isOn: $chainConnectionEnabled)
+                                }.padding()      
+                            }
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.black.opacity(0.05))
+                            ).padding(.horizontal)
+                            .padding(.vertical)
                         Text("Microphones")
                             .font(.headline)
                             .padding(.horizontal)

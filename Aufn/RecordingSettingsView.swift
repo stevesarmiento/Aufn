@@ -43,16 +43,16 @@ struct RecordingSettingsView: View {
                                             .padding()
                                             .background(appSettings.selectedAudioFormatIndex == index ? Color.blue : Color.clear)
                                             .cornerRadius(8)
-                                    }
+                                    }.padding(.horizontal)
                                 }
 
                                 VStack(alignment: .center, spacing: 4) {
                                     Text(descriptions[index])
                                         .font(.system(size: 14))
                                         .foregroundColor(.gray)
-                                }
+                                }.padding()
                             }
-                            .padding(.horizontal)
+
                         }
                     }
 
@@ -70,8 +70,7 @@ struct RecordingSettingsView: View {
                             Text(explainers[appSettings.selectedAudioFormatIndex])
                                 .font(.system(size: 16))
                                 .foregroundColor(.gray)
-                        }
-                        .padding()
+                        }.padding()
                     }
                     
                 }
@@ -155,19 +154,16 @@ struct RecordingSettingsView: View {
 
                 // Mono/stereo toggle
                 VStack(alignment: .leading, spacing: 10) {
-                    Toggle("Stereo Recording", isOn: $appSettings.isStereo)
-                        .padding(.horizontal)
-                }
-                .padding()
+                     HStack{
+                                    Image(systemName: "square.2.layers.3d.bottom.filled").opacity(0.5)
+                                    Toggle("Stereo Recording", isOn: $appSettings.isStereo)
+                                }.padding()      
+                            }
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.black.opacity(0.05))
+                            ).padding()  
 
-                // Audio level limit alert
-                VStack(alignment: .leading, spacing: 10) {
-                    Toggle("Audio Level Limit Alert", isOn: $appSettings.limitAlertEnabled)
-                        .padding(.horizontal)
-                }
-                .padding()
-
-                Spacer()
             }
             .navigationTitle("Settings")
             .toolbar {
