@@ -92,8 +92,8 @@ struct GeneralSettingsView: View {
                     .cornerRadius(16)
                 }
                 .padding(.horizontal)
+                
                 // Permissions
-                // App Icon link
                 NavigationLink(destination: PermissionsView()) {
                     HStack {
                         Image(systemName: "hand.raised.fill")
@@ -167,7 +167,6 @@ struct IconSelectionView: View {
                                         print("App icon changed to \(iconName)")
                                     }
                                 }
-
                                 dismiss()
                             }
                             .overlay(

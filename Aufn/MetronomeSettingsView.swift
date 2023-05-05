@@ -15,6 +15,8 @@ struct MetronomeIconButton: View {
 
     var body: some View {
         Button(action: {
+            let impactMed = UIImpactFeedbackGenerator(style: .medium)
+            impactMed.impactOccurred()
             selected = index
         }) {
             VStack {
@@ -22,14 +24,18 @@ struct MetronomeIconButton: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 30, height: 30)
-                    .foregroundColor(selected == index ? .blue : .gray)
+                    .foregroundColor(selected == index ? .white : .gray)
                 Text(name)
                     .font(.caption)
             }
             .padding()
-            .overlay(
+            .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(selected == index ? Color.blue : Color.gray.opacity(0.2), lineWidth: 2)
+                    .fill(selected == index ? Color.blue : Color.clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(selected == index ? Color.blue : Color.gray.opacity(0.2), lineWidth: 2)
+                    )
             )
         }
     }
@@ -59,16 +65,23 @@ struct MetronomeSettingsView: View {
 
                 ScrollView {
                     VStack(alignment: .leading) {
-                        HStack {
-                            HStack{
-                                    Image(systemName: "metronome").opacity(0.5)
+                    // metronome toggle
+                        VStack {
+                            HStack {
+                                Image(systemName: "metronome.fill") // Placeholder image
+                                    .foregroundColor(.yellow)
+                                    .font(.system(size: 20))
+                                    .padding(.trailing, 8)
                                     Toggle("Metronome", isOn: $metronomeEnabled)
-                                }.padding()      
+                                    .font(.headline)
+                                    .foregroundColor(Color(.label))
+                                Spacer()
                             }
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.black.opacity(0.05))
-                            )
+                            .padding()
+                            .background(Color(.systemGroupedBackground))
+                            .cornerRadius(16)
+                        }
+
 
                         Text("BPM")
                             .font(.headline)

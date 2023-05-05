@@ -29,11 +29,11 @@ struct ToggleableButton: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 30, height: 30)
-                .foregroundColor(isToggled ? .white : .blue)
+                .foregroundColor(isToggled ? .white : .gray)
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: 16)
                 .fill(isToggled ? Color.blue : Color.clear)
         )
     }
@@ -116,7 +116,7 @@ struct PluginManagementView: View {
         NavigationView {
             VStack (alignment: .leading) {
                 HStack {
-                    Text("Audio-chain settings")
+                    Text("This is your audio-chain.")
                         .font(.headline)
                         .foregroundColor(.gray)
                     Spacer()
@@ -124,21 +124,25 @@ struct PluginManagementView: View {
                 .padding()
                 ScrollView {
                     VStack (alignment: .leading) {
-                         HStack {
-                            HStack{
-                                    Image(systemName: "bolt.heart.fill").opacity(0.5)
+                        // connect audiochain toggle
+                            VStack {
+                                HStack {
+                                    Image(systemName: "bolt.heart.fill") // Placeholder image
+                                        .foregroundColor(chainConnectionEnabled ? .green : .yellow)
+                                        .font(.system(size: 20))
+                                        .padding(.trailing, 8)
                                     Toggle("Connect Audio-chain", isOn: $chainConnectionEnabled)
-                                }.padding()      
+                                        .font(.headline)
+                                        .foregroundColor(Color(.label))
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(Color(.systemGroupedBackground))
+                                .cornerRadius(16)
                             }
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.black.opacity(0.05))
-                            ).padding(.horizontal)
-                            .padding(.vertical)
-                        Text("Microphones")
-                            .font(.headline)
                             .padding(.horizontal)
-                        
+                            .padding(.bottom)
+
                         let micExplainers = [
                             "The versatile microphone, suitable for a wide range of applications.",
                             "A Sensitive microphone, capturing detailed and accurate sound.",
@@ -211,7 +215,7 @@ struct PluginManagementView: View {
                             .padding(.horizontal)
                     }
                 }
-                .navigationTitle("Manager")
+                .navigationTitle("Chain Manager")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: {
@@ -246,14 +250,14 @@ struct PluginManagementView: View {
                 
                 ZStack {
                     RoundedRectangle(cornerRadius: 15)
-                        .fill(Color.black.opacity(0.05))
+                        .fill(Color(.systemGroupedBackground))
                     
                     HStack {
                         Image(systemName: iconName)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 30, height: 30)
-                            .foregroundColor(.black)
+                            .foregroundColor(.blue)
                             .padding()
                         
                         Text(description)
