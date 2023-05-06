@@ -94,61 +94,69 @@ struct RecordingDetailsView: View {
 
     var body: some View {
             VStack {
-                Text("Recording Details")
+                if isEditing {
+                    TextField("New name", text: $newName, onCommit: {
+                        renameFile()
+                    })
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
                     .font(.title2)
                     .padding()
+                } else {
+                    Text(fileURL.lastPathComponent)
+                        .font(.title2)
+                        .bold()
+                        .padding()
+                }
 
                 VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Text("File Name:")
+                    Group {
+                        Text("File Size: \(fileSize)")
+                        Text("Sample Rate: \(sampleRate)")
+                    }
+                    .font(.system(size: 18))
+                    .fontWeight(.semibold)
+
+                    Group {
+                        Text("File Format: \(fileFormat)")
+                        Text("Bit Depth: \(bitDepth)")
+                        Text("Channels: \(numberOfChannels)")
+                        Text("Creation Date: \(creationDate)")
+                    }
+                    .font(.callout)
+                }
+                .padding()
+
+                HStack(spacing: 10) {
+                    Button(action: {
                         if isEditing {
-                            TextField("New name", text: $newName, onCommit: {
-                                renameFile()
-                            })
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .autocapitalization(.none)
-                            .disableAutocorrection(true)
+                            renameFile()
                         } else {
-                            Text(fileURL.lastPathComponent)
+                            newName = fileURL.lastPathComponent
                         }
+                        isEditing.toggle()
+                    }) {
+                        Label(isEditing ? "Save" : "Rename", systemImage: "pencil")
                     }
-                    Text("File Size: \(fileSize)")
-                    Text("File Format: \(fileFormat)")
-                    Text("Sample Rate: \(sampleRate)")
-                    Text("Bit Depth: \(bitDepth)")
-                    Text("Channels: \(numberOfChannels)")
-                    Text("Creation Date: \(creationDate)")
-                }
-                .padding()
 
-                Button(action: {
-                    if isEditing {
-                        renameFile()
-                    } else {
-                        newName = fileURL.lastPathComponent
+                    Button(action: {
+                        showDeleteConfirmation.toggle()
+                    }) {
+                        Label("Delete", systemImage: "trash")
+                            .foregroundColor(.red)
                     }
-                    isEditing.toggle()
-                }) {
-                    Label(isEditing ? "Save" : "Rename", systemImage: "pencil")
-                }
-                .padding()
-
-                Button(action: {
-                    showDeleteConfirmation.toggle()
-                }) {
-                    Label("Delete", systemImage: "trash")
-                        .foregroundColor(.red)
-                }
-                .alert(isPresented: $showDeleteConfirmation) {
-                    Alert(
-                        title: Text("Delete Recording"),
-                        message: Text("Are you sure you want to delete this recording?"),
-                        primaryButton: .destructive(Text("Delete"), action: {
-                            presentationMode.wrappedValue.dismiss()
-                            onDelete()
-                        }),
-                        secondaryButton: .cancel()
-                    )
+                    .alert(isPresented: $showDeleteConfirmation) {
+                        Alert(
+                            title: Text("Delete Recording"),
+                            message: Text("Are you sure you want to delete this recording?"),
+                            primaryButton: .destructive(Text("Delete"), action: {
+                                presentationMode.wrappedValue.dismiss()
+                                onDelete()
+                            }),
+                            secondaryButton: .cancel()
+                        )
+                    }
                 }
                 .padding()
 

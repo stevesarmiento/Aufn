@@ -29,12 +29,17 @@ struct ToggleableButton: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 30, height: 30)
-                .foregroundColor(isToggled ? .white : .gray)
+                .foregroundColor(isToggled ? .green : .white.opacity(0.3))
         }
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(isToggled ? Color.blue : Color.clear)
+                .fill(isToggled ? Color.white.opacity(0.2) : Color.clear)
+                .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                        )
+                        .shadow(radius: 10)
         )
     }
 }
@@ -50,7 +55,7 @@ struct PluginManagementView: View {
         Plugin(name: "Equalizer", icon: "dial.medium", isToggled: false),
         Plugin(name: "Reverb", icon: "drop", isToggled: false)
     ]
-    
+
     // Helper functions to handle selection changes
     func microphonePresetSelected(at index: Int) {
         if microphones[index].isToggled {
@@ -116,9 +121,9 @@ struct PluginManagementView: View {
         NavigationView {
             VStack (alignment: .leading) {
                 HStack {
-                    Text("This is your audio-chain.")
+                    Text("Whats in your audio-chain?")
                         .font(.headline)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                     Spacer()
                 }
                 .padding()
@@ -133,16 +138,33 @@ struct PluginManagementView: View {
                                         .padding(.trailing, 8)
                                     Toggle("Connect Audio-chain", isOn: $chainConnectionEnabled)
                                         .font(.headline)
-                                        .foregroundColor(Color(.label))
+                                        .foregroundColor(Color(.white))
                                     Spacer()
                                 }
                                 .padding()
-                                .background(Color(.systemGroupedBackground))
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(
+                                            LinearGradient(
+                                                gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
+                                                startPoint: .top,
+                                                endPoint: .bottom
+                                            )
+                                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                            .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                        )
+                        .shadow(radius: 10)     
+                )
                                 .cornerRadius(16)
                             }
                             .padding(.horizontal)
                             .padding(.bottom)
-
+                        Text("Microphone Type")
+                            .font(.headline)
+                            .padding(.horizontal)
+                        
                         let micExplainers = [
                             "The versatile microphone, suitable for a wide range of applications.",
                             "A Sensitive microphone, capturing detailed and accurate sound.",
@@ -216,6 +238,7 @@ struct PluginManagementView: View {
                     }
                 }
                 .navigationTitle("Chain Manager")
+                .foregroundColor(.white)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: {
@@ -223,18 +246,27 @@ struct PluginManagementView: View {
                         }) {
                             Image(systemName: "chevron.down.circle.fill")
                                 .font(.system(size: 20))
-                                .foregroundColor(Color(.systemGray4))
+                                .foregroundColor(Color.white.opacity(0.2))
                         }
                     }
                 }
             }
+            .background(
+            LinearGradient(
+                gradient: Gradient(colors: [ Color(red: 0, green: 0.122, blue: 0.137), Color.black.opacity(1)]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            
+        ) 
             .onAppear {
                 loadMicrophoneAndPluginSettings()
             }
             .onDisappear {
                 saveSettings()
             }
-        }
+        }.clipShape(RoundedRectangle(cornerRadius: 30))
+         .edgesIgnoringSafeArea(.all)
     }
     
     struct CardView: View {
@@ -250,22 +282,34 @@ struct PluginManagementView: View {
                 
                 ZStack {
                     RoundedRectangle(cornerRadius: 15)
-                        .fill(Color(.systemGroupedBackground))
-                    
+                          .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                        )
+                        .shadow(radius: 10)
+
                     HStack {
                         Image(systemName: iconName)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 30, height: 30)
-                            .foregroundColor(.blue)
+                            .foregroundColor(.white.opacity(0.8))
                             .padding()
-                        
+
                         Text(description)
                             .font(.system(size: 16))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.6))
                     }
                     .padding()
                 }
+
             }
         }
     }

@@ -3,7 +3,7 @@ import SwiftUI
 struct RecordingView: View {
     @EnvironmentObject var appSettings: AppSettings
     @StateObject private var audioRecorder: AudioRecorder
-    
+
     init(appSettings: AppSettings) {
         _audioRecorder = StateObject(wrappedValue: AudioRecorder(appSettings: appSettings))
     }
@@ -15,7 +15,7 @@ struct RecordingView: View {
     @State private var showRecordingSettings = false
     @State private var showPluginManagement = false
     @State private var isSecondaryNavVisible = true
-    
+
     private var audioChain: AudioChain {
         if usePluginManagement, let selectedPlugins = appSettings.selectedPlugins {
             return AudioChain(microphonePreset: appSettings.selectedMicrophonePreset, plugins: selectedPlugins)
@@ -28,34 +28,45 @@ struct RecordingView: View {
         
         VStack {
             Spacer()
+            Spacer()
 
             if audioRecorder.isRecording {
                 Text("Recording...")
                     .font(.largeTitle)
+                    .bold()
                     .foregroundColor(.red)
             } else {
                 Text("Ready?")
+                    .foregroundColor(.white)
                     .font(.largeTitle)
+                    .bold()
             }
 
             Spacer()
 
-            WaveformView(audioLevels: $audioRecorder.audioLevels)
-                .frame(height: 100)
+            WaveformView(audioLevels: $audioRecorder.audioLevels, isRecording: $audioRecorder.isRecording)
+                .frame(height: UIScreen.main.bounds.height * 0.5) // Adjust the height here
 
             Spacer()
 
             Button(action: {
+                let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+                impactFeedbackGenerator.prepare()
+                impactFeedbackGenerator.impactOccurred()
+
                 if audioRecorder.isRecording {
                     audioRecorder.stopRecording()
                 } else {
                     audioRecorder.startRecording()
                 }
+                
             }) {
                 Image(systemName: audioRecorder.isRecording ? "square.circle.fill" : "circle.circle.fill")
-                    .font(.system(size: 80))
+                    .font(.system(size: 99))//i got 99 problems but a bitch ain't one.
                     .foregroundColor(audioRecorder.isRecording ? .red : .blue)
-            }
+            }.padding(.bottom)
+
+
 
             if isSecondaryNavVisible {
                 HStack {
@@ -68,7 +79,7 @@ struct RecordingView: View {
                         Image(systemName: "wand.and.rays")
                             .font(.system(size: 23))
                             .padding()
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.6))
 
                     }
                     .sheet(isPresented: $showPluginManagement) {
@@ -84,7 +95,7 @@ struct RecordingView: View {
                         Image(systemName: "waveform")
                             .font(.system(size: 23))
                             .padding()
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.6))
 
                     }
                     .sheet(isPresented: $showRecordingSettings) {
@@ -100,7 +111,7 @@ struct RecordingView: View {
                         Image(systemName: "metronome")
                             .font(.system(size: 23))
                             .padding()
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.6))
 
 
                     }.sheet(isPresented: $showMetronomeSettings) {
@@ -116,7 +127,7 @@ struct RecordingView: View {
                         Image(systemName: "gear")
                             .font(.system(size: 23))
                             .padding()
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.6))
 
                     }.sheet(isPresented: $showGeneralSettings) {
                         GeneralSettingsView()
@@ -129,20 +140,28 @@ struct RecordingView: View {
                 DragGesture(minimumDistance: 0)
                     .onChanged({ value in
                         withAnimation {
-                            isSecondaryNavVisible = value.translation.height < 0
+                            isSecondaryNavVisible = value.translation.height < 100
                         }
                     })
                     .onEnded({ value in
                         withAnimation {
-                            isSecondaryNavVisible = value.translation.height < -50
+                            isSecondaryNavVisible = value.translation.height < -100
                         }
                     })
-                    .simultaneously(with: TapGesture().onEnded {
-                        withAnimation {
-                            isSecondaryNavVisible.toggle()
-                        }
-                    })
+                    // .simultaneously(with: TapGesture().onEnded {
+                    //     withAnimation {
+                    //         isSecondaryNavVisible.toggle()
+                    //     }
+                    // })
             )
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [ Color(red: 0.047, green: 0.039, blue: 0.055), Color.black.opacity(1)]),
+                startPoint: .top,
+                endPoint: .bottom
+            ).edgesIgnoringSafeArea(.all)
+            
+        )
         }
 
 }
