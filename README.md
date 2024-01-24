@@ -5,7 +5,7 @@ Record, ship, delete.
 
 <div align="left">
     <a href="https://twitter.com/_Aufn">
-        <img src="https://img.shields.io/twitter/follow/Light_Wallet?label=Light_Wallet&style=flat&logo=twitter&color=1DA1F2" alt="Aufn Twitter">
+        <img src="https://img.shields.io/twitter/follow/_Aufn?label=Aufn&style=flat&logo=twitter&color=1DA1F2" alt="Aufn Twitter">
     </a>
 </div>
 
