@@ -43,13 +43,17 @@ struct RecordingSettingsView: View {
             }
             .background(
                 LinearGradient(
-                    gradient: Gradient(colors: [ Color(red: 0.145, green: 0.086, blue: 0), Color(red: 0.145, green: 0.086, blue: 0)]),
+                    gradient: Gradient(colors: [ Color(red: 0.141, green: 0.141, blue: 0.141), Color(red: 0.141, green: 0.141, blue: 0.141)]),
                     startPoint: .top,
                     endPoint: .bottom
                 )
             )
         }
-        .clipShape(RoundedRectangle(cornerRadius: 30))
+        .clipShape(RoundedRectangle(cornerRadius: 40))
+        .overlay(
+            RoundedRectangle(cornerRadius: 40)
+                .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.2), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+        )
         .edgesIgnoringSafeArea(.all)
     }
 }

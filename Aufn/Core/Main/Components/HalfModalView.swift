@@ -50,14 +50,14 @@ struct HalfModalView<Content: View>: View {
 
     var body: some View {
         let screenSize = UIScreen.main.bounds.size
-        let minHeight: CGFloat = screenSize.height * (keyboard.currentHeight > 0 ? 0.1 : 0)
+        let minHeight: CGFloat = screenSize.height * (keyboard.currentHeight > 0 ? 0.1 : 0.01)
 
         return VStack {
                 ZStack {
                     content
                         .padding(.bottom, keyboard.currentHeight)
                         .animation(.easeOut(duration: 0.2), value: keyboard.currentHeight)
-                        .frame(width: screenSize.width * 0.94, height: screenSize.width * 1.85)
+                        .frame(width: screenSize.width * 0.98, height: screenSize.width * 1.85)
                         .clipped()
                         .background(
                             RoundedRectangle(cornerRadius: 40)

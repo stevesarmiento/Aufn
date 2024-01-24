@@ -20,19 +20,19 @@ struct WaveformView: View {
                         }
                     }
                 // Microphone image
-                Image("microphone")
+                Image("backscreen")
                     .resizable()
                     .scaledToFit()
                     .frame(width: geometry.size.width, height: geometry.size.height)
-                    .opacity(0.6)
-                    .mask(
-                        RadialGradient(
-                            gradient: Gradient(colors: [.white, .clear]),
-                            center: .center,
-                            startRadius: 0,
-                            endRadius: min(geometry.size.width, geometry.size.height) / 2
-                        )
-                    )                
+                    .opacity(1)
+//                    .mask(
+//                        RadialGradient(
+//                            gradient: Gradient(colors: [.white, .clear]),
+//                            center: .center,
+//                            startRadius: 0,
+//                            endRadius: min(geometry.size.width, geometry.size.height) / 2
+//                        )
+//                    )                
                 
                 // Tape-like pattern
                 // RoundedRectangle(cornerRadius: 0)
