@@ -120,6 +120,7 @@ struct PluginManagementView: View {
     var body: some View {
         NavigationView {
             VStack (alignment: .leading) {
+                //header tag
                 HStack {
                     Text("Whats in your audio-chain?")
                         .font(.headline)
@@ -127,114 +128,15 @@ struct PluginManagementView: View {
                     Spacer()
                 }
                 .padding()
+
+                //scrollview
                 ScrollView {
                     VStack (alignment: .leading) {
-                        // connect audiochain toggle
-                            VStack {
-                                HStack {
-                                    Image(systemName: "bolt.heart.fill") // Placeholder image
-                                        .foregroundColor(chainConnectionEnabled ? .green : .yellow)
-                                        .font(.system(size: 20))
-                                        .padding(.trailing, 8)
-                                    Toggle("Connect Audio-chain", isOn: $chainConnectionEnabled)
-                                        .font(.headline)
-                                        .foregroundColor(Color(.white))
-                                    Spacer()
-                                }
-                                .padding()
-                                .background(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .fill(
-                                            LinearGradient(
-                                                gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
-                                                startPoint: .top,
-                                                endPoint: .bottom
-                                            )
-                                        )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16)
-                                    .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
-                                )
-                                .shadow(radius: 10)     
-                                )
-                                .cornerRadius(16)
-                            }
-                            .padding(.horizontal, 10)
-
-                            Text("Microphone Type")
-                                .font(.headline)
-                                .padding(.horizontal, 10)
+                            pluginToggle
                             
-                            let micExplainers = [
-                                "The versatile microphone, suitable for a wide range of applications.",
-                                "A Sensitive microphone, capturing detailed and accurate sound.",
-                                "Delivers a smooth and warm sound, ideal for capturing vintage tones.",
-                                "You decide the levels you need to work with to get your sound."
-                            ]
-                        
-                        HStack {
-                             ForEach(microphones.indices, id: \.self) { index in
-                                 VStack {
-                                     ToggleableButton(name: microphones[index].name, icon: microphones[index].icon, isToggled: $microphones[index].isToggled) {
-                                         microphonePresetSelected(at: index)
-                                     }
-                                     Text(microphones[index].name)
-                                         .font(.caption)
-                                 }
-                                 .padding(.horizontal, 10)
-                             }
-                         }
+                            microphoneSelection
 
-                        CardView(title: "", iconName: microphones.first(where: { $0.isToggled })?.icon ?? "waveform.badge.plus", description: microphones.first(where: { $0.isToggled }) != nil ? micExplainers[microphones.firstIndex(where: { $0.isToggled })!] : "Aufn offers high-quality built-in custom microphone pre-amps incasse you want to try something new.")
-                            .padding(.horizontal, 10)
-                        
-                        if let customMicIndex = microphones.firstIndex(where: { $0.name == "Custom" }), microphones[customMicIndex].isToggled {
-                            VStack {
-                                Text("Custom Microphone Settings")
-                                    .font(.headline)
-                                // Add UI components to adjust custom microphone settings
-                                // Example: Gain slider
-                                HStack {
-                                    Text("Gain")
-                                    Slider(value: $microphones[customMicIndex].settings.gain, in: 0...1)
-                                }
-                                // Example: Frequency slider
-                                HStack {
-                                    Text("Frequency")
-                                    Slider(value: $microphones[customMicIndex].settings.frequency, in: 100...2000)
-                                }
-                                // Add other UI components for other settings
-                            }
-                            .padding(.horizontal, 10)
-                        }
-                        
-                        
-                        Text("Processing")
-                            .font(.headline)
-                            .padding(.horizontal, 10)
-                        
-                        let pluginExplainers = [
-                            "Dynamic range control of your audio, loud parts are quieter and quiet parts are louder.",
-                            "A general frequency boost that helps add clarity to your audio recording.",
-                            "Add some depth and space to your audio, this is a hall reverb."
-                        ]
-                        
-                        HStack {
-                            ForEach(plugins.indices, id: \.self) { index in
-                                VStack {
-                                    ToggleableButton(name: plugins[index].name, icon: plugins[index].icon, isToggled: $plugins[index].isToggled) {
-                                        pluginSelected(at: index)
-                                        
-                                    }
-                                    Text(plugins[index].name)
-                                        .font(.caption)
-                                }
-                                .padding(.horizontal, 10)
-                            }
-                        }
-                        
-                        CardView(title: "", iconName: plugins.first(where: { $0.isToggled })?.icon ?? "wand.and.stars", description: plugins.first(where: { $0.isToggled }) != nil ? pluginExplainers[plugins.firstIndex(where: { $0.isToggled })!] : "Add some magic to your chain. Print it directly to tape.")
-                            .padding(.horizontal, 10)
+                            pluginSelection
                     }
                 }
                 .navigationTitle("Chain Manager")
@@ -268,8 +170,9 @@ struct PluginManagementView: View {
         .clipShape(RoundedRectangle(cornerRadius: 30))
         .edgesIgnoringSafeArea(.all)
     }
-    
-    struct CardView: View {
+}
+
+struct CardView: View {
         let title: String
         let iconName: String
         let description: String
@@ -312,5 +215,124 @@ struct PluginManagementView: View {
 
             }
         }
+}
+
+extension PluginManagementView {
+
+    private var pluginSelection: some View {
+                VStack {
+                        Text("Processing")
+                            .font(.headline)
+                            .padding(.horizontal, 10)
+                        
+                        HStack {
+                            ForEach(plugins.indices, id: \.self) { index in
+                                VStack {
+                                    ToggleableButton(name: plugins[index].name, icon: plugins[index].icon, isToggled: $plugins[index].isToggled) {
+                                        pluginSelected(at: index)
+                                        
+                                    }
+                                    Text(plugins[index].name)
+                                        .font(.caption)
+                                }
+                                .padding(.horizontal, 10)
+                            }
+                        }
+                        
+                        let pluginExplainers = [
+                            "Dynamic range control of your audio, loud parts are quieter and quiet parts are louder.",
+                            "A general frequency boost that helps add clarity to your audio recording.",
+                            "Add some depth and space to your audio, this is a hall reverb."
+                        ]
+                        
+                        CardView(title: "", iconName: plugins.first(where: { $0.isToggled })?.icon ?? "wand.and.stars", description: plugins.first(where: { $0.isToggled }) != nil ? pluginExplainers[plugins.firstIndex(where: { $0.isToggled })!] : "Add some magic to your chain. Print it directly to tape.")
+                            .padding(.horizontal, 10)
+                    }  
+    }
+
+    private var microphoneSelection: some View {
+
+        VStack {
+            Text("Microphone Type")
+                .font(.headline)
+                .padding(.horizontal, 10)
+                
+                    HStack {
+                        ForEach(microphones.indices, id: \.self) { index in
+                            VStack {
+                                ToggleableButton(name: microphones[index].name, icon: microphones[index].icon, isToggled: $microphones[index].isToggled) {
+                                    microphonePresetSelected(at: index)
+                                }
+                                Text(microphones[index].name)
+                                    .font(.caption)
+                            }
+                            .padding(.horizontal, 10)
+                        }
+                    }
+            
+                    let micExplainers = [
+                       "The versatile microphone, suitable for a wide range of applications.",
+                       "A Sensitive microphone, capturing detailed and accurate sound.",
+                       "Delivers a smooth and warm sound, ideal for capturing vintage tones.",
+                       "You decide the levels you need to work with to get your sound."
+                   ]
+           
+
+                    CardView(title: "", iconName: microphones.first(where: { $0.isToggled })?.icon ?? "waveform.badge.plus", description: microphones.first(where: { $0.isToggled }) != nil ? micExplainers[microphones.firstIndex(where: { $0.isToggled })!] : "Aufn offers high-quality built-in custom microphone pre-amps incasse you want to try something new.")
+                        .padding(.horizontal, 10)
+                
+                    if let customMicIndex = microphones.firstIndex(where: { $0.name == "Custom" }), microphones[customMicIndex].isToggled {
+                        VStack {
+                            Text("Custom Microphone Settings")
+                                .font(.headline)
+                            // Add UI components to adjust custom microphone settings
+                            // Example: Gain slider
+                            HStack {
+                                Text("Gain")
+                                Slider(value: $microphones[customMicIndex].settings.gain, in: 0...1)
+                            }
+                            // Example: Frequency slider
+                            HStack {
+                                Text("Frequency")
+                                Slider(value: $microphones[customMicIndex].settings.frequency, in: 100...2000)
+                            }
+                            // Add other UI components for other settings
+                        }
+                        .padding(.horizontal, 10)
+                    }
+        }
+    }
+
+    private var pluginToggle: some View {
+                    VStack {
+                                HStack {
+                                    Image(systemName: "bolt.heart.fill")
+                                        .foregroundColor(chainConnectionEnabled ? .green : .yellow)
+                                        .font(.system(size: 20))
+                                        .padding(.trailing, 8)
+                                    Toggle("Connect Audio-chain", isOn: $chainConnectionEnabled)
+                                        .font(.headline)
+                                        .foregroundColor(Color(.white))
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(
+                                            LinearGradient(
+                                                gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
+                                                startPoint: .top,
+                                                endPoint: .bottom
+                                            )
+                                        )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                    .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                                )
+                                .shadow(radius: 10)     
+                                )
+                                .cornerRadius(16)
+                            }
+                            .padding(.horizontal, 10)
     }
 }

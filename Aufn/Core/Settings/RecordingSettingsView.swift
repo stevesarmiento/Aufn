@@ -7,133 +7,61 @@ struct RecordingSettingsView: View {
 
     var body: some View {
         NavigationView {
-                VStack {
-
-                    HStack {
+            VStack (alignment: .leading) {
+                //header tag
+                HStack {
                         Text("This is how your audio prints.")
                             .font(.headline)
                             .foregroundColor(.gray)
                         Spacer()
-                    }
-                    .padding()
-                    
-                    ScrollView {
-                        // Mono/stereo toggle
-                        VStack {
-                            HStack {
-                                Image(systemName: "square.2.layers.3d.bottom.filled") // Placeholder image
-                                    .foregroundColor(.blue)
-                                    .font(.system(size: 20))
-                                    .padding(.trailing, 8)
-                                Toggle("Stereo Recording", isOn: $appSettings.isStereo)
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                Spacer()
-                            }
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(
-                                        LinearGradient(
-                                            gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        )
-                                    )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
-                            )
-                            .shadow(radius: 10)     
-                        )
-                            .cornerRadius(16)
+                }
+                .padding()
+                
+                //scrollview
+                ScrollView {
+                    VStack (alignment: .leading) {
+                            channelToggle
+
+                            fileTypeSelection
+
+                            qualitySelection
                         }
+                }
+                .navigationTitle("Audio Settings")
+                .foregroundColor(.white)
+                // .toolbar {
+                //         ToolbarItem(placement: .navigationBarTrailing) {
+                //             Button(action: {
+                //                 dismiss()
+                //             }) {
+                //                 Image(systemName: "chevron.down.circle.fill")
+                //                     .font(.system(size: 20))
+                //                     .foregroundColor(.white.opacity(0.2))
+                //             }
+                //         }
+                //     }
+            }
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [ Color(red: 0.145, green: 0.086, blue: 0), Color(red: 0.145, green: 0.086, blue: 0)]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 30))
+        .edgesIgnoringSafeArea(.all)
+    }
+}
 
-                        // Audio file format
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("File Format")
-                                .font(.headline)
-                            let iconNames = ["hifispeaker.2.fill", "hifispeaker.fill"]
-                            let descriptions = ["WAV", "M4A"]
-                            let explainers = [
-                                "Uncompressed, highest quality audio. Access to H, and H+ quality, larger files.",
-                                "Compressed audio format, limited to G, G+ quality, provides smaller file size."
-                            ]
-                            HStack {
-                                ForEach(appSettings.audioFormats.indices, id: \.self) { index in
-                                    VStack {
-                                        Button(action: {
-                                            let impactMed = UIImpactFeedbackGenerator(style: .medium)
-                                            impactMed.impactOccurred()
-                                            appSettings.selectedAudioFormatIndex = index
-                                        }) {
-                                            VStack {
-                                                Image(systemName: iconNames[index])
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .frame(width: 30, height: 30)
-                                                    .foregroundColor(appSettings.selectedAudioFormatIndex == index ? .yellow : .white.opacity(0.5))
-                                                    .padding()
-                                                    .background(appSettings.selectedAudioFormatIndex == index ? Color.white.opacity(0.2) : Color.clear)
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 16)
-                                                        .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
-                                                    )
-                                                    .shadow(radius: 10) 
-                                                    .cornerRadius(16)
-                                            }
-                                        }
-                                        VStack(alignment: .center, spacing: 4) {
-                                            Text(descriptions[index])
-                                            .font(.caption)
+extension RecordingSettingsView {
 
-                                        }
-                                    }
-
-
-                                }
-                                
-                            }
-
-                            ZStack {
-                                VStack() {
-                                    HStack(){
-                                        Image(systemName: iconNames[appSettings.selectedAudioFormatIndex])
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 30, height: 30)
-                                            .foregroundColor(.white.opacity(0.8))
-
-
-                                        Text(explainers[appSettings.selectedAudioFormatIndex])
-                                            .font(.system(size: 16))
-                                            .foregroundColor(.white.opacity(0.5))
-                                    }
-                                .frame(maxWidth: .infinity)
-                                } 
-                                .background(
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .fill(
-                                                    LinearGradient(
-                                                        gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
-                                                        startPoint: .top,
-                                                        endPoint: .bottom
-                                                    )
-                                                )
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 16)
-                                            .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
-                                        )
-                                        .shadow(radius: 10)     
-                                )                        }
-
-                        }
-                        
-                        // Audio quality (sample rate)
-                        VStack(alignment: .leading, spacing: 10) {
+    private var qualitySelection: some View {
+                                // Audio quality (sample rate)
+                        VStack(alignment: .leading) {
                             Text("Sample Rate")
                                 .font(.headline)
-                                .padding(.horizontal)
+                                .padding(.horizontal, 10)
                                 
                             let iconNames = ["moonphase.waxing.gibbous.inverse", "moonphase.first.quarter.inverse", "moonphase.waxing.crescent.inverse", "moonphase.new.moon.inverse"]
                             let descriptions = ["G", "G+", "H", "H+"]
@@ -189,6 +117,7 @@ struct RecordingSettingsView: View {
                                         .padding(.horizontal)
                                     }
                                 }
+                                .padding(.horizontal, 10)
                                 
                                 ZStack {
                                     VStack {
@@ -221,39 +150,128 @@ struct RecordingSettingsView: View {
                                             .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
                                         )
                                         .shadow(radius: 10)     
-                                )
+                                    )
                                 }
-
-
-
-
+                                .padding(.horizontal, 10)
                             }
+                        }
+    }
 
+    private var fileTypeSelection: some View {
+                        // Audio file format
+                        VStack(alignment: .leading) {
+
+                            Text("File Format")
+                                .font(.headline)
+                                .padding(.horizontal, 10)
+
+                            let iconNames = ["hifispeaker.2.fill", "hifispeaker.fill"]
+                            let descriptions = ["WAV", "M4A"]
+                            let explainers = [
+                                "Uncompressed, highest quality audio. Access to H, and H+ quality, larger files.",
+                                "Compressed audio format, limited to G, G+ quality, provides smaller file size."
+                            ]
+                            HStack {
+                                ForEach(appSettings.audioFormats.indices, id: \.self) { index in
+                                    VStack {
+                                        Button(action: {
+                                            let impactMed = UIImpactFeedbackGenerator(style: .medium)
+                                            impactMed.impactOccurred()
+                                            appSettings.selectedAudioFormatIndex = index
+                                        }) {
+                                            VStack {
+                                                Image(systemName: iconNames[index])
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 30, height: 30)
+                                                    .foregroundColor(appSettings.selectedAudioFormatIndex == index ? .yellow : .white.opacity(0.5))
+                                                    .padding()
+                                                    .background(appSettings.selectedAudioFormatIndex == index ? Color.white.opacity(0.2) : Color.clear)
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 16)
+                                                        .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                                                    )
+                                                    .shadow(radius: 10) 
+                                                    .cornerRadius(16)
+                                            }
+                                        }
+                                        VStack(alignment: .center, spacing: 4) {
+                                            Text(descriptions[index])
+                                            .font(.caption)
+
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 10)
+
+                            ZStack {
+                                VStack() {
+                                    HStack(){
+                                        Image(systemName: iconNames[appSettings.selectedAudioFormatIndex])
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 30, height: 30)
+                                            .foregroundColor(.white.opacity(0.8))
+
+
+                                        Text(explainers[appSettings.selectedAudioFormatIndex])
+                                            .font(.system(size: 16))
+                                            .foregroundColor(.white.opacity(0.5))
+                                    }
+                                } 
+                                .padding()
+                                .background(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .fill(
+                                                    LinearGradient(
+                                                        gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
+                                                        startPoint: .top,
+                                                        endPoint: .bottom
+                                                    )
+                                                )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                            .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                                        )
+                                        .shadow(radius: 10)     
+                                )
+                            }
+                            .padding(.horizontal, 10)
+                        }
+    }
+
+    private var channelToggle: some View {
+                        // Mono/stereo toggle
+                VStack {
+                        HStack {
+                            Image(systemName: "square.2.layers.3d.bottom.filled")
+                                .foregroundColor(.blue)
+                                .font(.system(size: 20))
+                                .padding(.trailing, 8)
+                            Toggle("Stereo Recording", isOn: $appSettings.isStereo)
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            Spacer()
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                               .fill(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                    .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                                )
+                                .shadow(radius: 10)     
+                            )
+                            .cornerRadius(16)
                     }
-                }
-         }
-         .background(
-            LinearGradient(
-                gradient: Gradient(colors: [ Color(red: 0.145, green: 0.086, blue: 0), Color(red: 0.145, green: 0.086, blue: 0)]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            
-        )
-        .navigationTitle("Audio Settings")
-        // .toolbar {
-        //         ToolbarItem(placement: .navigationBarTrailing) {
-        //             Button(action: {
-        //                 dismiss()
-        //             }) {
-        //                 Image(systemName: "chevron.down.circle.fill")
-        //                     .font(.system(size: 20))
-        //                     .foregroundColor(.white.opacity(0.2))
-        //             }
-        //         }
-        //     }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 30))
-        .edgesIgnoringSafeArea(.all)
+                    .padding(.horizontal, 10)
     }
 }

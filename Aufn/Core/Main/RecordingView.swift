@@ -45,7 +45,7 @@ struct RecordingView: View {
             Spacer()
 
             WaveformView(audioLevels: $audioRecorder.audioLevels, isRecording: $audioRecorder.isRecording)
-                .frame(height: UIScreen.main.bounds.height * 0.5) // Adjust the height here
+                .frame(height: UIScreen.main.bounds.height * 0.5)
 
             Spacer()
 
@@ -133,24 +133,24 @@ struct RecordingView: View {
             }
         }
         .padding()
-        .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged({ value in
-                        withAnimation {
-                            isSecondaryNavVisible = value.translation.height < 100
-                        }
-                    })
-                    .onEnded({ value in
-                        withAnimation {
-                            isSecondaryNavVisible = value.translation.height < -100
-                        }
-                    })
-                    // .simultaneously(with: TapGesture().onEnded {
-                    //     withAnimation {
-                    //         isSecondaryNavVisible.toggle()
-                    //     }
-                    // })
-            )
+        // .gesture(
+        //         DragGesture(minimumDistance: 0)
+        //             .onChanged({ value in
+        //                 withAnimation {
+        //                     isSecondaryNavVisible = value.translation.height < 100
+        //                 }
+        //             })
+        //             .onEnded({ value in
+        //                 withAnimation {
+        //                     isSecondaryNavVisible = value.translation.height < -100
+        //                 }
+        //             })
+        //             // .simultaneously(with: TapGesture().onEnded {
+        //             //     withAnimation {
+        //             //         isSecondaryNavVisible.toggle()
+        //             //     }
+        //             // })
+        //     )
         .background(
             LinearGradient(
                 gradient: Gradient(colors: [ Color(red: 0.047, green: 0.039, blue: 0.055), Color.black.opacity(1)]),
