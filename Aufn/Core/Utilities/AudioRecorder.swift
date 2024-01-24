@@ -79,6 +79,7 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
     
         do {
             let audioRecorder = try AVAudioRecorder(url: temporaryAudioFilename, settings: settings)
+            print("Audio recorder initialized with file at URL: \(temporaryAudioFilename)") 
             audioRecorder.delegate = self
             audioRecorder.isMeteringEnabled = true
             audioRecorder.prepareToRecord()
@@ -125,6 +126,14 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
     
 func startRecording() {
     print("startRecording called")
+
+    // Update finalURL
+    let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyyMMddHHmmss"
+    let recordingName = "recording_\(dateFormatter.string(from: Date())).\(appSettings.audioFormats[appSettings.selectedAudioFormatIndex].lowercased())"
+    finalURL = documentPath.appendingPathComponent(recordingName)
+
     if audioEngine == nil {
         setupAudioEngine()
         setupAudioProcessingNodes()
@@ -171,12 +180,10 @@ func startRecording() {
     }
 }
 
-
-
-
     
     func stopRecording() {
         print("stopRecording called")
+        print("Recorded file at URL: \(finalURL)")
         isRecording = false
         
         // Remove the tap from the inputNode and mainMixerNode
@@ -211,15 +218,19 @@ func startRecording() {
             print("Failed to save the recorded audio file")
         }
         // Reset audio session
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-            try AVAudioSession.sharedInstance().setActive(false)
-        } catch {
-            print("Failed to reset audio session: \(error)")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+                try AVAudioSession.sharedInstance().setActive(false)
+            } catch {
+                print("Failed to reset audio session: \(error)")
+            }
         }
         
         // Stop the audio engine
         audioEngine.stop()
+
+        
     } 
 
     private func setupAudioProcessingNodes() {

@@ -82,9 +82,6 @@ struct RecordingView: View {
                             .foregroundColor(.white.opacity(0.6))
 
                     }
-                    .sheet(isPresented: $showPluginManagement) {
-                        PluginManagementView()
-                    }
 
                     // Settings button
                     Button(action: {
@@ -98,9 +95,9 @@ struct RecordingView: View {
                             .foregroundColor(.white.opacity(0.6))
 
                     }
-                    .sheet(isPresented: $showRecordingSettings) {
-                        RecordingSettingsView(appSettings: appSettings)
-                    }
+//                    .sheet(isPresented: $showRecordingSettings) {
+//                        RecordingSettingsView(appSettings: appSettings)
+//                    }
 
                     // Placeholder button 1
                     Button(action: {
@@ -162,6 +159,29 @@ struct RecordingView: View {
             ).edgesIgnoringSafeArea(.all)
             
         )
+        .overlay(
+                Group {
+                     if showPluginManagement {
+                                HalfModalView(isShown: $showPluginManagement, onDismiss: {
+                                    print("Dismissed")
+                            }) {
+                              PluginManagementView()
+                            }
+                        }
+                    }
+                )
+        .overlay(
+                Group {
+                     if showRecordingSettings {
+                                HalfModalView(isShown: $showRecordingSettings, onDismiss: {
+                                    print("Dismissed")
+                            }) {
+                                RecordingSettingsView(appSettings: appSettings)
+                            }
+                        }
+                    }
+                )
         }
+    
 
 }

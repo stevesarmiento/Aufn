@@ -151,26 +151,26 @@ struct PluginManagementView: View {
                                                 endPoint: .bottom
                                             )
                                         )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
-                        )
-                        .shadow(radius: 10)     
-                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                    .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                                )
+                                .shadow(radius: 10)     
+                                )
                                 .cornerRadius(16)
                             }
-                            .padding(.horizontal)
-                            .padding(.bottom)
-                        Text("Microphone Type")
-                            .font(.headline)
-                            .padding(.horizontal)
-                        
-                        let micExplainers = [
-                            "The versatile microphone, suitable for a wide range of applications.",
-                            "A Sensitive microphone, capturing detailed and accurate sound.",
-                            "Delivers a smooth and warm sound, ideal for capturing vintage tones.",
-                            "You decide the levels you need to work with to get your sound."
-                        ]
+                            .padding(.horizontal, 10)
+
+                            Text("Microphone Type")
+                                .font(.headline)
+                                .padding(.horizontal, 10)
+                            
+                            let micExplainers = [
+                                "The versatile microphone, suitable for a wide range of applications.",
+                                "A Sensitive microphone, capturing detailed and accurate sound.",
+                                "Delivers a smooth and warm sound, ideal for capturing vintage tones.",
+                                "You decide the levels you need to work with to get your sound."
+                            ]
                         
                         HStack {
                              ForEach(microphones.indices, id: \.self) { index in
@@ -181,12 +181,12 @@ struct PluginManagementView: View {
                                      Text(microphones[index].name)
                                          .font(.caption)
                                  }
-                                 .padding(.horizontal)
+                                 .padding(.horizontal, 10)
                              }
                          }
-                        
+
                         CardView(title: "", iconName: microphones.first(where: { $0.isToggled })?.icon ?? "waveform.badge.plus", description: microphones.first(where: { $0.isToggled }) != nil ? micExplainers[microphones.firstIndex(where: { $0.isToggled })!] : "Aufn offers high-quality built-in custom microphone pre-amps incasse you want to try something new.")
-                            .padding(.horizontal)
+                            .padding(.horizontal, 10)
                         
                         if let customMicIndex = microphones.firstIndex(where: { $0.name == "Custom" }), microphones[customMicIndex].isToggled {
                             VStack {
@@ -205,13 +205,13 @@ struct PluginManagementView: View {
                                 }
                                 // Add other UI components for other settings
                             }
-                            .padding(.horizontal)
+                            .padding(.horizontal, 10)
                         }
                         
                         
                         Text("Processing")
                             .font(.headline)
-                            .padding(.horizontal)
+                            .padding(.horizontal, 10)
                         
                         let pluginExplainers = [
                             "Dynamic range control of your audio, loud parts are quieter and quiet parts are louder.",
@@ -229,44 +229,44 @@ struct PluginManagementView: View {
                                     Text(plugins[index].name)
                                         .font(.caption)
                                 }
-                                .padding(.horizontal)
+                                .padding(.horizontal, 10)
                             }
                         }
                         
                         CardView(title: "", iconName: plugins.first(where: { $0.isToggled })?.icon ?? "wand.and.stars", description: plugins.first(where: { $0.isToggled }) != nil ? pluginExplainers[plugins.firstIndex(where: { $0.isToggled })!] : "Add some magic to your chain. Print it directly to tape.")
-                            .padding(.horizontal)
+                            .padding(.horizontal, 10)
                     }
                 }
                 .navigationTitle("Chain Manager")
                 .foregroundColor(.white)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            dismiss()
-                        }) {
-                            Image(systemName: "chevron.down.circle.fill")
-                                .font(.system(size: 20))
-                                .foregroundColor(Color.white.opacity(0.2))
-                        }
-                    }
-                }
+                // .toolbar {
+                //     ToolbarItem(placement: .navigationBarTrailing) {
+                //         Button(action: {
+                //             dismiss()
+                //         }) {
+                //             Image(systemName: "chevron.down.circle.fill")
+                //                 .font(.system(size: 20))
+                //                 .foregroundColor(Color.white.opacity(0.2))
+                //         }
+                //     }
+                // }
             }
             .background(
-            LinearGradient(
-                gradient: Gradient(colors: [ Color(red: 0, green: 0.122, blue: 0.137), Color.black.opacity(1)]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            
-        ) 
+                LinearGradient(
+                    gradient: Gradient(colors: [ Color(red: 0, green: 0.122, blue: 0.137), Color(red: 0, green: 0.122, blue: 0.137)]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            ) 
             .onAppear {
                 loadMicrophoneAndPluginSettings()
             }
             .onDisappear {
                 saveSettings()
             }
-        }.clipShape(RoundedRectangle(cornerRadius: 30))
-         .edgesIgnoringSafeArea(.all)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 30))
+        .edgesIgnoringSafeArea(.all)
     }
     
     struct CardView: View {
@@ -278,7 +278,7 @@ struct PluginManagementView: View {
             VStack(alignment: .leading) {
                 Text(title)
                     .font(.headline)
-                    .padding(.horizontal)
+                    .padding(.horizontal, 10)
                 
                 ZStack {
                     RoundedRectangle(cornerRadius: 15)

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F34D457F2A03412E004EDF1B /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF802A033B6C00DBC761 /* WaveformView.swift */; };
+		F3D568BE2B60AD830097B079 /* HalfModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D568BD2B60AD830097B079 /* HalfModalView.swift */; };
 		F3EEBF602A03162300DBC761 /* AufnApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF5F2A03162300DBC761 /* AufnApp.swift */; };
 		F3EEBF622A03162300DBC761 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF612A03162300DBC761 /* MainView.swift */; };
 		F3EEBF642A03162400DBC761 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3EEBF632A03162400DBC761 /* Assets.xcassets */; };
@@ -36,6 +37,7 @@
 
 /* Begin PBXFileReference section */
 		F34D45802A03729D004EDF1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F3D568BD2B60AD830097B079 /* HalfModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfModalView.swift; sourceTree = "<group>"; };
 		F3EEBF5C2A03162300DBC761 /* Aufn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aufn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3EEBF5F2A03162300DBC761 /* AufnApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AufnApp.swift; sourceTree = "<group>"; };
 		F3EEBF612A03162300DBC761 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				F3EEBF702A033B6B00DBC761 /* GeneralSettingsView.swift */,
+				F3EEBF7C2A033B6C00DBC761 /* PluginManagementView.swift */,
 				F3EEBF782A033B6B00DBC761 /* RecordingSettingsView.swift */,
 				F3EEBF752A033B6B00DBC761 /* MetronomeSettingsView.swift */,
 				F3EEBF7A2A033B6C00DBC761 /* AppSettings.swift */,
@@ -101,7 +104,6 @@
 			children = (
 				F3D568BC2B60AA760097B079 /* Components */,
 				F3EEBF762A033B6B00DBC761 /* PlaybackView.swift */,
-				F3EEBF7C2A033B6C00DBC761 /* PluginManagementView.swift */,
 				F3EEBF792A033B6C00DBC761 /* RecordingView.swift */,
 			);
 			path = Main;
@@ -131,6 +133,7 @@
 				F3EEBF802A033B6C00DBC761 /* WaveformView.swift */,
 				F3EEBF6D2A033B6B00DBC761 /* EditableText.swift */,
 				F3EEBF7E2A033B6C00DBC761 /* AudioPlayer.swift */,
+				F3D568BD2B60AD830097B079 /* HalfModalView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -243,6 +246,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F34D457F2A03412E004EDF1B /* WaveformView.swift in Sources */,
+				F3D568BE2B60AD830097B079 /* HalfModalView.swift in Sources */,
 				F3EEBF8C2A033B6C00DBC761 /* PlaybackView.swift in Sources */,
 				F3EEBF8A2A033B6C00DBC761 /* AudioProcessingManager.swift in Sources */,
 				F3EEBF622A03162300DBC761 /* MainView.swift in Sources */,

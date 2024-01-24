@@ -16,6 +16,7 @@ struct RecordingSettingsView: View {
                         Spacer()
                     }
                     .padding()
+                    
                     ScrollView {
                         // Mono/stereo toggle
                         VStack {
@@ -46,8 +47,7 @@ struct RecordingSettingsView: View {
                             .shadow(radius: 10)     
                         )
                             .cornerRadius(16)
-                        }.padding(.horizontal)
-                        .padding(.bottom)
+                        }
 
                         // Audio file format
                         VStack(alignment: .leading, spacing: 10) {
@@ -94,6 +94,7 @@ struct RecordingSettingsView: View {
                                 }
                                 
                             }
+
                             ZStack {
                                 VStack() {
                                     HStack(){
@@ -110,8 +111,7 @@ struct RecordingSettingsView: View {
                                     }
                                 .frame(maxWidth: .infinity)
                                 } 
-                                .padding()
-                                    .background(
+                                .background(
                                             RoundedRectangle(cornerRadius: 16)
                                                 .fill(
                                                     LinearGradient(
@@ -128,8 +128,6 @@ struct RecordingSettingsView: View {
                                 )                        }
 
                         }
-                        .padding(.horizontal)
-                        .padding(.bottom)
                         
                         // Audio quality (sample rate)
                         VStack(alignment: .leading, spacing: 10) {
@@ -224,7 +222,7 @@ struct RecordingSettingsView: View {
                                         )
                                         .shadow(radius: 10)     
                                 )
-                                }.padding(.horizontal)
+                                }
 
 
 
@@ -232,30 +230,30 @@ struct RecordingSettingsView: View {
                             }
 
                     }
-                }.padding()
+                }
          }
          .background(
             LinearGradient(
-                gradient: Gradient(colors: [ Color(red: 0.145, green: 0.086, blue: 0), Color.black.opacity(1)]),
+                gradient: Gradient(colors: [ Color(red: 0.145, green: 0.086, blue: 0), Color(red: 0.145, green: 0.086, blue: 0)]),
                 startPoint: .top,
                 endPoint: .bottom
             )
             
         )
-            .navigationTitle("Audio Settings")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        Image(systemName: "chevron.down.circle.fill")
-                            .font(.system(size: 20))
-                            .foregroundColor(.white.opacity(0.2))
-                    }
-                }
-            }
+        .navigationTitle("Audio Settings")
+        // .toolbar {
+        //         ToolbarItem(placement: .navigationBarTrailing) {
+        //             Button(action: {
+        //                 dismiss()
+        //             }) {
+        //                 Image(systemName: "chevron.down.circle.fill")
+        //                     .font(.system(size: 20))
+        //                     .foregroundColor(.white.opacity(0.2))
+        //             }
+        //         }
+        //     }
         }
         .clipShape(RoundedRectangle(cornerRadius: 30))
-         .edgesIgnoringSafeArea(.all)
+        .edgesIgnoringSafeArea(.all)
     }
 }

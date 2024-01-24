@@ -149,6 +149,8 @@ struct PlaybackView: View {
                 } else {
                     if let fileURL = selectedFile {
                         audioPlayer.startPlaying(fileURL: fileURL)
+                    } else {
+                        print("No file selected")
                     }
                 }
             }) {
