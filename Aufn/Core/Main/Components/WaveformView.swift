@@ -34,32 +34,6 @@ struct WaveformView: View {
     }
 }
 
-// struct TapePatternView: View {
-//     var body: some View {
-//         GeometryReader { geometry in
-//             Path { path in
-//                 let width = geometry.size.width
-//                 let height = geometry.size.height
-//                 let tapeSegmentHeight: CGFloat = 10
-
-//                 for i in stride(from: 0, through: height, by: tapeSegmentHeight * 2) {
-//                     path.move(to: CGPoint(x: 0, y: i))
-//                     path.addRect(CGRect(x: 0, y: i, width: width, height: tapeSegmentHeight))
-//                 }
-//             }
-//             .mask(
-//                 RadialGradient(
-//                     gradient: Gradient(colors: [.white, .clear]),
-//                     center: .center,
-//                     startRadius: 0,
-//                     endRadius: min(geometry.size.width, geometry.size.height) / 2
-//                 )
-//             )
-//         }
-//     }
-// }
-
-
 struct CentralWaveformView: View {
     @Binding var audioLevels: [CGFloat]
     @Binding var isRecording: Bool

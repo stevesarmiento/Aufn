@@ -27,9 +27,8 @@ struct RecordingView: View {
         VStack{
             VStack {
                 ZStack{
-
                     WaveformView(audioLevels: $audioRecorder.audioLevels, isRecording: $audioRecorder.isRecording)
-                        .frame(height: UIScreen.main.bounds.height * 0.4)
+                        //.frame(height: UIScreen.main.bounds.height * 0.4)
 
                     VStack {
                         Spacer()
@@ -143,27 +142,25 @@ struct RecordingView: View {
                         }
                     }
                 }
-
-
-                // Button(action: {
-                //     let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
-                //     impactFeedbackGenerator.prepare()
-                //     impactFeedbackGenerator.impactOccurred()
-
-                //     if audioRecorder.isRecording {
-                //         audioRecorder.stopRecording()
-                //     } else {
-                //         audioRecorder.startRecording()
-                //     }
+                HStack{
+                    Text("/// Aufn: v0.1")
+                        .foregroundColor(.black.opacity(0.4))
+                        .font(.system(size: 10, design: .monospaced))
+                        .bold()
+                        .padding(.leading, 15)
                     
-                // }) {
-                //     Image(systemName: audioRecorder.isRecording ? "square.circle.fill" : "circle.circle.fill")
-                //         .font(.system(size: 99))//i got 99 problems but a bitch ain't one.
-                //         .foregroundColor(audioRecorder.isRecording ? .red : .blue)
-                // }
-                // .padding(.bottom)
+                    Spacer()
 
-                        HStack {
+                    Text("Professional Recording Device")
+                        .foregroundColor(.black.opacity(0.2))
+                        .font(.system(size: 10, design: .monospaced))
+                        .bold()
+                        .padding(.trailing, 15)
+                }
+                .offset(x: 0, y: -40)  
+
+
+                    HStack {
 
                             ZStack {
                                 Image("triangle")
@@ -171,7 +168,7 @@ struct RecordingView: View {
                                
                                 Image("tape")
                                     .rotationEffect(.degrees(audioRecorder.isRecording ? 360 : 0))
-                                    .offset(x: -70, y: -70)
+                                    .offset(x: -80, y: -80)
                                     .animation(audioRecorder.isRecording ? Animation.linear(duration: 10).repeatForever(autoreverses: false) : .default, value: audioRecorder.isRecording)
 
                                 // Plugin management
@@ -228,12 +225,13 @@ struct RecordingView: View {
                                     
                                 }) {
                                     Image(systemName: audioRecorder.isRecording ? "square.circle.fill" : "circle.circle.fill")
-                                        .font(.system(size: 120))
+                                        .font(.system(size: 130))
                                         .foregroundColor(audioRecorder.isRecording ? .red : .blue)
                                 }
                                 .offset(x: 70, y: 70)
                             } 
-                        }  
+                        }
+                        .offset(x: 0, y: -25)  
                     
                     //grills
                     ZStack {
