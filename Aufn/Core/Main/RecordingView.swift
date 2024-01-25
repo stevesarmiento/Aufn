@@ -262,7 +262,7 @@ struct RecordingView: View {
                     .padding(.bottom) 
 
                 }
-                .padding()
+                .padding(.horizontal)
                 .background(
                     LinearGradient(
                         gradient: Gradient(colors: [Color(red: 0.878, green: 0.878, blue: 0.878), Color(red: 0.722, green: 0.722, blue: 0.722)]),
