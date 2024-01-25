@@ -9,38 +9,25 @@ struct WaveformView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                 // Glowing horizontal oval
-                Ellipse()
-                    .fill(RadialGradient(gradient: Gradient(colors: [isRecording ? Color.red.opacity(0.1) : Color.yellow.opacity(0.1), Color.clear]), center: .center, startRadius: 0, endRadius: geometry.size.height / 2))
-                    .frame(width: geometry.size.width, height: geometry.size.height)
-                    .scaleEffect(x: orbScale, y: 1)
-                    .onAppear {
-                        withAnimation(Animation.easeInOut(duration: 4).repeatForever(autoreverses: true)) {
-                            orbScale = 2
-                        }
-                    }
-                // Microphone image
-                Image("backscreen")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: geometry.size.width, height: geometry.size.height)
-                    .opacity(1)
-//                    .mask(
-//                        RadialGradient(
-//                            gradient: Gradient(colors: [.white, .clear]),
-//                            center: .center,
-//                            startRadius: 0,
-//                            endRadius: min(geometry.size.width, geometry.size.height) / 2
-//                        )
-//                    )                
-                
-                // Tape-like pattern
-                // RoundedRectangle(cornerRadius: 0)
-                //     .fill(Color.gray.opacity(1))
-                //     .frame(height: geometry.size.height)
-                //     .mask(TapePatternView().opacity(0.5))
 
-                // Central waveform
+                if isRecording {
+                    withAnimation(.easeInOut(duration: 1)) {
+                        Image("backscreen")
+                            .resizable()
+                            .scaledToFit()
+                            .opacity(1)
+                            .transition(.opacity)
+                    }
+                } else {
+                    withAnimation(.easeInOut(duration: 1)) {
+                        Image("backscreenoff")
+                            .resizable()
+                            .scaledToFit()
+                            .opacity(1)
+                            .transition(.opacity)
+                    }
+                }
+
                 CentralWaveformView(audioLevels: $audioLevels, isRecording: $isRecording)
             }
         }
