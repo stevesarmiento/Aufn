@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F34D457F2A03412E004EDF1B /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF802A033B6C00DBC761 /* WaveformView.swift */; };
+		F3947B1A2B636F06002FE28B /* AnimationUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3947B192B636F06002FE28B /* AnimationUtility.swift */; };
 		F3D568BE2B60AD830097B079 /* HalfModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D568BD2B60AD830097B079 /* HalfModalView.swift */; };
 		F3EEBF602A03162300DBC761 /* AufnApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF5F2A03162300DBC761 /* AufnApp.swift */; };
 		F3EEBF622A03162300DBC761 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF612A03162300DBC761 /* MainView.swift */; };
@@ -37,6 +38,7 @@
 
 /* Begin PBXFileReference section */
 		F34D45802A03729D004EDF1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F3947B192B636F06002FE28B /* AnimationUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationUtility.swift; sourceTree = "<group>"; };
 		F3D568BD2B60AD830097B079 /* HalfModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfModalView.swift; sourceTree = "<group>"; };
 		F3EEBF5C2A03162300DBC761 /* Aufn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aufn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3EEBF5F2A03162300DBC761 /* AufnApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AufnApp.swift; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 				F3EEBF6F2A033B6B00DBC761 /* AudioFileViewModal.swift */,
 				F3EEBF742A033B6B00DBC761 /* AudioProcessingManager.swift */,
 				F3EEBF7F2A033B6C00DBC761 /* AudioRecorder.swift */,
+				F3947B192B636F06002FE28B /* AnimationUtility.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -261,6 +264,7 @@
 				F3EEBF882A033B6C00DBC761 /* ActivityView.swift in Sources */,
 				F3EEBF832A033B6C00DBC761 /* EditableText.swift in Sources */,
 				F3EEBF942A033B6C00DBC761 /* AudioPlayer.swift in Sources */,
+				F3947B1A2B636F06002FE28B /* AnimationUtility.swift in Sources */,
 				F3EEBF912A033B6C00DBC761 /* UserDefaults+Extentions.swift in Sources */,
 				F3EEBF952A033B6C00DBC761 /* AudioRecorder.swift in Sources */,
 				F3EEBF8F2A033B6C00DBC761 /* RecordingView.swift in Sources */,
