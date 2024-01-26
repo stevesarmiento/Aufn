@@ -15,6 +15,7 @@ struct RecordingView: View {
     @State private var showRecordingSettings = false
     @State private var showPluginManagement = false
 
+
     private var audioChain: AudioChain {
         if usePluginManagement, let selectedPlugins = appSettings.selectedPlugins {
             return AudioChain(microphonePreset: appSettings.selectedMicrophonePreset, plugins: selectedPlugins)
@@ -150,8 +151,37 @@ extension RecordingView {
                                                 .strokeBorder(LinearGradient(gradient: Gradient(colors: [ .black.opacity(0.2), .white.opacity(0.5)]), startPoint: .top, endPoint: .bottom), lineWidth: 1)
                                         )   
                                 }
-                                .buttonStyle(PlainButtonStyle())
+                                //.buttonStyle(PlainButtonStyle())
                                 .offset(x: 120, y: -40)
+
+                                // Metronome Settings
+                                Button(action: {
+                                    showMetronomeSettings.toggle()
+                                    let impactMed = UIImpactFeedbackGenerator(style: .medium)
+                                    impactMed.impactOccurred()
+                                }) {
+                                    Image(systemName: "metronome")
+                                        .font(.system(size: 23))
+                                        .padding()
+                                        .foregroundColor(.black.opacity(0.5))
+                                        .background(
+                                            LinearGradient(
+                                                gradient: Gradient(colors: [Color(red: 0.871, green: 0.871, blue: 0.871).opacity(0.5), Color(red: 0.329, green: 0.329, blue: 0.329).opacity(0.5)]),
+                                                startPoint: .top,
+                                                endPoint: .bottom
+                                            )
+                                        )
+                                        .clipShape(Circle())
+                                        .overlay(
+                                            Circle()
+                                                .strokeBorder(LinearGradient(gradient: Gradient(colors: [ .black.opacity(0.2), .white.opacity(0.5)]), startPoint: .top, endPoint: .bottom), lineWidth: 1)
+                                        )                                
+
+                                    }
+                                    .offset(x: -40, y: 120)
+                                    .sheet(isPresented: $showMetronomeSettings) {
+                                        MetronomeSettingsView()
+                                    }
 
                                 // Audio Settings
                                 Button(action: {
@@ -177,8 +207,8 @@ extension RecordingView {
                                         )                                
 
                                     }
-                                    .buttonStyle(PlainButtonStyle())
-                                    .offset(x: -40, y: 120)
+                                    //.buttonStyle(PlainButtonStyle())
+                                    .offset(x: -120, y: 40)
 
                                 
                                 // Recording Button
@@ -261,21 +291,24 @@ extension RecordingView {
                                     HStack {
                                         Image(systemName: "circle.fill")
                                             .foregroundColor(.red)
+
                                         Text("REC")
                                             .foregroundColor(.white.opacity(0.8))
                                             .font(.system(size: 16, design: .monospaced))
                                             .bold()
-                                    }
-                                    .padding(5)
-
+                                        }
+                                        .animation(.easeInOut, value: audioRecorder.isRecording)
+                                        .padding(5)
+                                    
                                 } else {
                                     HStack {
                                         Image(systemName: "circle.fill")
                                             .foregroundColor(.yellow)
-                                        Text("REC")
-                                            .foregroundColor(.white.opacity(0.4))
-                                            .font(.system(size: 16, design: .monospaced))
-                                            .bold()
+
+                                        // Text("REC")
+                                        //     .foregroundColor(.white.opacity(0.4))
+                                        //     .font(.system(size: 16, design: .monospaced))
+                                        //     .bold()
                                     }
                                     .padding(5)
                                 }
@@ -292,6 +325,7 @@ extension RecordingView {
                                 RoundedRectangle(cornerRadius: 10)
                                     .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.1)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
                             )
+                            .animation(.spring(response: 0.2, dampingFraction: 0.6, blendDuration: 0), value: audioRecorder.isRecording)
                             .padding(.leading, 20)
                             .shadow(radius: 5)
 
@@ -300,34 +334,34 @@ extension RecordingView {
                             HStack {
 
                                 // metronome
-                                Button(action: {
-                                    showMetronomeSettings.toggle()
-                                    let impactMed = UIImpactFeedbackGenerator(style: .medium)
-                                    impactMed.impactOccurred()
-                                }) {
-                                    Image(systemName: "metronome")
-                                        .font(.system(size: 20))
-                                        .foregroundColor(.white.opacity(0.4))
+                                // Button(action: {
+                                //     showMetronomeSettings.toggle()
+                                //     let impactMed = UIImpactFeedbackGenerator(style: .medium)
+                                //     impactMed.impactOccurred()
+                                // }) {
+                                //     Image(systemName: "metronome")
+                                //         .font(.system(size: 17))
+                                //         .foregroundColor(.white.opacity(0.4))
 
 
-                                }
-                                .padding(5)
-                                .shadow(radius: 5)
-                                .background(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.1)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
-                                )
-                                .sheet(isPresented: $showMetronomeSettings) {
-                                    MetronomeSettingsView()
-                                }
+                                // }
+                                // .padding(5)
+                                // .shadow(radius: 5)
+                                // .background(
+                                //     LinearGradient(
+                                //         gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
+                                //         startPoint: .top,
+                                //         endPoint: .bottom
+                                //     )
+                                // )
+                                // .clipShape(RoundedRectangle(cornerRadius: 10))
+                                // .overlay(
+                                //     RoundedRectangle(cornerRadius: 10)
+                                //         .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.1)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                                // )
+                                // .sheet(isPresented: $showMetronomeSettings) {
+                                //     MetronomeSettingsView()
+                                // }
 
                                 // app settings
                                 Button(action: {
@@ -336,7 +370,7 @@ extension RecordingView {
                                     impactMed.impactOccurred()
                                 })  {
                                     Image(systemName: "gear")
-                                        .font(.system(size: 20))
+                                        .font(.system(size: 16))
                                         .foregroundColor(.white.opacity(0.4))
 
                                 }

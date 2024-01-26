@@ -11,21 +11,19 @@ struct WaveformView: View {
             ZStack {
 
                 if isRecording {
-                    withAnimation(.easeInOut(duration: 1)) {
                         Image("backscreen")
                             .resizable()
                             .scaledToFit()
                             .opacity(1)
                             .transition(.opacity)
-                    }
+
                 } else {
-                    withAnimation(.easeInOut(duration: 1)) {
                         Image("backscreenoff")
                             .resizable()
                             .scaledToFit()
                             .opacity(1)
                             .transition(.opacity)
-                    }
+
                 }
 
                 CentralWaveformView(audioLevels: $audioLevels, isRecording: $isRecording)
