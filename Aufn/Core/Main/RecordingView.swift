@@ -121,6 +121,12 @@ extension RecordingView {
                                     .offset(x: -75, y: -75)
                                     .animation(audioRecorder.isRecording ? Animation.linear(duration: 10).repeatForever(autoreverses: false) : .default, value: audioRecorder.isRecording)
 
+                                Image("tape")
+                                    .rotationEffect(.degrees(audioRecorder.isRecording ? 0 : 360))
+                                    .offset(x: 90, y: -270)
+                                    .scaleEffect(0.45)
+                                    .animation(audioRecorder.isRecording ? Animation.linear(duration: 10).repeatForever(autoreverses: false) : .default, value: audioRecorder.isRecording)
+
                                 // Plugin management
                                 Button(action: {
                                     showPluginManagement.toggle()
@@ -188,7 +194,7 @@ extension RecordingView {
                                                     .strokeBorder(LinearGradient(gradient: Gradient(colors: [ .black.opacity(0.8), .black.opacity(0.3)]), startPoint: .top, endPoint: .bottom), lineWidth: 1)
                                             ) 
                                             .frame(width: 130, height: 130)
-                                            .scaleEffect(1.1)
+                                            .scaleEffect(1.05)
                                 
                                      Button(action: {
                                             let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
@@ -205,7 +211,7 @@ extension RecordingView {
                                         ZStack {
                                             Circle()
                                                 .fill(LinearGradient(
-                                                    gradient: Gradient(colors: [Color(red: 0.871, green: 0.871, blue: 0.871).opacity(0.5), Color(red: 0.329, green: 0.329, blue: 0.329).opacity(0.5)]),
+                                                    gradient: Gradient(colors: [Color(red: 0.427, green: 0.427, blue: 0.427), Color(red: 0.761, green: 0.761, blue: 0.761)]),
                                                     startPoint: .top,
                                                     endPoint: .bottom
                                                 ))
