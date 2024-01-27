@@ -20,8 +20,86 @@ struct PlaybackView: View {
 
 
     var body: some View {
-        GeometryReader { geometry in 
             VStack{
+                playbackHeader
+                
+                ZStack {
+
+                    audioList
+                
+                    playbackControls
+
+
+                }        
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.black, Color(red: 0.141, green: 0.141, blue: 0.141)]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ).edgesIgnoringSafeArea(.all)
+                    
+                )
+                .foregroundColor(.white)
+                .font(.system(size: 16))
+                .onReceive(NotificationCenter.default.publisher(for: .newRecordingAdded)) { _ in
+                    audioFileViewModel.fetchAudioFiles()
+                }
+                .sheet(isPresented: $showShareSheet) {
+                    if let fileURL = fileToShare {
+                        NavigationView {
+                            ShareSheet(items: [fileURL])
+                        }
+                    }
+                }
+                .sheet(isPresented: $showRecordingDetails) {
+                    if let selectedFile = selectedFile {
+                        RecordingDetailsView(fileURL: selectedFile, onDelete: {
+                            deleteAudioFile(at: [audioFileViewModel.audioFiles.firstIndex(of: selectedFile)!])
+                        }, onRename: {
+                            audioFileViewModel.fetchAudioFiles()
+                        })
+                    }
+                }                
+            }        
+        
+
+
+        
+    }
+    
+    private func presentRecordingDetailsModal(for fileURL: URL) {
+        selectedFile = fileURL
+    }
+
+    private func deleteAllFiles() {
+        for fileURL in audioFileViewModel.audioFiles {
+            do {
+                try FileManager.default.removeItem(at: fileURL)
+            } catch {
+                print("Error deleting audio file: \(error)")
+            }
+        }
+        audioFileViewModel.fetchAudioFiles()
+    }
+
+    private func deleteAudioFile(at offsets: IndexSet) {
+        for index in offsets {
+            let fileURL = audioFileViewModel.audioFiles[index]
+
+            do {
+                try FileManager.default.removeItem(at: fileURL)
+            } catch {
+                print("Error deleting audio file: \(error)")
+            }
+        }
+        audioFileViewModel.fetchAudioFiles()
+    }
+    
+}
+
+extension PlaybackView {
+
+    private var playbackHeader: some View {
                 HStack {
                     Text("Playback")
                         .font(.largeTitle)
@@ -41,10 +119,11 @@ struct PlaybackView: View {
                     }
                 }
                 .padding()
-                
-                ZStack {
+    }
 
-                    if audioFileViewModel.audioFiles.isEmpty {
+    private var audioList: some View {
+        VStack {
+                if audioFileViewModel.audioFiles.isEmpty {
                         VStack {
                             Image(systemName: "music.note.list")
                                 .font(.system(size: 80))
@@ -93,7 +172,7 @@ struct PlaybackView: View {
                                         .foregroundColor(Color.white.opacity(0.2))
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 18)
-                                                .stroke(Color.white.opacity(0.05), lineWidth: 1)
+                                                .stroke(fileURL == selectedFile ? Color.blue : Color.white.opacity(0.05), lineWidth: 1)
                                         )
                                     )
                                 .listRowBackground(Color.clear)                        
@@ -129,8 +208,12 @@ struct PlaybackView: View {
                         }
                                     
 
-                    }
-                
+                    }            
+        }
+
+    }
+
+    private var playbackControls: some View {
                     VStack{
                         Spacer()
 
@@ -143,17 +226,18 @@ struct PlaybackView: View {
                             }  
 
                             VStack{
-                            // Selected file name
-                            if let selectedFile = selectedFile {
-                                Text(selectedFile.lastPathComponent)
-                                    .font(.headline)
-                                    .padding(.bottom)
+                                // Selected file name
+                                if let selectedFile = selectedFile {
+                                    Text(selectedFile.lastPathComponent)
+                                        .font(.headline)
+                                        .padding(.bottom)
 
-                                // Slider to show and change the current playback position
-                                Slider(value: $audioPlayer.currentTime, in: 0...audioPlayer.duration, onEditingChanged: { _ in
-                                    audioPlayer.updateCurrentTime(to: audioPlayer.currentTime)
-                                })
-                                .padding(.horizontal)
+                                    Slider(value: $audioPlayer.currentTime, in: 0...audioPlayer.duration, onEditingChanged: { _ in
+                                        audioPlayer.updateCurrentTime(to: audioPlayer.currentTime)
+                                    })
+                                    .padding(.horizontal)
+                                    // WaveformSliderView(audioFile: $audioPlayer.audioFile, currentTime: $audioPlayer.currentTime)
+                                    //     .padding(.horizontal)
                                 }
                         
                                 Button(action: {
@@ -171,91 +255,25 @@ struct PlaybackView: View {
                                         .font(.system(size: 80))
                                         .foregroundColor(audioPlayer.isPlaying ? .red : .blue)
                                 }
-                                .padding(.bottom)
 
                             }
-                            // .frame(width: UIScreen.main.bounds.width / 1.2)
-                            // .padding(.horizontal, 10)
-                            // .padding(.vertical, 10)
-                            // .background(
-                            //     RoundedRectangle(cornerRadius: 30)
-                            //         .fill(LinearGradient(gradient: Gradient(colors: [Color(red: 0.141, green: 0.141, blue: 0.141), Color(red: 0.141, green: 0.141, blue: 0.141)]), startPoint: .bottom, endPoint: .top))
-                            //         .shadow(radius: 10)
-                            // )
-                            // .overlay(
-                            //     RoundedRectangle(cornerRadius: 30)
-                            //         .stroke(Color.white.opacity(0.4), lineWidth: 1)
-                            // )         
+                            .frame(width: UIScreen.main.bounds.width / 1.5)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 40)
+                                    .fill(LinearGradient(gradient: Gradient(colors: [Color(red: 0.141, green: 0.141, blue: 0.141), Color(red: 0.141, green: 0.141, blue: 0.141)]), startPoint: .bottom, endPoint: .top))
+                                    .shadow(radius: 10)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 40)
+                                    .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                            )         
 
                         }
                         .edgesIgnoringSafeArea(.bottom)
                         .frame(maxWidth: .infinity, maxHeight: 250, alignment: .bottom)                         
                     }
-
-
-                }        
-                .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.black, Color(red: 0.141, green: 0.141, blue: 0.141)]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    ).edgesIgnoringSafeArea(.all)
-                    
-                )
-                .foregroundColor(.white)
-                .font(.system(size: 16))
-                .onReceive(NotificationCenter.default.publisher(for: .newRecordingAdded)) { _ in
-                    audioFileViewModel.fetchAudioFiles()
-                }
-                .sheet(isPresented: $showShareSheet) {
-                    if let fileURL = fileToShare {
-                        NavigationView {
-                            ShareSheet(items: [fileURL])
-                        }
-                    }
-                }
-                .sheet(isPresented: $showRecordingDetails) {
-                    if let selectedFile = selectedFile {
-                        RecordingDetailsView(fileURL: selectedFile, onDelete: {
-                            deleteAudioFile(at: [audioFileViewModel.audioFiles.firstIndex(of: selectedFile)!])
-                        }, onRename: {
-                            audioFileViewModel.fetchAudioFiles()
-                        })
-                    }
-                }                
-            }        
-        }
-
-
-        
-    }
-    
-    private func presentRecordingDetailsModal(for fileURL: URL) {
-        selectedFile = fileURL
     }
 
-    private func deleteAllFiles() {
-        for fileURL in audioFileViewModel.audioFiles {
-            do {
-                try FileManager.default.removeItem(at: fileURL)
-            } catch {
-                print("Error deleting audio file: \(error)")
-            }
-        }
-        audioFileViewModel.fetchAudioFiles()
-    }
-
-    private func deleteAudioFile(at offsets: IndexSet) {
-        for index in offsets {
-            let fileURL = audioFileViewModel.audioFiles[index]
-
-            do {
-                try FileManager.default.removeItem(at: fileURL)
-            } catch {
-                print("Error deleting audio file: \(error)")
-            }
-        }
-        audioFileViewModel.fetchAudioFiles()
-    }
-    
 }

@@ -23,19 +23,19 @@ public struct ContentBlurView<Content:View>: View{
             content()
 
             Rectangle()
-                .fill(Color.black.opacity(0.66))
+                .fill(Color.black)
                 .background(Material.ultraThin)
                 .mask {
                     LinearGradient(colors: [
-                        Color.black.opacity(0),
-                        Color.black.opacity(0.1),
-                        Color.black.opacity(0.3),
-                        Color.black.opacity(0.6),
-                        //Color.black.opacity(0.5),
-                        Color.black.opacity(0.8),
-                        Color.black.opacity(1),
-                        Color.black.opacity(1),
-                        Color.black.opacity(1),
+                        Color(red: 0.141, green: 0.141, blue: 0.141).opacity(0),
+                        Color(red: 0.141, green: 0.141, blue: 0.141).opacity(0.2),
+                        Color(red: 0.141, green: 0.141, blue: 0.141).opacity(0.4),
+                        Color(red: 0.141, green: 0.141, blue: 0.141).opacity(0.6),
+                        //Color(red: 0.141, green: 0.141, blue: 0.141).opacity(0.5),
+                        Color(red: 0.141, green: 0.141, blue: 0.141).opacity(0.8),
+                        Color(red: 0.141, green: 0.141, blue: 0.141).opacity(1),
+                        Color(red: 0.141, green: 0.141, blue: 0.141).opacity(1),
+                        Color(red: 0.141, green: 0.141, blue: 0.141).opacity(1),
                     ],
                                    startPoint: direction.start,
                                    endPoint: direction.end)

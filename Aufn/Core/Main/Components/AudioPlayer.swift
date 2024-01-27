@@ -10,6 +10,7 @@ import AVFoundation
 
 class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var audioPlayer: AVAudioPlayer?
+    @Published var audioFile: AVAudioFile?
     @Published var isPlaying = false
     @Published var currentTime: TimeInterval = 0
     @Published var duration: TimeInterval = 0
@@ -19,6 +20,13 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func startPlaying(fileURL: URL) {
         setupAudioPlayer(fileURL: fileURL)
         print("Playing file at URL: \(fileURL)")
+
+        do {
+                self.audioFile = try AVAudioFile(forReading: fileURL)
+            } catch {
+                print("Error loading audio file: \(error)")
+            }
+            print("Playing file at URL: \(fileURL)")
 
         // Check and set audio output route
         let audioSession = AVAudioSession.sharedInstance()

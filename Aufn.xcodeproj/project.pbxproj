@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F31CB4292B645AC500271C90 /* ContentBlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31CB4282B645AC500271C90 /* ContentBlurView.swift */; };
+		F31CB42B2B64885900271C90 /* WaveformSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31CB42A2B64885900271C90 /* WaveformSliderView.swift */; };
 		F34D457F2A03412E004EDF1B /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF802A033B6C00DBC761 /* WaveformView.swift */; };
 		F3947B1A2B636F06002FE28B /* AnimationUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3947B192B636F06002FE28B /* AnimationUtility.swift */; };
 		F3D568BE2B60AD830097B079 /* HalfModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D568BD2B60AD830097B079 /* HalfModalView.swift */; };
@@ -39,6 +40,7 @@
 
 /* Begin PBXFileReference section */
 		F31CB4282B645AC500271C90 /* ContentBlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentBlurView.swift; sourceTree = "<group>"; };
+		F31CB42A2B64885900271C90 /* WaveformSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformSliderView.swift; sourceTree = "<group>"; };
 		F34D45802A03729D004EDF1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F3947B192B636F06002FE28B /* AnimationUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationUtility.swift; sourceTree = "<group>"; };
 		F3D568BD2B60AD830097B079 /* HalfModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfModalView.swift; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				F3EEBF722A033B6B00DBC761 /* ActivityView.swift */,
+				F31CB42A2B64885900271C90 /* WaveformSliderView.swift */,
 				F3EEBF772A033B6B00DBC761 /* RecordingDetailsView.swift */,
 				F3EEBF802A033B6C00DBC761 /* WaveformView.swift */,
 				F3EEBF6D2A033B6B00DBC761 /* EditableText.swift */,
@@ -272,6 +275,7 @@
 				F3EEBF912A033B6C00DBC761 /* UserDefaults+Extentions.swift in Sources */,
 				F3EEBF952A033B6C00DBC761 /* AudioRecorder.swift in Sources */,
 				F3EEBF8F2A033B6C00DBC761 /* RecordingView.swift in Sources */,
+				F31CB42B2B64885900271C90 /* WaveformSliderView.swift in Sources */,
 				F3EEBF602A03162300DBC761 /* AufnApp.swift in Sources */,
 				F3EEBF892A033B6C00DBC761 /* MicrophonePresetEffects.swift in Sources */,
 				F3EEBF8E2A033B6C00DBC761 /* RecordingSettingsView.swift in Sources */,
