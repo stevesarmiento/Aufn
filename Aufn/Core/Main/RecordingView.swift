@@ -325,7 +325,7 @@ extension RecordingView {
                                 RoundedRectangle(cornerRadius: 10)
                                     .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.1)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
                             )
-                            .animation(.spring(response: 0.2, dampingFraction: 0.6, blendDuration: 0), value: audioRecorder.isRecording)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6, blendDuration: 0), value: audioRecorder.isRecording)
                             .padding(.leading, 20)
                             .shadow(radius: 5)
 
