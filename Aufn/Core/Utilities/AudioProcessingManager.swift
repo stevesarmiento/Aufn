@@ -59,15 +59,15 @@ class AudioEngine {
                 lastConnectedNode = audioEngine.inputNode
             }
 
-            for plugin in audioChain.plugins {
-                print("Processing plugin: \(plugin.name)")
+            // for plugin in audioChain.plugins {
+            //     print("Processing plugin: \(plugin.name)")
                 
-                if let pluginNode = plugin.node {
-                    audioEngine.attach(pluginNode)
-                    connectNodes(lastConnectedNode, pluginNode)
-                    lastConnectedNode = pluginNode
-                }
-            }
+            //     if let pluginNode = plugin.node {
+            //         audioEngine.attach(pluginNode)
+            //         connectNodes(lastConnectedNode, pluginNode)
+            //         lastConnectedNode = pluginNode
+            //     }
+            // }
 
             connectNodes(lastConnectedNode, audioEngine.outputNode)
         }
@@ -199,23 +199,30 @@ class AudioProcessingManager {
     }
 
     
-func togglePlugin(plugin: Plugin) {
-    if plugin.isToggled {
-        if let audioUnit = plugin.createAudioUnit() {
-            activePlugins.append(plugin)
-            addAudioUnit(audioUnit)
-        } else {
-            print("Failed to create audio unit for plugin \(plugin.name).")
-        }
-    } else {
-        if let index = activePlugins.firstIndex(where: { $0.name == plugin.name }) {
-            activePlugins.remove(at: index)
+    func togglePlugin(plugin: Plugin) {
+        if plugin.isToggled {
             if let audioUnit = plugin.createAudioUnit() {
-                removeAudioUnit(audioUnit)
+                activePlugins.append(plugin)
+                addAudioUnit(audioUnit)
+            } else {
+                print("Failed to create audio unit for plugin \(plugin.name).")
+            }
+        } else {
+            if let index = activePlugins.firstIndex(where: { $0.name == plugin.name }) {
+                activePlugins.remove(at: index)
+                if let audioUnit = plugin.createAudioUnit() {
+                    removeAudioUnit(audioUnit)
+                }
             }
         }
+
+        // Update the audio processing chain to reflect the changes
+        updateAudioProcessingChain()
+
+        // Debug log to check the state of the audio units
+        print("Active plugins: \(activePlugins)")
+
     }
-}
 
 
     func toggleMicrophonePreset(preset: MicrophonePreset) {
@@ -237,11 +244,17 @@ func togglePlugin(plugin: Plugin) {
         
         // Update the audio processing chain to reflect the changes
         updateAudioProcessingChain()
+
+        // Debug log to check the state of the audio units
+        print("Active microphone preset: \(String(describing: activeMicrophonePreset))")
     }
 
     private func setupAudioProcessingChain() {
         // Remove any existing nodes from the audio processing chain
         audioProcessingChain.forEach { engine.disconnectNodeInput($0) }
+
+        // Debug log to trace the flow
+        print("Disconnected all existing nodes from the audio processing chain.")
 
         // Set up microphone preset
         if let microphonePreset = appSettings.selectedMicrophonePreset {
@@ -252,18 +265,18 @@ func togglePlugin(plugin: Plugin) {
         }
 
         // Set up plugins
-        if let selectedPlugins = appSettings.selectedPlugins {
-            for plugin in selectedPlugins {
-                if let audioUnit = plugin.createAudioUnit() {
-                    audioProcessingChain.append(audioUnit)
-                    print("Plugin \(plugin.name) successfully added to audio processing chain.")
-                } else {
-                    print("Failed to create audio unit for plugin \(plugin.name).")
-                }
-            }
-        } else {
-            print("No plugins selected.")
-        }
+        // if let selectedPlugins = appSettings.selectedPlugins {
+        //     for plugin in selectedPlugins {
+        //         if let audioUnit = plugin.createAudioUnit() {
+        //             audioProcessingChain.append(audioUnit)
+        //             print("Plugin \(plugin.name) successfully added to audio processing chain.")
+        //         } else {
+        //             print("Failed to create audio unit for plugin \(plugin.name).")
+        //         }
+        //     }
+        // } else {
+        //     print("No plugins selected.")
+        // }
 
         // Connect audio processing chain nodes
         let inputNode = engine.inputNode
@@ -306,13 +319,13 @@ private func observeAppSettings() {
         }
     }.store(in: &cancellables)
     
-    appSettings.$selectedPlugins.sink { [weak self] plugins in
-        if let plugins = plugins {
-            plugins.forEach { plugin in
-                self?.togglePlugin(plugin: plugin)
-            }
-        }
-    }.store(in: &cancellables)
+    // appSettings.$selectedPlugins.sink { [weak self] plugins in
+    //     if let plugins = plugins {
+    //         plugins.forEach { plugin in
+    //             self?.togglePlugin(plugin: plugin)
+    //         }
+    //     }
+    // }.store(in: &cancellables)
 }
 
 

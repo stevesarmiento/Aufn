@@ -10,19 +10,20 @@ import AVFoundation
 
 extension MicrophonePreset {
     var audioUnits: [AVAudioUnit] {
-        switch name {
-        case "Dynamic":
-            return dynamicMicrophoneEffects()
-        case "Condenser":
-            return condenserMicrophoneEffects()
-        case "Ribbon":
-            return ribbonMicrophoneEffects()
-        case "Custom":
-            return customMicrophoneEffects(settings: settings)
-        default:
-            print("Unknown microphone preset name: \(name)")
-            return []
-        }
+        // switch name {
+        // case "Dynamic":
+        //     return dynamicMicrophoneEffects()
+        // case "Condenser":
+        //     return condenserMicrophoneEffects()
+        // case "Ribbon":
+        //     return ribbonMicrophoneEffects()
+        // case "Custom":
+        //     return customMicrophoneEffects(settings: settings)
+        // default:
+        //     print("Unknown microphone preset name: \(name)")
+        //     return []
+        // }
+        return []
     }
     
     private func dynamicMicrophoneEffects() -> [AVAudioUnit] {

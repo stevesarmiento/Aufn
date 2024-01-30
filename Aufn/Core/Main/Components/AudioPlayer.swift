@@ -30,6 +30,9 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
         // Check and set audio output route
         let audioSession = AVAudioSession.sharedInstance()
+            let currentRoute = audioSession.currentRoute
+            print("Current audio route: \(currentRoute)")
+        
         do {
             let currentRoute = audioSession.currentRoute
             if currentRoute.outputs.contains(where: { $0.portType == AVAudioSession.Port.builtInSpeaker }) {

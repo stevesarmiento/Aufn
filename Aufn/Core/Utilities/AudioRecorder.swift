@@ -22,6 +22,8 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
     private var audioEngine: AVAudioEngine!
     private var attachedNodes: [AVAudioNode] = []
     private var audioProcessingManager: AudioProcessingManager!
+    private var isAudioProcessingNodesSetup = false
+
     var appSettings: AppSettings
     var finalURL: URL
     var temporaryAudioFilename: URL
@@ -127,7 +129,7 @@ class AudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
 func startRecording() {
     print("startRecording called")
 
-    // Update finalURL
+    // Generate a new finalURL for the new recording
     let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyyMMddHHmmss"
@@ -138,6 +140,14 @@ func startRecording() {
         setupAudioEngine()
         setupAudioProcessingNodes()
     }
+
+        // if audioEngine == nil {
+        //     setupAudioEngine()
+        //     if !isAudioProcessingNodesSetup {
+        //         setupAudioProcessingNodes()
+        //         isAudioProcessingNodesSetup = true
+        //     }
+        // }
     
     do {
         print("Setting audio session active")
@@ -170,9 +180,13 @@ func startRecording() {
             if let audioFile = strongSelf.outputFile {
                 do {
                     try audioFile.write(from: buffer)
+                    print("Successfully wrote buffer of size \(buffer.frameLength) to audio file")
+
                 } catch {
                     print("Failed to write buffer to audio file: \(error)")
                 }
+            } else {
+                print("Output file is nil, cannot write buffer")
             }
         }
     } catch {
@@ -182,35 +196,36 @@ func startRecording() {
 
     
     func stopRecording() {
-        print("stopRecording called")
-        print("Recorded file at URL: \(finalURL)")
-        isRecording = false
-        
-        // Remove the tap from the inputNode and mainMixerNode
-        audioEngine.inputNode.removeTap(onBus: 0)
-        audioEngine.mainMixerNode.removeTap(onBus: 0)
-        
-        // Stop the AudioProcessingManager engine
-        audioProcessingManager.stop()
+            print("stopRecording called")
+            print("Recorded file at URL: \(finalURL)")
+            isRecording = false
 
-        // Move the temporary recording to its final location
-        let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMddHHmmss"
-        let recordingName = "recording_\(dateFormatter.string(from: Date())).\(appSettings.audioFormats[appSettings.selectedAudioFormatIndex].lowercased())"
-        let finalURL = documentPath.appendingPathComponent(recordingName)
-        let temporaryAudioFilename = documentPath.appendingPathComponent("temp_recording.\(appSettings.audioFormats[appSettings.selectedAudioFormatIndex].lowercased())")
+            // Stop the AVAudioRecorder instance
+            audioRecorder?.stop()
 
-        do {
-            try FileManager.default.moveItem(at: temporaryAudioFilename, to: finalURL)
-            NotificationCenter.default.post(name: .newRecordingAdded, object: nil)
-            print("File moved successfully")
-        } catch {
-            print("Failed to move the recorded audio file: \(error)")
-        }
+            // Close the output file and set the outputFile to nil
+            outputFile = nil
+            
+            // Remove the tap from the inputNode and mainMixerNode
+            audioEngine.inputNode.removeTap(onBus: 0)
+            audioEngine.mainMixerNode.removeTap(onBus: 0)
+
+            // Stop the AudioProcessingManager engine
+            audioProcessingManager.stop()
+
+            // Move the temporary recording to its final location
+            let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let temporaryAudioFilename = documentPath.appendingPathComponent("temp_recording.\(appSettings.audioFormats[appSettings.selectedAudioFormatIndex].lowercased())")
+
+            do {
+                try FileManager.default.moveItem(at: temporaryAudioFilename, to: finalURL)
+                NotificationCenter.default.post(name: .newRecordingAdded, object: nil)
+                print("File moved successfully - URL: \(finalURL)")
+            } catch {
+                print("Failed to move the recorded audio file: \(error)")
+            }
         
-        // Close the output file and set the outputFile to nil
-        outputFile = nil
+
         
          if checkFileSavedSuccessfully(url: finalURL) {
         print("File saved successfully")
@@ -229,7 +244,6 @@ func startRecording() {
         
         // Stop the audio engine
         audioEngine.stop()
-
         
     } 
 
@@ -328,6 +342,20 @@ func startRecording() {
             try (temporaryAudioFilename as NSURL).setResourceValue(URLFileProtection.complete, forKey: .fileProtectionKey)
         } catch {
             print("Failed to initialize audio recorder: \(error)")
+        }
+    }
+
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+        if flag {
+            print("Recording finished successfully.")
+        } else {
+            print("Recording finished unsuccessfully.")
+        }
+    }
+
+    func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
+        if let error = error {
+            print("Encode error occurred: \(error.localizedDescription)")
         }
     }
 }

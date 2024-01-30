@@ -121,8 +121,16 @@ extension PlaybackView {
     }
 
     private var audioList: some View {
-        VStack {
+            VStack {
                 if audioFileViewModel.audioFiles.isEmpty {
+                        emptyAudioList
+                    } else {
+                        populatedAudioList
+                    }            
+                }
+    }
+
+    private var emptyAudioList: some View {
                         VStack {
                             Image(systemName: "music.note.list")
                                 .font(.system(size: 80))
@@ -147,54 +155,11 @@ extension PlaybackView {
                                 .shadow(radius: 10)
                             
                         )
-                        .padding()
-                    } else {
+                        .padding()    }
+
+    private var populatedAudioList: some View {
                         ScrollView {
                             LazyVStack {
-                                // ForEach(audioFileViewModel.audioFiles, id: \.self) { fileURL in
-                                //     VStack{
-                                //         HStack {
-                                //             Image(systemName: fileURL.pathExtension.lowercased() == "wav" ? "w.square.fill" : "m.square.fill")
-                                //                 .foregroundColor(.gray.opacity(0.7))
-                                            
-                                //             Text(fileURL.lastPathComponent)
-                                //                 .font(.callout)
-                                //                 .lineLimit(1)
-                                            
-                                //             Spacer()
-
-                                //         }
-                                //         .font(.subheadline)
-                                //         .padding()
-                                //         if selectedFile == fileURL {
-                                //             VStack{
-                                //                 onlyPlaybackControls
-                                //             }
-                                //         }                                    
-                                //     }
-                                //     .padding(8)
-                                //     .background(
-                                //             RoundedRectangle(cornerRadius: 18)
-                                //                 .foregroundColor(fileURL == selectedFile ? Color.white.opacity(0.2): Color.white.opacity(0.1))
-                                //                 .overlay(
-                                //                     RoundedRectangle(cornerRadius: 18)
-                                //                         .stroke(fileURL == selectedFile ? Color.white.opacity(0.2): Color.white.opacity(0.1), lineWidth: 1)
-                                //                 )
-                                //             )                        
-                                //         .onTapGesture {
-                                //             if selectedFile == fileURL {
-                                //                 selectedFile = nil
-                                //             } else {
-                                //                 selectedFile = fileURL
-                                //             }
-                                //         }
-                                //         .onLongPressGesture {
-                                //             presentRecordingDetailsModal(for: fileURL)
-                                //             showRecordingDetails.toggle()
-                                //         }
-                                //         .transition(.move(edge: .bottom).combined(with: .opacity))
-                                //         .animation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0), value: selectedFile)
-                                // }
                                 ForEach(audioFileViewModel.audioFiles, id: \.self) { fileURL in
                                     let isSelected = (fileURL == selectedFile)
                                     
@@ -227,13 +192,11 @@ extension PlaybackView {
                                             )
                                     )
                                     .onTapGesture {
-                                        // withAnimation {
                                             if isSelected {
                                                 selectedFile = nil
                                             } else {
                                                 selectedFile = fileURL
                                             }
-                                       // }
                                     }
                                     .onLongPressGesture {
                                         presentRecordingDetailsModal(for: fileURL)
@@ -244,10 +207,7 @@ extension PlaybackView {
                                 }
                             }
                             .onAppear(perform: audioFileViewModel.fetchAudioFiles)
-                        }.padding(.horizontal)
-                    }            
-                }
-            }
+                        }.padding(.horizontal)    }
 
     // private var playbackControls: some View {
     //                 VStack{
@@ -329,8 +289,8 @@ extension PlaybackView {
                                     }
                                 }) {
                                     Image(systemName: audioPlayer.isPlaying ? "pause.circle.fill" : "arrowtriangle.right.circle.fill")
-                                        .font(.system(size: 40))
-                                        .foregroundColor(audioPlayer.isPlaying ? .red : .blue)
+                                        .font(.system(size: 50))
+                                        .foregroundColor(audioPlayer.isPlaying ? .red : .white.opacity(0.4))
                                 }    
 
                                 Slider(value: $audioPlayer.currentTime, in: 0...audioPlayer.duration, onEditingChanged: { _ in
@@ -343,18 +303,49 @@ extension PlaybackView {
                                 Button(action: {
                                    deleteAudioFile(at: [audioFileViewModel.audioFiles.firstIndex(of: fileURL)!])
                                 }) {
-                                    Image(systemName: "trash")
-                                        .font(.system(size: 20))
+                                    Image(systemName: "trash.fill")
+                                        .frame(width: 22)
+                                        .font(.system(size: 18))
                                         .foregroundColor(Color.red)
-                                }             
+                                        .padding(5)
+
+                                }  
+                                .background(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.1)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                                )   
+
                                 Button(action: {
                                         fileToShare = fileURL
                                         showShareSheet = true 
                                         }) {
-                                    Image(systemName: "circle")
-                                        .font(.system(size: 20))
+                                    Image(systemName: "paperplane.fill")
+                                        .frame(width: 22)
+                                        .font(.system(size: 18))
                                         .foregroundColor(Color.blue)
-                                }  
+                                        .padding(5)
+
+                                } 
+                                .background(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.1)]),
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .strokeBorder(LinearGradient(gradient: Gradient(colors: [.white.opacity(0.1), .white.opacity(0.1)]), startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                                )    
 
 
                             }
