@@ -17,15 +17,6 @@ Record, ship, delete.
 - 🎤 **Microphone Presets** 4 different microphone options replicating real microphones.
 - 📱 **Easy Sharing** Once their recordings are complete, send it off.
 
-See our [contributing guidelines](./CONTRIBUTING.md).
-
-## 🥰 Community & Support
-
-- Install our [Testflight](#)
-- Join our [Discord](https://discord.gg/zurrdC46sQ)
-- Follow our [Twitter](http://twitter.com/_Aufn)
-- To get help, ask a question, request a feature, be a part of the community. 
-
 ## ✍️ Authors
 
 - Anon ([@_Aufn](https://twitter.com/_Aufn))
