@@ -59,10 +59,10 @@ struct TransportBar: View {
     @ViewBuilder
     private var leftControl: some View {
         if engine.state == .idle && choosingMode {
-            Text("Processing")
-                .font(.footnote)
+            Text("PROCESSING")
+                .font(.subheadline.weight(.heavy))
                 .foregroundStyle(.secondary)
-                .frame(width: 110, alignment: .trailing)
+                .frame(width: 120, alignment: .trailing)
                 .transition(.opacity)
         } else {
             playButton
@@ -95,23 +95,24 @@ struct TransportBar: View {
         .accessibilityLabel("Capture mode, \(currentMode.label)")
     }
 
-    /// Custom UIPickerView wheel over a vertical black-to-transparent scrim,
-    /// so the selected row sits on black like the timer, not a gray bubble.
+    /// Custom UIPickerView wheel over a black panel that fades to transparent
+    /// on the left into the tape dots; the selected row sits on black (no gray
+    /// bubble) like the timer.
     private var captureModeWheel: some View {
         CaptureWheel(modes: CaptureMode.allCases, selection: $captureMode) {
             choosingMode = false
         }
-            .frame(width: 100, height: 96)
+            .frame(width: 130, height: 96)
             .clipped()
             .background(
                 LinearGradient(
                     stops: [
                         .init(color: .clear, location: 0),
-                        .init(color: .black.opacity(0.9), location: 0.5),
-                        .init(color: .clear, location: 1),
+                        .init(color: .black, location: 0.5),
+                        .init(color: .black, location: 1),
                     ],
-                    startPoint: .top,
-                    endPoint: .bottom
+                    startPoint: .leading,
+                    endPoint: .trailing
                 )
             )
             .transition(.opacity)
