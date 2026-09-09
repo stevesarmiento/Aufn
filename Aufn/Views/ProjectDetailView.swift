@@ -9,6 +9,7 @@ struct ProjectDetailView: View {
     @State private var showingExport = false
     @State private var showingSampleRate = false
     @State private var showingInputPicker = false
+    @State private var showingMasterVolume = false
 
     var body: some View {
         Group {
@@ -55,6 +56,10 @@ struct ProjectDetailView: View {
                         showingExport = true
                     }
                     .disabled(project.tracks.isEmpty)
+                    Button("Master Volume…", systemImage: "speaker.wave.2") {
+                        showingMasterVolume = true
+                    }
+                    .disabled(project.tracks.isEmpty)
                     Button("Sample Rate…", systemImage: "dial.medium") {
                         showingSampleRate = true
                     }
@@ -90,6 +95,10 @@ struct ProjectDetailView: View {
             InputPicker()
                 .presentationDetents([.medium, .large])
         }
+        .sheet(isPresented: $showingMasterVolume) {
+            MasterVolumeSheet(projectID: projectID)
+                .presentationDetents([.height(220)])
+        }
         .alert("Audio Error", isPresented: engineErrorShown) {
             Button("OK", role: .cancel) { engine.clearError() }
         } message: {
@@ -114,5 +123,59 @@ struct ProjectDetailView: View {
             get: { engine.lastError != nil },
             set: { if !$0 { engine.clearError() } }
         )
+    }
+}
+
+/// Master volume as a tucked-away mix setting: live while dragging, persisted
+/// to the project (and thus the mixdown export) on release. Deliberately
+/// separate from the phone's hardware volume, which only controls loudness.
+struct MasterVolumeSheet: View {
+    @Environment(ProjectStore.self) private var store
+    @Environment(AudioEngineController.self) private var engine
+    @Environment(\.dismiss) private var dismiss
+
+    let projectID: UUID
+
+    @State private var masterVolume: Float = 1
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 12) {
+                HStack(spacing: 12) {
+                    Image(systemName: "speaker.wave.1")
+                        .foregroundStyle(.secondary)
+                    Slider(
+                        value: Binding(
+                            get: { masterVolume },
+                            set: { masterVolume = $0; engine.setMasterVolume($0) }
+                        ),
+                        in: 0...1
+                    ) { editing in
+                        if !editing, var project = store.project(id: projectID) {
+                            project.masterVolume = masterVolume
+                            store.update(project)
+                        }
+                    }
+                    .accessibilityLabel("Master volume")
+                    Image(systemName: "speaker.wave.3")
+                        .foregroundStyle(.secondary)
+                }
+                Text("Part of the project's mix — applied to playback and the stereo mixdown. Use the volume buttons for loudness.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(24)
+            .navigationTitle("Master Volume")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .task {
+            masterVolume = store.project(id: projectID)?.masterVolume ?? 1
+        }
     }
 }

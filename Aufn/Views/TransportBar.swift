@@ -4,12 +4,8 @@ import SwiftUI
 /// runs full-width directly on the screen, the clear record head sits
 /// centered on it, and the play/volume buttons are the only glass elements.
 struct TransportBar: View {
-    @Environment(ProjectStore.self) private var store
-
     let engine: AudioEngineController
     let project: Project
-    @State private var masterVolume: Float = 1
-    @State private var showsMasterVolume = false
 
     private var isRecording: Bool { engine.state == .recording }
     private var isPlaying: Bool { engine.state == .playing }
@@ -20,22 +16,11 @@ struct TransportBar: View {
                 LevelMeterView(meter: engine.meter)
                     .padding(.horizontal, 4)
             }
-            if showsMasterVolume && !project.tracks.isEmpty {
-                masterVolumeRow
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
-            }
-            if engine.state != .idle {
-                elapsedClock
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
-            }
             tapeDeck
         }
         .animation(.snappy, value: engine.state)
         .padding(.horizontal, 20)
         .padding(.bottom, 4)
-        .task(id: project.id) {
-            masterVolume = project.masterVolume
-        }
     }
 
     /// ZStack ordering matters: the strip is the bottom layer so the glass
@@ -46,47 +31,38 @@ struct TransportBar: View {
             HStack {
                 playButton
                 Spacer()
-                volumeToggleButton
+                timerReadout
             }
             recordHeadButton
         }
         .frame(height: 96)
     }
 
-    private var volumeToggleButton: some View {
-        Button {
-            withAnimation(.snappy) { showsMasterVolume.toggle() }
-        } label: {
-            Image(systemName: showsMasterVolume ? "speaker.wave.2.fill" : "speaker.wave.2")
-                .font(.subheadline)
-                .frame(width: 36, height: 36)
+    /// Always-visible timecode + sample rate over a soft scrim that fades to
+    /// transparent, so the tape dots stay visible around it.
+    private var timerReadout: some View {
+        VStack(alignment: .trailing, spacing: 2) {
+            elapsedClock
+            Text(sampleRateLabel)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
         }
-        .buttonStyle(.glass)
-        .disabled(project.tracks.isEmpty)
-        .accessibilityLabel(showsMasterVolume ? "Hide master volume" : "Show master volume")
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            EllipticalGradient(
+                colors: [.black.opacity(0.75), .clear],
+                center: .center,
+                startRadiusFraction: 0.2,
+                endRadiusFraction: 0.7
+            )
+        )
     }
 
-    private var masterVolumeRow: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "speaker.wave.1")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Slider(
-                value: Binding(
-                    get: { masterVolume },
-                    set: { masterVolume = $0; engine.setMasterVolume($0) }
-                ),
-                in: 0...1
-            ) { editing in
-                if !editing {
-                    var updated = project
-                    updated.masterVolume = masterVolume
-                    store.update(updated)
-                }
-            }
-            .accessibilityLabel("Master volume")
-        }
-        .padding(.horizontal, 4)
+    private var sampleRateLabel: String {
+        let rate = project.sampleRate ?? UserDefaults.standard.preferredSampleRate
+        let khz = rate / 1000
+        return khz == khz.rounded() ? "\(Int(khz)) kHz" : String(format: "%.1f kHz", khz)
     }
 
     private var playButton: some View {
@@ -136,18 +112,18 @@ struct TransportBar: View {
         .accessibilityLabel(isRecording ? "Stop recording" : "Record")
     }
 
+    /// Camera-style morph: red circle at rest, rounded stop square recording.
     private var pillShape: some View {
-        RoundedRectangle(cornerRadius: isRecording ? 9 : 15, style: .continuous)
+        RoundedRectangle(cornerRadius: isRecording ? 9 : 17, style: .continuous)
             .fill(Color(red: 1.0, green: 0.20, blue: 0.22))
-            .frame(width: isRecording ? 28 : 30, height: isRecording ? 28 : 52)
+            .frame(width: isRecording ? 28 : 34, height: isRecording ? 28 : 34)
     }
 
-    /// Shown centered above the head only while the transport runs.
     private var elapsedClock: some View {
         TimelineView(.periodic(from: .now, by: 0.5)) { _ in
-            Text(engine.elapsedSeconds.timecode)
+            Text(engine.state == .idle ? "0:00" : engine.elapsedSeconds.timecode)
                 .font(.subheadline.monospacedDigit())
-                .foregroundStyle(.primary)
+                .foregroundStyle(engine.state == .idle ? .secondary : .primary)
         }
     }
 }
