@@ -1,34 +1,33 @@
 import SwiftUI
 
-/// Floating glass transport styled as a tape deck: the dot-matrix tape strip
-/// runs full-width behind a centered glass "record head" (which refracts it),
-/// with the play button and clock flanking at the strip's faded edges.
+/// Floating tape-deck transport with no backing panel: the dot-matrix strip
+/// runs full-width directly on the screen, the clear record head sits
+/// centered on it, and the play/volume buttons are the only glass elements.
 struct TransportBar: View {
     @Environment(ProjectStore.self) private var store
 
     let engine: AudioEngineController
     let project: Project
     @State private var masterVolume: Float = 1
+    @State private var showsMasterVolume = false
 
     private var isRecording: Bool { engine.state == .recording }
     private var isPlaying: Bool { engine.state == .playing }
 
     var body: some View {
-        GlassEffectContainer(spacing: 12) {
-            VStack(spacing: 10) {
-                if isRecording {
-                    LevelMeterView(meter: engine.meter)
-                        .padding(.horizontal, 4)
-                }
-                if !project.tracks.isEmpty {
-                    masterVolumeRow
-                }
-                tapeDeck
+        VStack(spacing: 12) {
+            if isRecording {
+                LevelMeterView(meter: engine.meter)
+                    .padding(.horizontal, 4)
             }
-            .padding(16)
-            .glassEffect(.regular, in: .rect(cornerRadius: 28))
+            if showsMasterVolume && !project.tracks.isEmpty {
+                masterVolumeRow
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+            }
+            tapeDeck
         }
-        .padding(.horizontal)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 4)
         .task(id: project.id) {
             masterVolume = project.masterVolume
         }
@@ -42,11 +41,25 @@ struct TransportBar: View {
             HStack {
                 playButton
                 Spacer()
+                volumeToggleButton
                 elapsedClock
             }
             recordHeadButton
         }
-        .frame(height: 80)
+        .frame(height: 92)
+    }
+
+    private var volumeToggleButton: some View {
+        Button {
+            withAnimation(.snappy) { showsMasterVolume.toggle() }
+        } label: {
+            Image(systemName: showsMasterVolume ? "speaker.wave.2.fill" : "speaker.wave.2")
+                .font(.subheadline)
+                .frame(width: 36, height: 36)
+        }
+        .buttonStyle(.glass)
+        .disabled(project.tracks.isEmpty)
+        .accessibilityLabel(showsMasterVolume ? "Hide master volume" : "Show master volume")
     }
 
     private var masterVolumeRow: some View {
@@ -120,10 +133,9 @@ struct TransportBar: View {
                         ),
                         lineWidth: 1
                     )
-                RoundedRectangle(cornerRadius: isRecording ? 7 : 13, style: .continuous)
-                    .fill(.red)
-                    .frame(width: isRecording ? 24 : 26, height: isRecording ? 24 : 46)
-                    .shadow(color: .red.opacity(0.5), radius: 6)
+                RoundedRectangle(cornerRadius: isRecording ? 8 : 14, style: .continuous)
+                    .fill(Color(red: 1.0, green: 0.20, blue: 0.22))
+                    .frame(width: isRecording ? 26 : 28, height: isRecording ? 26 : 52)
             }
             .frame(width: TapeHead.size.width, height: TapeHead.size.height)
             .shadow(color: .black.opacity(0.35), radius: 8, y: 2)
