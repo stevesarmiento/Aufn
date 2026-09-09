@@ -20,6 +20,7 @@
 		417A0285956B5D7B56E242A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62678A3ACAC43AD644B8F77C /* Assets.xcassets */; };
 		46BCB4DB3E7C64E1DA815533 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FB0BB77CED728DB965323E /* WaveformView.swift */; };
 		4AB727D851FD6740046417F5 /* InputPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */; };
+		62E391C189B53DAEC5D4F59C /* TapeWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */; };
 		6EEA7A385C4ADEA43921F3B5 /* MixWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */; };
 		73B1827ED7FD7D2CF5E60C3A /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5AA0A3C78D261AAA26F172 /* Project.swift */; };
 		7F52C940B17018BCB4D030B1 /* ModelCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */; };
@@ -56,6 +57,7 @@
 		0637C1D4B7BF55CCC6C39433 /* ExportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSheet.swift; sourceTree = "<group>"; };
 		08AEB2116153E60C0B264C44 /* TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportBar.swift; sourceTree = "<group>"; };
 		12BCEE49143C0E2CCF63420D /* PeakStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeakStore.swift; sourceTree = "<group>"; };
+		1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapeWaveformView.swift; sourceTree = "<group>"; };
 		29C339619CA7533837060A4F /* Exporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exporter.swift; sourceTree = "<group>"; };
 		32A520395A415465ECDA8922 /* ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListView.swift; sourceTree = "<group>"; };
 		39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordFlowUITests.swift; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 				90E0F36D39180002A95932DF /* ProjectDetailView.swift */,
 				32A520395A415465ECDA8922 /* ProjectListView.swift */,
 				4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */,
+				1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */,
 				3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */,
 				08AEB2116153E60C0B264C44 /* TransportBar.swift */,
 				00FB0BB77CED728DB965323E /* WaveformView.swift */,
@@ -319,6 +322,7 @@
 				0820CCC8D50347F23F06F9B1 /* ProjectListView.swift in Sources */,
 				CFF682E5BD092D8BCB51E8AA /* ProjectStore.swift in Sources */,
 				0A1C3E4246FF7C7436E160D8 /* SampleRatePicker.swift in Sources */,
+				62E391C189B53DAEC5D4F59C /* TapeWaveformView.swift in Sources */,
 				AD994ED964F5C382FDA43B2D /* Track.swift in Sources */,
 				225F74BFE0D21E2CA1733100 /* TrackRecorder.swift in Sources */,
 				373D6D965219F9D8487F10DA /* TrackRowView.swift in Sources */,

@@ -1,8 +1,10 @@
 import SwiftUI
 
-/// Aggregated project waveform for the transport bar: every track's cached
-/// peaks combined at its effective (mute/solo-aware) volume, with a playhead
-/// while the transport runs. Only ever reads the small peaks caches.
+/// The transport's "tape" strip: the aggregated project waveform (every
+/// track's cached peaks combined at its effective mute/solo-aware volume)
+/// rendered as scrolling dot-matrix tape under the record head. During
+/// recording it shows the live take's peaks emerging at the head instead.
+/// Only ever reads the small peaks caches.
 ///
 /// Known simplification (shared with TrackRowView): peaks start at file frame
 /// 0 while playback skips `latencyOffsetSamples`, so the picture can lead the
@@ -17,14 +19,33 @@ struct MixWaveformView: View {
     @State private var combined: [Float] = []
 
     var body: some View {
-        WaveformView(peaks: combined, tint: .secondary)
-            .frame(height: 28)
-            .overlay(playhead)
-            .accessibilityElement()
-            .accessibilityIdentifier("MixWaveform")
-            .accessibilityLabel("Project waveform")
-            .task(id: peaksFingerprint) { await loadPeaks() }
-            .task(id: mixFingerprint) { combine() }
+        TimelineView(.animation(minimumInterval: 0.05, paused: engine.state == .idle)) { _ in
+            TapeWaveformView(bins: currentBins, centerBin: currentCenterBin)
+        }
+        .frame(height: 48)
+        .allowsHitTesting(false)
+        .accessibilityElement()
+        .accessibilityIdentifier("MixWaveform")
+        .accessibilityLabel("Project waveform")
+        .task(id: peaksFingerprint) { await loadPeaks() }
+        .task(id: mixFingerprint) { combine() }
+    }
+
+    /// State table: idle = mix cued at 0; playing = mix scrolling under the
+    /// head; recording = the live take's bins with the newest bin at the head.
+    private var currentBins: [Float] {
+        engine.state == .recording ? engine.liveRecordingPeaks : combined
+    }
+
+    private var currentCenterBin: Double {
+        switch engine.state {
+        case .idle:
+            0
+        case .playing:
+            engine.elapsedSeconds / PeakStore.binDuration
+        case .recording:
+            Double(engine.liveRecordingPeaks.count)
+        }
     }
 
     /// Reload peak caches when the track set changes; durations included so a
@@ -80,24 +101,4 @@ struct MixWaveformView: View {
         combined = mix.map { min($0, 1) }
     }
 
-    private var playhead: some View {
-        GeometryReader { geometry in
-            TimelineView(.periodic(from: .now, by: 0.05)) { _ in
-                if engine.state != .idle, longestPlayableSeconds > 0 {
-                    let fraction = min(1, engine.elapsedSeconds / longestPlayableSeconds)
-                    Capsule()
-                        .fill(Color.accentColor)
-                        .frame(width: 2)
-                        .offset(x: geometry.size.width * fraction - 1)
-                }
-            }
-        }
-        .allowsHitTesting(false)
-    }
-
-    private var longestPlayableSeconds: Double {
-        project.tracks
-            .map { $0.durationSeconds - Double($0.latencyOffsetSamples) / $0.sampleRate }
-            .max() ?? 0
-    }
 }

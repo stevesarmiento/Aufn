@@ -1,6 +1,8 @@
 import SwiftUI
 
-/// Floating glass transport: play/stop, record, elapsed time, live meter.
+/// Floating glass transport styled as a tape deck: the dot-matrix tape strip
+/// runs full-width behind a centered glass "record head" (which refracts it),
+/// with the play button and clock flanking at the strip's faded edges.
 struct TransportBar: View {
     @Environment(ProjectStore.self) private var store
 
@@ -20,15 +22,9 @@ struct TransportBar: View {
                         .padding(.horizontal, 4)
                 }
                 if !project.tracks.isEmpty {
-                    MixWaveformView(project: project, engine: engine)
-                        .padding(.horizontal, 4)
                     masterVolumeRow
                 }
-                HStack(spacing: 16) {
-                    playButton
-                    recordButton
-                    elapsedClock
-                }
+                tapeDeck
             }
             .padding(16)
             .glassEffect(.regular, in: .rect(cornerRadius: 28))
@@ -37,6 +33,21 @@ struct TransportBar: View {
         .task(id: project.id) {
             masterVolume = project.masterVolume
         }
+    }
+
+    /// ZStack ordering matters: the strip is the bottom layer so the glass
+    /// record head above it refracts the dots passing beneath.
+    private var tapeDeck: some View {
+        ZStack {
+            MixWaveformView(project: project, engine: engine)
+            HStack {
+                playButton
+                Spacer()
+                elapsedClock
+            }
+            recordHeadButton
+        }
+        .frame(height: 80)
     }
 
     private var masterVolumeRow: some View {
@@ -79,7 +90,10 @@ struct TransportBar: View {
         .accessibilityLabel(isPlaying ? "Stop" : "Play")
     }
 
-    private var recordButton: some View {
+    /// Tall glass capsule with a red pill inside; the pill morphs into a stop
+    /// square while recording. Clear glass (not prominent) so the tape strip
+    /// stays visible, refracted, behind it.
+    private var recordHeadButton: some View {
         Button {
             if isRecording {
                 engine.stopRecording()
@@ -87,13 +101,15 @@ struct TransportBar: View {
                 Task { await engine.startRecording(into: project) }
             }
         } label: {
-            Image(systemName: isRecording ? "stop.fill" : "record.circle.fill")
-                .font(.title)
-                .frame(width: 56, height: 56)
+            RoundedRectangle(cornerRadius: isRecording ? 7 : 13, style: .continuous)
+                .fill(.red)
+                .frame(width: isRecording ? 24 : 26, height: isRecording ? 24 : 46)
+                .frame(width: 56, height: 76)
+                .glassEffect(.regular.interactive(), in: .capsule)
         }
-        .buttonStyle(.glassProminent)
-        .tint(.red)
+        .buttonStyle(.plain)
         .glassEffectID("record", in: glassNamespace)
+        .animation(.snappy, value: isRecording)
         .disabled(isPlaying)
         .accessibilityLabel(isRecording ? "Stop recording" : "Record")
     }
@@ -101,7 +117,7 @@ struct TransportBar: View {
     private var elapsedClock: some View {
         TimelineView(.periodic(from: .now, by: 0.5)) { _ in
             Text(engine.state == .idle ? "0:00" : engine.elapsedSeconds.timecode)
-                .font(.title3.monospacedDigit())
+                .font(.subheadline.monospacedDigit())
                 .foregroundStyle(engine.state == .idle ? .secondary : .primary)
                 .frame(minWidth: 56, alignment: .trailing)
         }

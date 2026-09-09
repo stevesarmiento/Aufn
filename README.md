@@ -10,7 +10,7 @@ A simple multitrack overdub recorder for iPhone. Layer takes over each other, he
 - 🎛️ **Multitrack overdubs** — record a new track while the existing ones play back, sample-aligned via a shared engine start time with per-track latency compensation.
 - 💾 **Highest-quality capture** — every take is 32-bit float PCM (CAF) at the hardware sample rate, up to 96 kHz.
 - 🎚️ **Mixing** — per-track volume and pan (tap the sliders button on a track to expand), DAW-style **M**ute and **S**olo buttons that work live during playback and overdubs (mute beats solo; solo silences everything else), plus a per-project master fader. Applied live and to the mixdown; stems always stay complete.
-- 🌊 **Mix waveform** — an aggregated project waveform in the transport, weighted by each track's effective level, with a playhead while the transport runs.
+- 🌊 **Tape-head transport** — the transport is a tape deck: a dot-matrix waveform of the project flows right-to-left behind a glass capsule record head (Liquid Glass refracts it). Blue dots left of the head are on tape; gray dots right are upcoming; dim dots are blank tape. The red pill morphs to a stop square while recording.
 - 🎤 **Input picker** — choose the recording device (built-in mic, USB interface, or a Bluetooth headset mic with a quality warning); your choice is remembered per device.
 - 📤 **Stem export** — each track as its own 24-bit WAV (individually, zipped, or as a stereo mixdown) for Logic, Ableton, or anywhere else. Stems are raw by default; toggle "Apply track volume" to bake levels in.
 - 🧊 **Liquid Glass UI** — built for iOS 26 with SwiftUI's glass effects; two screens, no clutter.
