@@ -6,6 +6,9 @@ import SwiftUI
 struct TransportBar: View {
     let engine: AudioEngineController
     let project: Project
+    // AppStorage (not raw UserDefaults) so the readout re-renders when the
+    // sample-rate picker changes the preference.
+    @AppStorage("preferredSampleRate") private var preferredSampleRate: Double = 48_000
 
     private var isRecording: Bool { engine.state == .recording }
     private var isPlaying: Bool { engine.state == .playing }
@@ -59,8 +62,10 @@ struct TransportBar: View {
         )
     }
 
+    /// Locked project rate once the first take exists; the (reactive)
+    /// preference before that. The hardware has the final say at record time.
     private var sampleRateLabel: String {
-        let rate = project.sampleRate ?? UserDefaults.standard.preferredSampleRate
+        let rate = project.sampleRate ?? preferredSampleRate
         let khz = rate / 1000
         return khz == khz.rounded() ? "\(Int(khz)) kHz" : String(format: "%.1f kHz", khz)
     }
@@ -122,7 +127,7 @@ struct TransportBar: View {
     private var elapsedClock: some View {
         TimelineView(.periodic(from: .now, by: 0.5)) { _ in
             Text(engine.state == .idle ? "0:00" : engine.elapsedSeconds.timecode)
-                .font(.subheadline.monospacedDigit())
+                .font(.title3.weight(.medium).monospacedDigit())
                 .foregroundStyle(engine.state == .idle ? .secondary : .primary)
         }
     }
