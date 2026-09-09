@@ -59,10 +59,10 @@ struct TransportBar: View {
     @ViewBuilder
     private var leftControl: some View {
         if engine.state == .idle && choosingMode {
-            Text(currentMode.caption)
+            Text("Processing")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
-                .frame(width: 150, alignment: .leading)
+                .frame(width: 110, alignment: .trailing)
                 .transition(.opacity)
         } else {
             playButton
@@ -86,7 +86,7 @@ struct TransportBar: View {
             choosingMode = true
         } label: {
             Text(currentMode.label)
-                .font(.subheadline.weight(.heavy))
+                .font(.footnote.weight(.heavy))
                 .foregroundStyle(Color.accentColor)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
@@ -101,7 +101,7 @@ struct TransportBar: View {
         CaptureWheel(modes: CaptureMode.allCases, selection: $captureMode) {
             choosingMode = false
         }
-            .frame(width: 150, height: 100)
+            .frame(width: 100, height: 96)
             .clipped()
             .background(
                 LinearGradient(

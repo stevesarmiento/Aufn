@@ -28,18 +28,12 @@ struct CaptureWheel: UIViewRepresentable {
            picker.selectedRow(inComponent: 0) != index {
             picker.selectRow(index, inComponent: 0, animated: false)
         }
-        // Strip the system selection indicator after layout: the thin divider
-        // lines are hidden and the gray rounded selection background is cleared.
-        // Deferred so subview sizes are real — doing it pre-layout (everything
-        // zero-height) would hide the whole wheel.
+        // Clear the gray rounded selection background so the selected row sits
+        // on our own black scrim. Clear-only (never hide) so we can't
+        // accidentally hide row content during a layout pass.
         DispatchQueue.main.async {
             for subview in picker.subviews {
-                let height = subview.bounds.height
-                if height > 0.1 && height < 1.5 {
-                    subview.isHidden = true
-                } else {
-                    subview.backgroundColor = .clear
-                }
+                subview.backgroundColor = .clear
             }
         }
     }
@@ -56,15 +50,15 @@ struct CaptureWheel: UIViewRepresentable {
             parent.modes.count
         }
 
-        func pickerView(_: UIPickerView, rowHeightForComponent _: Int) -> CGFloat { 34 }
+        func pickerView(_: UIPickerView, rowHeightForComponent _: Int) -> CGFloat { 30 }
 
         func pickerView(_: UIPickerView, viewForRow row: Int, forComponent _: Int, reusing view: UIView?) -> UIView {
             let label = (view as? UILabel) ?? UILabel()
             label.text = parent.modes[row].label
             label.textAlignment = .center
             label.textColor = UIColor(Color.accentColor)
-            let base = UIFont.systemFont(ofSize: 17, weight: .heavy)
-            label.font = base.fontDescriptor.withDesign(.rounded).map { UIFont(descriptor: $0, size: 17) } ?? base
+            let base = UIFont.systemFont(ofSize: 14, weight: .heavy)
+            label.font = base.fontDescriptor.withDesign(.rounded).map { UIFont(descriptor: $0, size: 14) } ?? base
             return label
         }
 
