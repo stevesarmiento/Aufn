@@ -93,6 +93,11 @@ final class AudioEngineController {
         do {
             try session.configure(preferredSampleRate: project.sampleRate ?? UserDefaults.standard.preferredSampleRate, output: .standard, recording: true)
 
+            // Toggle the AEC/noise-suppression/AGC stack to match the capture
+            // mode. Must happen while the engine is stopped and before we read
+            // the input format (it can change the format).
+            try? engine.inputNode.setVoiceProcessingEnabled(CaptureMode.current.usesVoiceProcessing)
+
             schedulePlayers(for: project)
 
             let inputFormat = engine.inputNode.outputFormat(forBus: 0)

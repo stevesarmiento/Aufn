@@ -9,6 +9,7 @@ struct TransportBar: View {
     // AppStorage (not raw UserDefaults) so the readout re-renders when the
     // sample-rate picker changes the preference.
     @AppStorage("preferredSampleRate") private var preferredSampleRate: Double = 48_000
+    @AppStorage(CaptureMode.storageKey) private var captureMode = CaptureMode.raw.rawValue
 
     private var isRecording: Bool { engine.state == .recording }
     private var isPlaying: Bool { engine.state == .playing }
@@ -34,11 +35,40 @@ struct TransportBar: View {
             HStack {
                 playButton
                 Spacer()
-                timerReadout
+                if engine.state == .idle {
+                    captureModeWheel
+                } else {
+                    timerReadout
+                }
             }
             recordHeadButton
         }
         .frame(height: 96)
+        .animation(.snappy, value: engine.state)
+    }
+
+    /// Camera-style vertical wheel of capture modes, occupying the timer's
+    /// spot while idle. Selected mode is accent + bold; the rest dim. Locked
+    /// away during a take (the timer takes over), since mode can't change
+    /// mid-record anyway.
+    private var captureModeWheel: some View {
+        VStack(alignment: .trailing, spacing: 3) {
+            ForEach(CaptureMode.allCases) { mode in
+                let isSelected = mode.rawValue == captureMode
+                Button {
+                    captureMode = mode.rawValue
+                } label: {
+                    Text(mode.label)
+                        .font(isSelected ? .headline.weight(.heavy) : .caption.weight(.semibold))
+                        .foregroundStyle(isSelected ? Color.accentColor : .secondary)
+                        .opacity(isSelected ? 1 : 0.5)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .animation(.snappy, value: captureMode)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Capture mode")
     }
 
     /// Always-visible timecode + sample rate over a soft scrim that fades to
