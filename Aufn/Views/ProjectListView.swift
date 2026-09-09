@@ -90,3 +90,21 @@ struct ProjectListView: View {
         _ = try? store.createProject(named: "Project \(number)")
     }
 }
+
+#Preview("Projects") {
+    let store = PreviewData.store()
+    ProjectListView()
+        .fontDesign(.rounded)
+        .environment(store)
+        .environment(AudioEngineController(store: store))
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Empty") {
+    let store = PreviewData.store(seeded: false)
+    ProjectListView()
+        .fontDesign(.rounded)
+        .environment(store)
+        .environment(AudioEngineController(store: store))
+        .preferredColorScheme(.dark)
+}

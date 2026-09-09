@@ -114,3 +114,12 @@ struct MixWaveformView: View {
     }
 
 }
+
+#Preview("Cued mix", traits: .sizeThatFitsLayout) {
+    let store = PreviewData.store()
+    MixWaveformView(project: PreviewData.demoProject(in: store), engine: AudioEngineController(store: store))
+        .padding(.vertical, 24)
+        .frame(width: 380)
+        .environment(store)
+        .preferredColorScheme(.dark)
+}

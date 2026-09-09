@@ -32,3 +32,18 @@ struct WaveformView: View {
         }
     }
 }
+
+#Preview("Waveforms", traits: .sizeThatFitsLayout) {
+    VStack(spacing: 20) {
+        WaveformView(peaks: PreviewData.peaks())
+            .frame(height: 36)
+        WaveformView(peaks: PreviewData.peaks(seed: 0.05), tint: .secondary)
+            .frame(height: 36)
+            .opacity(0.4)
+        WaveformView(peaks: PreviewData.peaks(bins: 300), tint: .red)
+            .frame(height: 36)
+    }
+    .padding()
+    .frame(width: 340)
+    .preferredColorScheme(.dark)
+}

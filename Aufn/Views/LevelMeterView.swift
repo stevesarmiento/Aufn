@@ -48,3 +48,14 @@ struct LevelMeterView: View {
         return peakHold
     }
 }
+
+#Preview("Levels", traits: .sizeThatFitsLayout) {
+    VStack(spacing: 16) {
+        LevelMeterView(meter: PreviewData.meter(level: 0.35))
+        LevelMeterView(meter: PreviewData.meter(level: 0.7))
+        LevelMeterView(meter: PreviewData.meter(level: 0.98))
+    }
+    .padding()
+    .frame(width: 340)
+    .preferredColorScheme(.dark)
+}

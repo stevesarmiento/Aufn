@@ -111,3 +111,19 @@ struct SampleRatePicker: View {
         return khz == khz.rounded() ? "\(Int(khz)) kHz" : String(format: "%.1f kHz", khz)
     }
 }
+
+#Preview("Unlocked") {
+    SheetPreviewHost {
+        SampleRatePicker()
+            .environment(AudioEngineController(store: ProjectStore()))
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Locked project") {
+    SheetPreviewHost {
+        SampleRatePicker(lockedRate: 48_000)
+            .environment(AudioEngineController(store: ProjectStore()))
+    }
+    .preferredColorScheme(.dark)
+}

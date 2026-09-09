@@ -25,6 +25,7 @@
 		6EEA7A385C4ADEA43921F3B5 /* MixWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */; };
 		73B1827ED7FD7D2CF5E60C3A /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5AA0A3C78D261AAA26F172 /* Project.swift */; };
 		7F52C940B17018BCB4D030B1 /* ModelCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */; };
+		80827C7451DDFAFEC6331831 /* PreviewSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */; };
 		907456A2EB8A1ABAB713C38D /* ExportPipelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37B6BCF8C4EF20E3A2CB96B /* ExportPipelineTests.swift */; };
 		A25179BD9EE57D1CB68319FC /* MixRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5B60D01674003C1EADF75F /* MixRules.swift */; };
 		A38B185C8F3A3D161D11D198 /* AufnApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711EA42EDE83F0D800EE54A /* AufnApp.swift */; };
@@ -65,6 +66,7 @@
 		39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordFlowUITests.swift; sourceTree = "<group>"; };
 		3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRowView.swift; sourceTree = "<group>"; };
 		4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleRatePicker.swift; sourceTree = "<group>"; };
+		5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSupport.swift; sourceTree = "<group>"; };
 		62678A3ACAC43AD644B8F77C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		642BD84573D886156BD58DFD /* AufnTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AufnTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelCodableTests.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 				C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */,
 				EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */,
 				CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */,
+				5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */,
 				90E0F36D39180002A95932DF /* ProjectDetailView.swift */,
 				32A520395A415465ECDA8922 /* ProjectListView.swift */,
 				4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */,
@@ -325,6 +328,7 @@
 				A25179BD9EE57D1CB68319FC /* MixRules.swift in Sources */,
 				6EEA7A385C4ADEA43921F3B5 /* MixWaveformView.swift in Sources */,
 				E3BA6A51F2534F52306AB145 /* PeakStore.swift in Sources */,
+				80827C7451DDFAFEC6331831 /* PreviewSupport.swift in Sources */,
 				73B1827ED7FD7D2CF5E60C3A /* Project.swift in Sources */,
 				10CDC308F9E3B95DF768E5B0 /* ProjectDetailView.swift in Sources */,
 				0820CCC8D50347F23F06F9B1 /* ProjectListView.swift in Sources */,

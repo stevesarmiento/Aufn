@@ -10,6 +10,7 @@ struct TransportBar: View {
     // sample-rate picker changes the preference.
     @AppStorage("preferredSampleRate") private var preferredSampleRate: Double = 48_000
     @AppStorage(CaptureMode.storageKey) private var captureMode = CaptureMode.raw.rawValue
+    @State private var dragStartIndex: Int?
 
     private var isRecording: Bool { engine.state == .recording }
     private var isPlaying: Bool { engine.state == .playing }
@@ -47,28 +48,57 @@ struct TransportBar: View {
         .animation(.snappy, value: engine.state)
     }
 
-    /// Camera-style vertical wheel of capture modes, occupying the timer's
-    /// spot while idle. Selected mode is accent + bold; the rest dim. Locked
-    /// away during a take (the timer takes over), since mode can't change
-    /// mid-record anyway.
+    /// Camera-style capture-mode wheel: one mode shown at a time, dragged up
+    /// or down like a date picker (with detent haptics), occupying the timer's
+    /// spot while idle. Locked away during a take — the timer takes over,
+    /// since mode can't change mid-record anyway.
     private var captureModeWheel: some View {
-        VStack(alignment: .trailing, spacing: 3) {
-            ForEach(CaptureMode.allCases) { mode in
-                let isSelected = mode.rawValue == captureMode
-                Button {
-                    captureMode = mode.rawValue
-                } label: {
-                    Text(mode.label)
-                        .font(isSelected ? .headline.weight(.heavy) : .caption.weight(.semibold))
-                        .foregroundStyle(isSelected ? Color.accentColor : .secondary)
-                        .opacity(isSelected ? 1 : 0.5)
-                }
-                .buttonStyle(.plain)
-            }
+        let modes = CaptureMode.allCases
+        let currentIndex = modes.firstIndex { $0.rawValue == captureMode } ?? 0
+        return VStack(spacing: 1) {
+            Image(systemName: "chevron.compact.up")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+            Text(modes[currentIndex].label)
+                .font(.headline.weight(.heavy))
+                .foregroundStyle(Color.accentColor)
+                .id(captureMode)
+                .transition(.push(from: .bottom).combined(with: .opacity))
+                .frame(minWidth: 112, alignment: .trailing)
+            Image(systemName: "chevron.compact.down")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
         }
         .animation(.snappy, value: captureMode)
-        .accessibilityElement(children: .contain)
+        .contentShape(.rect)
+        .gesture(
+            DragGesture(minimumDistance: 4)
+                .onChanged { value in
+                    let start = dragStartIndex ?? currentIndex
+                    if dragStartIndex == nil { dragStartIndex = start }
+                    // Drag up (negative height) advances to the next mode.
+                    let steps = Int((value.translation.height / 30).rounded())
+                    let target = min(max(start - steps, 0), modes.count - 1)
+                    if modes[target].rawValue != captureMode {
+                        captureMode = modes[target].rawValue
+                    }
+                }
+                .onEnded { _ in dragStartIndex = nil }
+        )
+        .sensoryFeedback(.selection, trigger: captureMode)
+        .accessibilityElement()
         .accessibilityLabel("Capture mode")
+        .accessibilityValue(modes[currentIndex].label)
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment where currentIndex < modes.count - 1:
+                captureMode = modes[currentIndex + 1].rawValue
+            case .decrement where currentIndex > 0:
+                captureMode = modes[currentIndex - 1].rawValue
+            default:
+                break
+            }
+        }
     }
 
     /// Always-visible timecode + sample rate over a soft scrim that fades to
@@ -158,4 +188,15 @@ struct TransportBar: View {
                 .foregroundStyle(engine.state == .idle ? .secondary : .primary)
         }
     }
+}
+
+#Preview("Idle") {
+    let store = PreviewData.store()
+    VStack {
+        Spacer()
+        TransportBar(engine: AudioEngineController(store: store), project: PreviewData.demoProject(in: store))
+    }
+    .fontDesign(.rounded)
+    .environment(store)
+    .preferredColorScheme(.dark)
 }

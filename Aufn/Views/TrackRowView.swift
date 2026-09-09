@@ -182,3 +182,22 @@ extension Double {
         return String(format: "%d:%02d", total / 60, total % 60)
     }
 }
+
+#Preview("Track rows") {
+    let store = PreviewData.store()
+    let project = PreviewData.demoProject(in: store)
+    let engine = AudioEngineController(store: store)
+    ScrollView {
+        LazyVStack(spacing: 12) {
+            ForEach(project.tracks) { track in
+                TrackRowView(track: track, project: project)
+            }
+            LiveTrackRowView(engine: engine)
+        }
+        .padding()
+    }
+    .fontDesign(.rounded)
+    .environment(store)
+    .environment(engine)
+    .preferredColorScheme(.dark)
+}

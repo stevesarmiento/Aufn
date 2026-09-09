@@ -111,3 +111,10 @@ struct InputPicker: View {
         }
     }
 }
+
+#Preview("Microphone") {
+    SheetPreviewHost {
+        InputPicker()
+    }
+    .preferredColorScheme(.dark)
+}

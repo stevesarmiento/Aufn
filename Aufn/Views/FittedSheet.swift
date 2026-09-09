@@ -47,3 +47,18 @@ extension View {
             .background(.white.opacity(0.06), in: .rect(cornerRadius: 14))
     }
 }
+
+#Preview("Fitted sheet") {
+    SheetPreviewHost {
+        FittedSheet(title: "Example") {
+            Label("A card row", systemImage: "waveform")
+                .font(.headline)
+                .sheetCard()
+            Text("A footnote explainer, in the style the pickers use for their fine print.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .sheetCard()
+        }
+    }
+    .preferredColorScheme(.dark)
+}

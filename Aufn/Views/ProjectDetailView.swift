@@ -166,3 +166,35 @@ struct MasterVolumeSheet: View {
         }
     }
 }
+
+#Preview("Project") {
+    let store = PreviewData.store()
+    NavigationStack {
+        ProjectDetailView(projectID: PreviewData.demoProject(in: store).id)
+    }
+    .fontDesign(.rounded)
+    .environment(store)
+    .environment(AudioEngineController(store: store))
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Empty project") {
+    let store = PreviewData.store()
+    NavigationStack {
+        ProjectDetailView(projectID: store.projects.last?.id ?? UUID())
+    }
+    .fontDesign(.rounded)
+    .environment(store)
+    .environment(AudioEngineController(store: store))
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Master Volume") {
+    let store = PreviewData.store()
+    SheetPreviewHost {
+        MasterVolumeSheet(projectID: PreviewData.demoProject(in: store).id)
+            .environment(store)
+            .environment(AudioEngineController(store: store))
+    }
+    .preferredColorScheme(.dark)
+}

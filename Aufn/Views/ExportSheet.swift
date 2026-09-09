@@ -115,3 +115,12 @@ struct ActivityView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
 }
+
+#Preview("Export") {
+    let store = PreviewData.store()
+    SheetPreviewHost {
+        ExportSheet(project: PreviewData.demoProject(in: store))
+            .environment(store)
+    }
+    .preferredColorScheme(.dark)
+}
