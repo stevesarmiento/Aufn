@@ -89,15 +89,12 @@ struct ProjectDetailView: View {
         }
         .sheet(isPresented: $showingSampleRate) {
             SampleRatePicker(lockedRate: store.project(id: projectID)?.sampleRate)
-                .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showingInputPicker) {
             InputPicker()
-                .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showingMasterVolume) {
             MasterVolumeSheet(projectID: projectID)
-                .presentationDetents([.height(220)])
         }
         .alert("Audio Error", isPresented: engineErrorShown) {
             Button("OK", role: .cancel) { engine.clearError() }
@@ -132,47 +129,37 @@ struct ProjectDetailView: View {
 struct MasterVolumeSheet: View {
     @Environment(ProjectStore.self) private var store
     @Environment(AudioEngineController.self) private var engine
-    @Environment(\.dismiss) private var dismiss
 
     let projectID: UUID
 
     @State private var masterVolume: Float = 1
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 12) {
-                HStack(spacing: 12) {
-                    Image(systemName: "speaker.wave.1")
-                        .foregroundStyle(.secondary)
-                    Slider(
-                        value: Binding(
-                            get: { masterVolume },
-                            set: { masterVolume = $0; engine.setMasterVolume($0) }
-                        ),
-                        in: 0...1
-                    ) { editing in
-                        if !editing, var project = store.project(id: projectID) {
-                            project.masterVolume = masterVolume
-                            store.update(project)
-                        }
-                    }
-                    .accessibilityLabel("Master volume")
-                    Image(systemName: "speaker.wave.3")
-                        .foregroundStyle(.secondary)
-                }
-                Text("Part of the project's mix — applied to playback and the stereo mixdown. Use the volume buttons for loudness.")
-                    .font(.footnote)
+        FittedSheet(title: "Master Volume") {
+            HStack(spacing: 12) {
+                Image(systemName: "speaker.wave.1")
                     .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            .padding(24)
-            .navigationTitle("Master Volume")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                Slider(
+                    value: Binding(
+                        get: { masterVolume },
+                        set: { masterVolume = $0; engine.setMasterVolume($0) }
+                    ),
+                    in: 0...1
+                ) { editing in
+                    if !editing, var project = store.project(id: projectID) {
+                        project.masterVolume = masterVolume
+                        store.update(project)
+                    }
                 }
+                .accessibilityLabel("Master volume")
+                Image(systemName: "speaker.wave.3")
+                    .foregroundStyle(.secondary)
             }
+            .sheetCard()
+            Text("Part of the project's mix — applied to playback and the stereo mixdown. Use the volume buttons for loudness.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .sheetCard()
         }
         .task {
             masterVolume = store.project(id: projectID)?.masterVolume ?? 1

@@ -1,12 +1,12 @@
 import SwiftUI
 
 /// Preferred capture sample rate with the plain-English explainers carried
-/// over from the original Aufn. Rates the current input can't grant are shown
-/// disabled (probed live), and a project that already has takes shows its
-/// locked rate — the selection only shapes future first takes.
+/// over from the original Aufn. Rates the current input can't grant keep
+/// their descriptions and get an "Unavailable" badge (probed live); a project
+/// that already has takes shows its locked rate — the selection only shapes
+/// future first takes.
 struct SampleRatePicker: View {
     @Environment(AudioEngineController.self) private var engine
-    @Environment(\.dismiss) private var dismiss
     @AppStorage("preferredSampleRate") private var preferredSampleRate: Double = 48_000
 
     /// The open project's locked rate, if it already has takes.
@@ -34,43 +34,30 @@ struct SampleRatePicker: View {
     ]
 
     var body: some View {
-        NavigationStack {
-            List {
-                if let lockedRate {
-                    Section {
-                        Label(
-                            "This project is locked at \(formatted(lockedRate)) — set by its first take. Your selection here applies to new projects.",
-                            systemImage: "lock"
-                        )
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    }
-                }
-                Section {
-                    ForEach(options, id: \.rate) { option in
-                        row(for: option)
-                    }
-                }
-                if didProbe && supportedRates.count < options.count {
-                    Section {
-                        Label(
-                            "Rates marked unavailable aren't supported by the current microphone — a USB audio interface can unlock them. Recording always captures 32-bit float.",
-                            systemImage: "cable.connector"
-                        )
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    }
-                }
+        FittedSheet(title: "Sample Rate") {
+            if let lockedRate {
+                Label(
+                    "This project is locked at \(formatted(lockedRate)) — set by its first take. Your selection here applies to new projects.",
+                    systemImage: "lock"
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .sheetCard()
             }
-            .navigationTitle("Sample Rate")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
-                }
+            ForEach(options, id: \.rate) { option in
+                row(for: option)
             }
-            .onAppear(perform: probe)
+            if didProbe && supportedRates.count < options.count {
+                Label(
+                    "Sample rates marked unavailable are not supported by the current microphone. A USB microphone can unlock more sample rates.",
+                    systemImage: "cable.connector"
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .sheetCard()
+            }
         }
+        .onAppear(perform: probe)
     }
 
     private func row(for option: RateOption) -> some View {
@@ -104,8 +91,9 @@ struct SampleRatePicker: View {
                         .foregroundStyle(.tint)
                 }
             }
+            .sheetCard()
         }
-        .foregroundStyle(.primary)
+        .buttonStyle(.plain)
         .disabled(!isSupported)
         .opacity(isSupported ? 1 : 0.55)
     }

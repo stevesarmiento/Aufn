@@ -17,6 +17,7 @@
 		25E2FAA37E11DD3D3D480409 /* TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AEB2116153E60C0B264C44 /* TransportBar.swift */; };
 		373D6D965219F9D8487F10DA /* TrackRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */; };
 		3D8E7563C0A132A4C6DE6631 /* RecordFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */; };
+		3F5820A4BA0B3BEBF2A55F13 /* FittedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F29F36DC7179183A9532339 /* FittedSheet.swift */; };
 		417A0285956B5D7B56E242A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62678A3ACAC43AD644B8F77C /* Assets.xcassets */; };
 		46BCB4DB3E7C64E1DA815533 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FB0BB77CED728DB965323E /* WaveformView.swift */; };
 		4AB727D851FD6740046417F5 /* InputPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */; };
@@ -66,6 +67,7 @@
 		62678A3ACAC43AD644B8F77C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		642BD84573D886156BD58DFD /* AufnTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AufnTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelCodableTests.swift; sourceTree = "<group>"; };
+		7F29F36DC7179183A9532339 /* FittedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FittedSheet.swift; sourceTree = "<group>"; };
 		80233F83100DBD15AD06CE76 /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
 		90E0F36D39180002A95932DF /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
 		9CB153B8D25AA800D8D238B2 /* MeterTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterTap.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 			isa = PBXGroup;
 			children = (
 				0637C1D4B7BF55CCC6C39433 /* ExportSheet.swift */,
+				7F29F36DC7179183A9532339 /* FittedSheet.swift */,
 				C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */,
 				EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */,
 				CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */,
@@ -311,6 +314,7 @@
 				A38B185C8F3A3D161D11D198 /* AufnApp.swift in Sources */,
 				03A7D114F8672BD5D5D2C087 /* ExportSheet.swift in Sources */,
 				C74E613D29ACDBF431F79FC4 /* Exporter.swift in Sources */,
+				3F5820A4BA0B3BEBF2A55F13 /* FittedSheet.swift in Sources */,
 				4AB727D851FD6740046417F5 /* InputPicker.swift in Sources */,
 				DECE386A0BB6D862F705AAF5 /* LevelMeterView.swift in Sources */,
 				EA1FF872BA1372FDCEBB6B76 /* MeterTap.swift in Sources */,

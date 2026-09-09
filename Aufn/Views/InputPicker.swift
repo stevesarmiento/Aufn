@@ -1,43 +1,30 @@
 import AVFAudio
 import SwiftUI
 
-/// Microphone selection, following the SampleRatePicker list pattern.
+/// Microphone selection, matching the SampleRatePicker card pattern.
 /// AVAudioSessionPortDescription values stay confined to this @MainActor view.
 struct InputPicker: View {
-    @Environment(\.dismiss) private var dismiss
-
     @State private var inputs: [AVAudioSessionPortDescription] = []
     @State private var selectedUID: String?
 
     private let session = AudioSessionController.shared
 
     var body: some View {
-        NavigationStack {
-            List {
-                autoRow
-                ForEach(inputs, id: \.uid) { input in
-                    row(for: input)
-                }
+        FittedSheet(title: "Microphone") {
+            autoRow
+            ForEach(inputs, id: \.uid) { input in
+                row(for: input)
             }
-            .navigationTitle("Microphone")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
-                }
-            }
-            .safeAreaInset(edge: .bottom) {
-                Text("Your choice is remembered per device — if it disconnects, Aufn falls back to Auto until it returns.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .padding()
-            }
-            .onAppear(perform: refresh)
-            .task {
-                // Devices can connect while the sheet is open.
-                for await _ in NotificationCenter.default.notifications(named: AVAudioSession.routeChangeNotification).map({ _ in () }) {
-                    refresh()
-                }
+            Text("Your choice is remembered per device — if it disconnects, Aufn falls back to Auto until it returns.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .sheetCard()
+        }
+        .onAppear(perform: refresh)
+        .task {
+            // Devices can connect while the sheet is open.
+            for await _ in NotificationCenter.default.notifications(named: AVAudioSession.routeChangeNotification).map({ _ in () }) {
+                refresh()
             }
         }
     }
@@ -63,8 +50,9 @@ struct InputPicker: View {
                         .foregroundStyle(.tint)
                 }
             }
+            .sheetCard()
         }
-        .foregroundStyle(.primary)
+        .buttonStyle(.plain)
     }
 
     private func row(for input: AVAudioSessionPortDescription) -> some View {
@@ -88,8 +76,9 @@ struct InputPicker: View {
                         .foregroundStyle(.tint)
                 }
             }
+            .sheetCard()
         }
-        .foregroundStyle(.primary)
+        .buttonStyle(.plain)
     }
 
     private func refresh() {
