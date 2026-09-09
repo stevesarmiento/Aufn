@@ -24,8 +24,13 @@ struct TransportBar: View {
                 masterVolumeRow
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
             }
+            if engine.state != .idle {
+                elapsedClock
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+            }
             tapeDeck
         }
+        .animation(.snappy, value: engine.state)
         .padding(.horizontal, 20)
         .padding(.bottom, 4)
         .task(id: project.id) {
@@ -41,14 +46,11 @@ struct TransportBar: View {
             HStack {
                 playButton
                 Spacer()
-                VStack(alignment: .trailing, spacing: 8) {
-                    elapsedClock
-                    volumeToggleButton
-                }
+                volumeToggleButton
             }
             recordHeadButton
         }
-        .frame(height: 108)
+        .frame(height: 96)
     }
 
     private var volumeToggleButton: some View {
@@ -117,12 +119,17 @@ struct TransportBar: View {
                 Task { await engine.startRecording(into: project) }
             }
         } label: {
-            RoundedRectangle(cornerRadius: isRecording ? 9 : 15, style: .continuous)
-                .fill(Color(red: 1.0, green: 0.20, blue: 0.22))
-                .frame(width: isRecording ? 28 : 30, height: isRecording ? 28 : 58)
-                .frame(width: TapeHead.size.width, height: TapeHead.size.height)
-                .glassEffect(.regular.interactive(), in: .capsule)
-                .contentShape(Capsule())
+            ZStack {
+                // Same shape under the glass pill, blurred, so the red reads
+                // as a glow bleeding through the frosted head.
+                pillShape
+                    .blur(radius: 14)
+                    .opacity(0.75)
+                pillShape
+            }
+            .frame(width: TapeHead.size.width, height: TapeHead.size.height)
+            .glassEffect(.regular.interactive(), in: .circle)
+            .contentShape(Circle())
         }
         .buttonStyle(.plain)
         .animation(.snappy, value: isRecording)
@@ -130,12 +137,18 @@ struct TransportBar: View {
         .accessibilityLabel(isRecording ? "Stop recording" : "Record")
     }
 
+    private var pillShape: some View {
+        RoundedRectangle(cornerRadius: isRecording ? 9 : 15, style: .continuous)
+            .fill(Color(red: 1.0, green: 0.20, blue: 0.22))
+            .frame(width: isRecording ? 28 : 30, height: isRecording ? 28 : 52)
+    }
+
+    /// Shown centered above the head only while the transport runs.
     private var elapsedClock: some View {
         TimelineView(.periodic(from: .now, by: 0.5)) { _ in
-            Text(engine.state == .idle ? "0:00" : engine.elapsedSeconds.timecode)
+            Text(engine.elapsedSeconds.timecode)
                 .font(.subheadline.monospacedDigit())
-                .foregroundStyle(engine.state == .idle ? .secondary : .primary)
-                .frame(minWidth: 56, alignment: .trailing)
+                .foregroundStyle(.primary)
         }
     }
 }

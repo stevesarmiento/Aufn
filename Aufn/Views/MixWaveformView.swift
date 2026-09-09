@@ -29,7 +29,7 @@ struct MixWaveformView: View {
                 TapeWaveformView(bins: currentBins, centerBin: currentCenterBin)
                     .scaleEffect(TapeHead.magnification, anchor: .center)
                     .mask(
-                        Capsule()
+                        Circle()
                             .frame(width: TapeHead.size.width, height: TapeHead.size.height)
                     )
             }

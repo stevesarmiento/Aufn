@@ -3,7 +3,7 @@ import SwiftUI
 /// Shared geometry for the record head "lens" so the strip's magnified copy
 /// (in MixWaveformView) and the button chrome (in TransportBar) stay aligned.
 enum TapeHead {
-    static let size = CGSize(width: 72, height: 100)
+    static let size = CGSize(width: 80, height: 80)
     static let magnification: CGFloat = 1.35
 }
 
