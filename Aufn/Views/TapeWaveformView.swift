@@ -1,5 +1,12 @@
 import SwiftUI
 
+/// Shared geometry for the record head "lens" so the strip's magnified copy
+/// (in MixWaveformView) and the button chrome (in TransportBar) stay aligned.
+enum TapeHead {
+    static let size = CGSize(width: 56, height: 76)
+    static let magnification: CGFloat = 1.35
+}
+
 /// Stateless dot-matrix "tape" renderer. The strip is a timeline of 20 ms
 /// bins flowing right-to-left under a fixed center point (the record head).
 /// Bins left of center render in `playedTint` (committed to tape); bins right

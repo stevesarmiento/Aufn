@@ -8,7 +8,6 @@ struct TransportBar: View {
 
     let engine: AudioEngineController
     let project: Project
-    @Namespace private var glassNamespace
     @State private var masterVolume: Float = 1
 
     private var isRecording: Bool { engine.state == .recording }
@@ -90,9 +89,11 @@ struct TransportBar: View {
         .accessibilityLabel(isPlaying ? "Stop" : "Play")
     }
 
-    /// Tall glass capsule with a red pill inside; the pill morphs into a stop
-    /// square while recording. Clear glass (not prominent) so the tape strip
-    /// stays visible, refracted, behind it.
+    /// Tall clear "lens" capsule with a red pill inside; the pill morphs into
+    /// a stop square while recording. The magnified tape showing through it is
+    /// drawn by MixWaveformView (glassEffect can't sample siblings inside the
+    /// transport's GlassEffectContainer, and .regular glass would frost the
+    /// dots away) — this button only supplies the rim chrome and the pill.
     private var recordHeadButton: some View {
         Button {
             if isRecording {
@@ -101,14 +102,34 @@ struct TransportBar: View {
                 Task { await engine.startRecording(into: project) }
             }
         } label: {
-            RoundedRectangle(cornerRadius: isRecording ? 7 : 13, style: .continuous)
-                .fill(.red)
-                .frame(width: isRecording ? 24 : 26, height: isRecording ? 24 : 46)
-                .frame(width: 56, height: 76)
-                .glassEffect(.regular.interactive(), in: .capsule)
+            ZStack {
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [.white.opacity(0.10), .white.opacity(0.02)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                Capsule()
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [.white.opacity(0.45), .white.opacity(0.08), .white.opacity(0.30)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 1
+                    )
+                RoundedRectangle(cornerRadius: isRecording ? 7 : 13, style: .continuous)
+                    .fill(.red)
+                    .frame(width: isRecording ? 24 : 26, height: isRecording ? 24 : 46)
+                    .shadow(color: .red.opacity(0.5), radius: 6)
+            }
+            .frame(width: TapeHead.size.width, height: TapeHead.size.height)
+            .shadow(color: .black.opacity(0.35), radius: 8, y: 2)
+            .contentShape(Capsule())
         }
         .buttonStyle(.plain)
-        .glassEffectID("record", in: glassNamespace)
         .animation(.snappy, value: isRecording)
         .disabled(isPlaying)
         .accessibilityLabel(isRecording ? "Stop recording" : "Record")

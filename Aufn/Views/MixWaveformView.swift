@@ -20,7 +20,19 @@ struct MixWaveformView: View {
 
     var body: some View {
         TimelineView(.animation(minimumInterval: 0.05, paused: engine.state == .idle)) { _ in
-            TapeWaveformView(bins: currentBins, centerBin: currentCenterBin)
+            ZStack {
+                TapeWaveformView(bins: currentBins, centerBin: currentCenterBin)
+                // The record head's "refraction": the same tape, magnified
+                // around the head's center and clipped to its capsule. Real
+                // glassEffect can't sample siblings inside the transport's
+                // GlassEffectContainer, so the lens is drawn by hand.
+                TapeWaveformView(bins: currentBins, centerBin: currentCenterBin)
+                    .scaleEffect(TapeHead.magnification, anchor: .center)
+                    .mask(
+                        Capsule()
+                            .frame(width: TapeHead.size.width, height: TapeHead.size.height)
+                    )
+            }
         }
         .frame(height: 48)
         .allowsHitTesting(false)
