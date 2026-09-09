@@ -60,7 +60,25 @@ enum Exporter {
                     vDSP_vsmul(channels[channel], 1, &scalar, channels[channel], 1, vDSP_Length(buffer.frameLength))
                 }
             }
+            applyDither(buffer)
             try output.write(from: buffer)
+        }
+    }
+
+    /// TPDF dither at the 24-bit LSB, added just before AVAudioFile quantizes
+    /// Float32 -> int24. Decorrelates quantization error from the signal
+    /// (removes low-level distortion on fades/quiet passages) at the cost of a
+    /// vanishingly low noise floor. Applied to stems and the mixdown alike.
+    private static func applyDither(_ buffer: AVAudioPCMBuffer) {
+        guard let channels = buffer.floatChannelData else { return }
+        let lsb = Float(1) / Float(1 << 23) // 24-bit full-scale LSB in [-1, 1]
+        let frames = Int(buffer.frameLength)
+        for channel in 0..<Int(buffer.format.channelCount) {
+            let samples = channels[channel]
+            for frame in 0..<frames {
+                let triangular = Float.random(in: -0.5...0.5) + Float.random(in: -0.5...0.5)
+                samples[frame] += triangular * lsb
+            }
         }
     }
 
@@ -150,6 +168,7 @@ enum Exporter {
             let status = try engine.renderOffline(frames, to: buffer)
             switch status {
             case .success:
+                applyDither(buffer)
                 try output.write(from: buffer)
             case .insufficientDataFromInputNode, .cannotDoInCurrentContext:
                 continue

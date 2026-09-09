@@ -10,6 +10,7 @@ struct ProjectDetailView: View {
     @State private var showingSampleRate = false
     @State private var showingInputPicker = false
     @State private var showingMasterVolume = false
+    @AppStorage("rawCapture") private var rawCapture = true
 
     var body: some View {
         Group {
@@ -65,6 +66,10 @@ struct ProjectDetailView: View {
                     }
                     Button("Microphone…", systemImage: "mic") {
                         showingInputPicker = true
+                    }
+                    Divider()
+                    Toggle(isOn: $rawCapture) {
+                        Label("Raw Capture", systemImage: "waveform.badge.magnifyingglass")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")

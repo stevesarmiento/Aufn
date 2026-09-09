@@ -91,7 +91,7 @@ final class AudioEngineController {
             return
         }
         do {
-            try session.configure(preferredSampleRate: project.sampleRate ?? UserDefaults.standard.preferredSampleRate, output: .standard)
+            try session.configure(preferredSampleRate: project.sampleRate ?? UserDefaults.standard.preferredSampleRate, output: .standard, recording: true)
 
             schedulePlayers(for: project)
 

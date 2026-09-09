@@ -40,14 +40,23 @@ final class AudioSessionController {
         }
     }
 
-    func configure(preferredSampleRate: Double = 48_000, output: OutputRoutingPolicy = .standard) throws {
+    /// Raw capture (default on): `.measurement` mode tells iOS to apply the
+    /// minimum signal processing to the input — no AGC/EQ/noise shaping — so
+    /// what's written is as close to the mic as the OS allows. Off falls back
+    /// to `.default`, which lets iOS condition the input.
+    var isRawCaptureEnabled: Bool {
+        (UserDefaults.standard.object(forKey: "rawCapture") as? Bool) ?? true
+    }
+
+    func configure(preferredSampleRate: Double = 48_000, output: OutputRoutingPolicy = .standard, recording: Bool = false) throws {
         var options: AVAudioSession.CategoryOptions = [.allowBluetoothA2DP]
         // BT mics need the HFP option to be usable — only pay that cost (both
         // directions drop to headset quality) when the user actually chose one.
         if preferredInputPortType == AVAudioSession.Port.bluetoothHFP.rawValue {
             options.insert(.allowBluetoothHFP)
         }
-        try session.setCategory(.playAndRecord, mode: .default, options: options)
+        let mode: AVAudioSession.Mode = (recording && isRawCaptureEnabled) ? .measurement : .default
+        try session.setCategory(.playAndRecord, mode: mode, options: options)
         try? session.setPreferredSampleRate(preferredSampleRate)
         try? session.setPreferredIOBufferDuration(0.005)
         try session.setActive(true)
