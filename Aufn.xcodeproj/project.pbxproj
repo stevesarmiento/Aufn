@@ -23,6 +23,8 @@
 		46BCB4DB3E7C64E1DA815533 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FB0BB77CED728DB965323E /* WaveformView.swift */; };
 		4AB727D851FD6740046417F5 /* InputPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */; };
 		62E391C189B53DAEC5D4F59C /* TapeWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */; };
+		6A2CC8F4F9E0323DA05C2575 /* SwipeToDeleteRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113635C994053FA0433FE156 /* SwipeToDeleteRow.swift */; };
+		6E31C7A0B9A5C17FFC816175 /* TrackCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 875FC223D2F40A915B1311C5 /* TrackCard.swift */; };
 		6EEA7A385C4ADEA43921F3B5 /* MixWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */; };
 		73B1827ED7FD7D2CF5E60C3A /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5AA0A3C78D261AAA26F172 /* Project.swift */; };
 		7F52C940B17018BCB4D030B1 /* ModelCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */; };
@@ -60,6 +62,7 @@
 		00FB0BB77CED728DB965323E /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
 		0637C1D4B7BF55CCC6C39433 /* ExportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSheet.swift; sourceTree = "<group>"; };
 		08AEB2116153E60C0B264C44 /* TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportBar.swift; sourceTree = "<group>"; };
+		113635C994053FA0433FE156 /* SwipeToDeleteRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeToDeleteRow.swift; sourceTree = "<group>"; };
 		12BCEE49143C0E2CCF63420D /* PeakStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeakStore.swift; sourceTree = "<group>"; };
 		1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapeWaveformView.swift; sourceTree = "<group>"; };
 		29C339619CA7533837060A4F /* Exporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exporter.swift; sourceTree = "<group>"; };
@@ -73,6 +76,7 @@
 		6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelCodableTests.swift; sourceTree = "<group>"; };
 		7F29F36DC7179183A9532339 /* FittedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FittedSheet.swift; sourceTree = "<group>"; };
 		80233F83100DBD15AD06CE76 /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
+		875FC223D2F40A915B1311C5 /* TrackCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackCard.swift; sourceTree = "<group>"; };
 		90E0F36D39180002A95932DF /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
 		9CB153B8D25AA800D8D238B2 /* MeterTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterTap.swift; sourceTree = "<group>"; };
 		ADB93826B8AD141909A69E59 /* TrackRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRecorder.swift; sourceTree = "<group>"; };
@@ -182,7 +186,9 @@
 				90E0F36D39180002A95932DF /* ProjectDetailView.swift */,
 				32A520395A415465ECDA8922 /* ProjectListView.swift */,
 				4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */,
+				113635C994053FA0433FE156 /* SwipeToDeleteRow.swift */,
 				1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */,
+				875FC223D2F40A915B1311C5 /* TrackCard.swift */,
 				3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */,
 				08AEB2116153E60C0B264C44 /* TransportBar.swift */,
 				00FB0BB77CED728DB965323E /* WaveformView.swift */,
@@ -338,8 +344,10 @@
 				0820CCC8D50347F23F06F9B1 /* ProjectListView.swift in Sources */,
 				CFF682E5BD092D8BCB51E8AA /* ProjectStore.swift in Sources */,
 				0A1C3E4246FF7C7436E160D8 /* SampleRatePicker.swift in Sources */,
+				6A2CC8F4F9E0323DA05C2575 /* SwipeToDeleteRow.swift in Sources */,
 				62E391C189B53DAEC5D4F59C /* TapeWaveformView.swift in Sources */,
 				AD994ED964F5C382FDA43B2D /* Track.swift in Sources */,
+				6E31C7A0B9A5C17FFC816175 /* TrackCard.swift in Sources */,
 				225F74BFE0D21E2CA1733100 /* TrackRecorder.swift in Sources */,
 				373D6D965219F9D8487F10DA /* TrackRowView.swift in Sources */,
 				25E2FAA37E11DD3D3D480409 /* TransportBar.swift in Sources */,

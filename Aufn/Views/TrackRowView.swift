@@ -13,52 +13,52 @@ struct TrackRowView: View {
     @State private var pan: Float = 0
 
     var body: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text(track.name)
-                            .font(.subheadline.weight(.semibold))
-                        Spacer()
-                        Text(track.durationSeconds.timecode)
-                            .font(.caption.monospacedDigit())
-                            .foregroundStyle(.secondary)
-                    }
-                    WaveformView(peaks: peaks, tint: project.isAudible(track) ? .accentColor : .secondary)
-                        .frame(height: 36)
-                        .opacity(project.isAudible(track) ? 1 : 0.4)
-                }
-
-                Button {
-                    withAnimation(.snappy) { isMixerExpanded.toggle() }
-                } label: {
-                    Image(systemName: "slider.horizontal.3")
-                        .foregroundStyle(isMixerExpanded ? Color.accentColor : .primary)
-                        .frame(width: 32, height: 32)
-                }
-                .buttonStyle(.glass)
-                .accessibilityLabel("Mixer for \(track.name)")
-
-                VStack(spacing: 4) {
-                    muteSoloButton("M", isActive: track.isMuted, tint: .orange, label: "Mute \(track.name)") {
+        TrackCard {
+            VStack(spacing: 8) {
+                HStack(spacing: 6) {
+                    Text(track.name)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .layoutPriority(-1)
+                    Spacer(minLength: 8)
+                    Text(track.durationSeconds.timecode)
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .padding(.trailing, 4)
+                    RoundToggle(letter: "M", isOn: track.isMuted, tint: .orange, label: "Mute \(track.name)") {
                         var updated = track
                         updated.isMuted.toggle()
                         persistAndUpdateMix(updated)
                     }
-                    muteSoloButton("S", isActive: track.isSoloed, tint: .yellow, label: "Solo \(track.name)") {
+                    RoundToggle(letter: "S", isOn: track.isSoloed, tint: .yellow, label: "Solo \(track.name)") {
                         var updated = track
                         updated.isSoloed.toggle()
                         persistAndUpdateMix(updated)
                     }
+                    RoundToggle(systemImage: "slider.horizontal.3", isOn: isMixerExpanded, tint: .accentColor, label: "Mixer for \(track.name)") {
+                        withAnimation(.snappy) { isMixerExpanded.toggle() }
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.top, 12)
+
+                WaveformView(peaks: peaks, tint: .gray.opacity(0.45))
+                    .frame(height: 48)
+                    .opacity(project.isAudible(track) ? 1 : 0.4)
+                    .padding(.bottom, isMixerExpanded ? 0 : 12)
+
+                if isMixerExpanded {
+                    mixerControls
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 12)
+                        .transition(.blurReplace.combined(with: .move(edge: .top)))
+                        // Below the header/waveform so the expand reveals from
+                        // underneath instead of sliding over the track.
+                        .zIndex(-1)
                 }
             }
-
-            if isMixerExpanded {
-                mixerControls
-            }
         }
-        .padding(12)
-        .glassEffect(.regular, in: .rect(cornerRadius: 16))
         .task(id: track.id) {
             volume = track.volume
             pan = track.pan
@@ -72,11 +72,12 @@ struct TrackRowView: View {
     /// Slider ticks drive the live engine only; disk writes happen once per
     /// gesture, on release.
     private var mixerControls: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 10) {
             HStack(spacing: 8) {
-                Image(systemName: "speaker.wave.1")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Image(systemName: "speaker.wave.2")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .frame(width: 16)
                 Slider(
                     value: Binding(
                         get: { volume },
@@ -88,33 +89,34 @@ struct TrackRowView: View {
                 ) { editing in
                     if !editing { persistLevels() }
                 }
+                .tint(.white.opacity(0.6))
                 .accessibilityLabel("Volume for \(track.name)")
-                Image(systemName: "speaker.wave.3")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             }
             HStack(spacing: 8) {
-                Text("L")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                Image(systemName: "arrow.left.and.right")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .frame(width: 16)
                 Slider(
                     value: Binding(
                         get: { pan },
                         set: { pan = $0; engine.setTrackPan($0, trackID: track.id) }
                     ),
-                    in: -1...1
-                ) { editing in
-                    if !editing { persistLevels() }
-                }
+                    in: -1...1,
+                    neutralValue: 0,
+                    label: { Text("Pan") },
+                    onEditingChanged: { editing in
+                        if !editing { persistLevels() }
+                    }
+                )
+                .labelsHidden()
+                .tint(.white.opacity(0.6))
                 .accessibilityLabel("Pan for \(track.name)")
                 .onTapGesture(count: 2) {
                     pan = 0
                     engine.setTrackPan(0, trackID: track.id)
                     persistLevels()
                 }
-                Text("R")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -135,21 +137,6 @@ struct TrackRowView: View {
             engine.updateMix(for: fresh)
         }
     }
-
-    @ViewBuilder
-    private func muteSoloButton(_ letter: String, isActive: Bool, tint: Color, label: String, action: @escaping () -> Void) -> some View {
-        let button = Button(action: action) {
-            Text(letter)
-                .font(.caption.weight(.bold))
-                .frame(width: 30, height: 24)
-        }
-        .accessibilityLabel(label)
-        if isActive {
-            button.buttonStyle(.glassProminent).tint(tint)
-        } else {
-            button.buttonStyle(.glass).foregroundStyle(.primary)
-        }
-    }
 }
 
 /// The in-progress take: renders the engine's live peak bins as they arrive.
@@ -157,8 +144,8 @@ struct LiveTrackRowView: View {
     let engine: AudioEngineController
 
     var body: some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 6) {
+        TrackCard {
+            VStack(spacing: 8) {
                 HStack {
                     Label("Recording", systemImage: "record.circle")
                         .font(.subheadline.weight(.semibold))
@@ -166,12 +153,13 @@ struct LiveTrackRowView: View {
                         .symbolEffect(.pulse)
                     Spacer()
                 }
+                .padding(.horizontal, 12)
+                .padding(.top, 12)
                 WaveformView(peaks: engine.liveRecordingPeaks.suffix(600).map { $0 }, tint: .red)
-                    .frame(height: 36)
+                    .frame(height: 48)
+                    .padding(.bottom, 12)
             }
         }
-        .padding(12)
-        .glassEffect(.regular, in: .rect(cornerRadius: 16))
     }
 }
 
@@ -184,13 +172,21 @@ extension Double {
 }
 
 #Preview("Track rows") {
+    @Previewable @State var openID: UUID?
     let store = PreviewData.store()
     let project = PreviewData.demoProject(in: store)
     let engine = AudioEngineController(store: store)
     ScrollView {
         LazyVStack(spacing: 12) {
             ForEach(project.tracks) { track in
-                TrackRowView(track: track, project: project)
+                SwipeToDeleteRow(
+                    id: track.id,
+                    openRowID: $openID,
+                    deleteTitle: "Delete \"\(track.name)\"?",
+                    onDelete: {}
+                ) {
+                    TrackRowView(track: track, project: project)
+                }
             }
             LiveTrackRowView(engine: engine)
         }

@@ -10,6 +10,7 @@ struct ProjectDetailView: View {
     @State private var showingSampleRate = false
     @State private var showingInputPicker = false
     @State private var showingMasterVolume = false
+    @State private var openSwipeTrackID: UUID?
 
     var body: some View {
         Group {
@@ -31,14 +32,20 @@ struct ProjectDetailView: View {
                     emptyState
                 }
                 ForEach(project.tracks) { track in
-                    TrackRowView(track: track, project: project)
-                        .contextMenu {
-                            Button(role: .destructive) {
+                    SwipeToDeleteRow(
+                        id: track.id,
+                        openRowID: $openSwipeTrackID,
+                        deleteTitle: "Delete \"\(track.name)\"?",
+                        onDelete: {
+                            withAnimation(.snappy) {
+                                engine.removeTrack(trackID: track.id)
                                 store.deleteTrack(track, from: project)
-                            } label: {
-                                Label("Delete Track", systemImage: "trash")
+                                openSwipeTrackID = nil
                             }
                         }
+                    ) {
+                        TrackRowView(track: track, project: project)
+                    }
                 }
                 if engine.state == .recording {
                     LiveTrackRowView(engine: engine)
@@ -46,6 +53,11 @@ struct ProjectDetailView: View {
             }
             .padding()
             .padding(.bottom, 120)
+        }
+        .onScrollPhaseChange { _, newPhase in
+            if newPhase == .interacting, openSwipeTrackID != nil {
+                withAnimation(.snappy) { openSwipeTrackID = nil }
+            }
         }
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)

@@ -82,6 +82,15 @@ final class AudioEngineController {
         engine.mainMixerNode.outputVolume = volume
     }
 
+    /// Stops and detaches a deleted track's player so its audio ceases
+    /// immediately. Safe while idle (no player exists), playing, or recording.
+    func removeTrack(trackID: UUID) {
+        guard let player = players.removeValue(forKey: trackID) else { return }
+        player.stop()
+        engine.detach(player)
+        if players.isEmpty && state == .playing { stopTransport() }
+    }
+
     // MARK: - Recording
 
     func startRecording(into project: Project) async {

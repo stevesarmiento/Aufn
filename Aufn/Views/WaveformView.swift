@@ -1,19 +1,25 @@
 import SwiftUI
 
-/// Symmetric waveform rendered from cached peak bins. Downsamples bins to
-/// pixel columns in a Canvas — never touches audio files.
+/// Dot-matrix waveform rendered from cached peak bins — same visual language
+/// as the transport's tape strip (3 pt dots on a 6 pt pitch, amplitude = dot
+/// count). Downsamples bins to columns in a Canvas — never touches audio files.
 struct WaveformView: View {
     let peaks: [Float]
-    var tint: Color = .accentColor
+    var tint: Color = .gray.opacity(0.45)
+
+    private static let columnPitch: CGFloat = 6
+    private static let dotDiameter: CGFloat = 3
+    private static let dotPitch: CGFloat = 6
+    private static let silenceFloor: Float = 0.015
 
     var body: some View {
         Canvas { context, size in
             guard !peaks.isEmpty else { return }
-            let columnWidth: CGFloat = 3
-            let gap: CGFloat = 1
-            let columns = max(1, Int(size.width / (columnWidth + gap)))
+            let maxDots = max(1, min(7, Int(size.height / Self.dotPitch)))
+            let columns = max(1, Int(size.width / Self.columnPitch))
             let binsPerColumn = max(1, peaks.count / columns)
             let midY = size.height / 2
+            let radius = Self.dotDiameter / 2
 
             var path = Path()
             for column in 0..<columns {
@@ -21,12 +27,14 @@ struct WaveformView: View {
                 guard start < peaks.count else { break }
                 let end = min(start + binsPerColumn, peaks.count)
                 let peak = peaks[start..<end].max() ?? 0
-                let height = max(2, CGFloat(peak) * size.height)
-                let x = CGFloat(column) * (columnWidth + gap)
-                path.addRoundedRect(
-                    in: CGRect(x: x, y: midY - height / 2, width: columnWidth, height: height),
-                    cornerSize: CGSize(width: 1.5, height: 1.5)
-                )
+                let dotCount = peak <= Self.silenceFloor
+                    ? 1
+                    : min(maxDots, max(1, Int((peak * Float(maxDots)).rounded(.up))))
+                let x = CGFloat(column) * Self.columnPitch + Self.columnPitch / 2
+                for index in 0..<dotCount {
+                    let y = midY + (CGFloat(index) - CGFloat(dotCount - 1) / 2) * Self.dotPitch
+                    path.addEllipse(in: CGRect(x: x - radius, y: y - radius, width: Self.dotDiameter, height: Self.dotDiameter))
+                }
             }
             context.fill(path, with: .color(tint))
         }
@@ -36,12 +44,12 @@ struct WaveformView: View {
 #Preview("Waveforms", traits: .sizeThatFitsLayout) {
     VStack(spacing: 20) {
         WaveformView(peaks: PreviewData.peaks())
-            .frame(height: 36)
-        WaveformView(peaks: PreviewData.peaks(seed: 0.05), tint: .secondary)
-            .frame(height: 36)
+            .frame(height: 48)
+        WaveformView(peaks: PreviewData.peaks(seed: 0.05))
+            .frame(height: 48)
             .opacity(0.4)
         WaveformView(peaks: PreviewData.peaks(bins: 300), tint: .red)
-            .frame(height: 36)
+            .frame(height: 48)
     }
     .padding()
     .frame(width: 340)
