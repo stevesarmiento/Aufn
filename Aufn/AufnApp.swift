@@ -15,6 +15,7 @@ struct AufnApp: App {
         WindowGroup {
             ProjectListView()
                 .fontDesign(.rounded)
+                .preferredColorScheme(.dark)
                 .environment(store)
                 .environment(engine)
         }

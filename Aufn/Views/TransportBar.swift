@@ -8,11 +8,12 @@ struct TransportBar: View {
     let project: Project
     // AppStorage (not raw UserDefaults) so the readout re-renders when the
     // sample-rate picker changes the preference.
-    @AppStorage("preferredSampleRate") private var preferredSampleRate: Double = 48_000
     @AppStorage(CaptureMode.storageKey) private var captureMode = CaptureMode.raw.rawValue
+    @State private var choosingMode = false
 
     private var isRecording: Bool { engine.state == .recording }
     private var isPlaying: Bool { engine.state == .playing }
+    private var currentMode: CaptureMode { CaptureMode(rawValue: captureMode) ?? .raw }
 
     var body: some View {
         VStack(spacing: 12) {
@@ -20,11 +21,22 @@ struct TransportBar: View {
                 LevelMeterView(meter: engine.meter)
                     .padding(.horizontal, 4)
             }
+            if engine.state == .idle && choosingMode {
+                Text(currentMode.caption)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .transition(.opacity)
+            }
             tapeDeck
         }
         .animation(.snappy, value: engine.state)
+        .animation(.snappy, value: choosingMode)
         .padding(.horizontal, 20)
         .padding(.bottom, 4)
+        .onChange(of: engine.state) { _, state in
+            if state != .idle { choosingMode = false }
+        }
     }
 
     /// ZStack ordering matters: the strip is the bottom layer so the glass
@@ -33,13 +45,9 @@ struct TransportBar: View {
         ZStack {
             MixWaveformView(project: project, engine: engine)
             HStack {
-                playButton
+                leftControl
                 Spacer()
-                if engine.state == .idle {
-                    captureModeWheel
-                } else {
-                    timerReadout
-                }
+                rightControl
             }
             recordHeadButton
         }
@@ -47,9 +55,57 @@ struct TransportBar: View {
         .animation(.snappy, value: engine.state)
     }
 
-    /// Standard SwiftUI wheel picker (UIPickerView) for capture mode: native
-    /// momentum, snap, and haptics. Occupies the timer's spot while idle; the
-    /// timer takes over during a take, since mode can't change mid-record.
+    /// Play at rest; a Done button while choosing the capture mode (which the
+    /// wheel replaces on the right). Play is unavailable mid-record anyway.
+    @ViewBuilder
+    private var leftControl: some View {
+        if engine.state == .idle && choosingMode {
+            Button {
+                choosingMode = false
+            } label: {
+                Image(systemName: "checkmark")
+                    .font(.title2)
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.glass)
+            .transition(.opacity)
+            .accessibilityLabel("Done choosing capture mode")
+        } else {
+            playButton
+        }
+    }
+
+    @ViewBuilder
+    private var rightControl: some View {
+        if engine.state != .idle {
+            timerReadout
+        } else if choosingMode {
+            captureModeWheel
+        } else {
+            captureModeTrigger
+        }
+    }
+
+    /// Collapsed trigger showing the current mode; tap to reveal the wheel.
+    private var captureModeTrigger: some View {
+        Button {
+            choosingMode = true
+        } label: {
+            HStack(spacing: 4) {
+                Text(currentMode.label)
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(Color.accentColor)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Capture mode, \(currentMode.label)")
+    }
+
+    /// Standard SwiftUI wheel picker (UIPickerView) — native momentum, snap,
+    /// haptics — over a vertical black-to-transparent scrim matching the tape.
     private var captureModeWheel: some View {
         Picker("Capture mode", selection: $captureMode) {
             ForEach(CaptureMode.allCases) { mode in
@@ -60,37 +116,36 @@ struct TransportBar: View {
             }
         }
         .pickerStyle(.wheel)
-        .frame(width: 132, height: 90)
+        .frame(width: 150, height: 100)
         .clipped()
-    }
-
-    /// Always-visible timecode + sample rate over a soft scrim that fades to
-    /// transparent, so the tape dots stay visible around it.
-    private var timerReadout: some View {
-        VStack(alignment: .trailing, spacing: 2) {
-            elapsedClock
-            Text(sampleRateLabel)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
         .background(
-            EllipticalGradient(
-                colors: [.black.opacity(0.75), .clear],
-                center: .center,
-                startRadiusFraction: 0.2,
-                endRadiusFraction: 0.7
+            LinearGradient(
+                stops: [
+                    .init(color: .clear, location: 0),
+                    .init(color: .black.opacity(0.85), location: 0.5),
+                    .init(color: .clear, location: 1),
+                ],
+                startPoint: .top,
+                endPoint: .bottom
             )
         )
+        .transition(.opacity)
     }
 
-    /// Locked project rate once the first take exists; the (reactive)
-    /// preference before that. The hardware has the final say at record time.
-    private var sampleRateLabel: String {
-        let rate = project.sampleRate ?? preferredSampleRate
-        let khz = rate / 1000
-        return khz == khz.rounded() ? "\(Int(khz)) kHz" : String(format: "%.1f kHz", khz)
+    /// Just the elapsed time now — larger — over a soft scrim that fades to
+    /// transparent so the tape dots stay visible around it.
+    private var timerReadout: some View {
+        elapsedClock
+            .padding(.horizontal, 18)
+            .padding(.vertical, 12)
+            .background(
+                EllipticalGradient(
+                    colors: [.black.opacity(0.75), .clear],
+                    center: .center,
+                    startRadiusFraction: 0.2,
+                    endRadiusFraction: 0.7
+                )
+            )
     }
 
     private var playButton: some View {
@@ -147,7 +202,7 @@ struct TransportBar: View {
     private var elapsedClock: some View {
         TimelineView(.periodic(from: .now, by: 0.5)) { _ in
             Text(engine.state == .idle ? "0:00" : engine.elapsedSeconds.timecode)
-                .font(.title3.weight(.medium).monospacedDigit())
+                .font(.title.weight(.semibold).monospacedDigit())
                 .foregroundStyle(engine.state == .idle ? .secondary : .primary)
         }
     }
