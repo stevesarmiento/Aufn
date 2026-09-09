@@ -115,31 +115,15 @@ struct TransportBar: View {
                 Task { await engine.startRecording(into: project) }
             }
         } label: {
-            ZStack {
-                Capsule()
-                    .fill(
-                        LinearGradient(
-                            colors: [.white.opacity(0.10), .white.opacity(0.02)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                Capsule()
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [.white.opacity(0.45), .white.opacity(0.08), .white.opacity(0.30)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: 1
-                    )
-                RoundedRectangle(cornerRadius: isRecording ? 8 : 14, style: .continuous)
-                    .fill(Color(red: 1.0, green: 0.20, blue: 0.22))
-                    .frame(width: isRecording ? 26 : 28, height: isRecording ? 26 : 52)
-            }
-            .frame(width: TapeHead.size.width, height: TapeHead.size.height)
-            .shadow(color: .black.opacity(0.35), radius: 8, y: 2)
-            .contentShape(Capsule())
+            RoundedRectangle(cornerRadius: isRecording ? 8 : 14, style: .continuous)
+                .fill(Color(red: 1.0, green: 0.20, blue: 0.22))
+                .frame(width: isRecording ? 26 : 28, height: isRecording ? 26 : 52)
+                .frame(width: TapeHead.size.width, height: TapeHead.size.height)
+                // .clear glass (the media-controls variant) stays transparent
+                // enough for the lens dots behind it while adding the real
+                // Liquid Glass rim and highlights that match the play button.
+                .glassEffect(.clear.interactive(), in: .capsule)
+                .contentShape(Capsule())
         }
         .buttonStyle(.plain)
         .animation(.snappy, value: isRecording)
