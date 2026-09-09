@@ -21,7 +21,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     var label: String {
         switch self {
         case .raw: "RAW"
-        case .standard: "STANDARD"
+        case .standard: "TAPE"
         case .voice: "VOICE"
         }
     }

@@ -59,7 +59,7 @@ struct TransportBar: View {
     @ViewBuilder
     private var leftControl: some View {
         if engine.state == .idle && choosingMode {
-            Text("PROCESSING")
+            Text("INPUT PROCESSING")
                 .font(.subheadline.weight(.heavy))
                 .foregroundStyle(.secondary)
                 .frame(width: 120, alignment: .trailing)
@@ -144,7 +144,7 @@ struct TransportBar: View {
         } label: {
             Image(systemName: isPlaying ? "stop.fill" : "play.fill")
                 .font(.title2)
-                .frame(width: 44, height: 44)
+                .frame(width: 40, height: 40)
         }
         .buttonStyle(.glass)
         .disabled(isRecording || project.tracks.isEmpty)
@@ -188,7 +188,7 @@ struct TransportBar: View {
     private var elapsedClock: some View {
         TimelineView(.periodic(from: .now, by: 0.5)) { _ in
             Text(engine.state == .idle ? "0:00" : engine.elapsedSeconds.timecode)
-                .font(.title.weight(.semibold).monospacedDigit())
+                .font(.title2.weight(.semibold).monospacedDigit())
                 .foregroundStyle(engine.state == .idle ? .secondary : .primary)
         }
     }
