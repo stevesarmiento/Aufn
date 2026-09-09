@@ -50,8 +50,16 @@ struct SampleRatePicker: View {
                     ForEach(options, id: \.rate) { option in
                         row(for: option)
                     }
-                } footer: {
-                    Text("Recording always captures 32-bit float. Rates your current microphone can't reach are dimmed — a USB interface can unlock them.")
+                }
+                if didProbe && supportedRates.count < options.count {
+                    Section {
+                        Label(
+                            "Rates marked unavailable aren't supported by the current microphone — a USB audio interface can unlock them. Recording always captures 32-bit float.",
+                            systemImage: "cable.connector"
+                        )
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    }
                 }
             }
             .navigationTitle("Sample Rate")
@@ -74,9 +82,19 @@ struct SampleRatePicker: View {
                 Image(systemName: option.icon)
                     .font(.title2)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("\(option.badge) — \(option.rate / 1000, format: .number.precision(.fractionLength(0...1))) kHz")
-                        .font(.headline)
-                    Text(isSupported ? option.explainer : "Not supported by the current microphone.")
+                    HStack(spacing: 6) {
+                        Text("\(option.badge) — \(option.rate / 1000, format: .number.precision(.fractionLength(0...1))) kHz")
+                            .font(.headline)
+                        if !isSupported {
+                            Text("Unavailable")
+                                .font(.caption2.weight(.semibold))
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(.quaternary, in: .capsule)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    Text(option.explainer)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -89,7 +107,7 @@ struct SampleRatePicker: View {
         }
         .foregroundStyle(.primary)
         .disabled(!isSupported)
-        .opacity(isSupported ? 1 : 0.4)
+        .opacity(isSupported ? 1 : 0.55)
     }
 
     /// Probe what the current route grants — only while the transport is idle
