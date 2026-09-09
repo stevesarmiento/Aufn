@@ -11,12 +11,15 @@
 		0820CCC8D50347F23F06F9B1 /* ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A520395A415465ECDA8922 /* ProjectListView.swift */; };
 		0A1C3E4246FF7C7436E160D8 /* SampleRatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */; };
 		0CFFEDE6ED09EA23F0021DC1 /* AudioSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9349C45AC65E7E803D41997 /* AudioSessionController.swift */; };
+		0F1D98DC77C99CC49DD3BB9D /* MetronomeClickTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A23EF8819D114AE7462032A /* MetronomeClickTests.swift */; };
 		10CDC308F9E3B95DF768E5B0 /* ProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E0F36D39180002A95932DF /* ProjectDetailView.swift */; };
+		13020CA1318F985FFFC6F519 /* MetronomeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694BCA64B54AF085C7FDBF06 /* MetronomeSettings.swift */; };
 		188F1216E9962D6D9A5D89DA /* AudioEngineController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E39CE7F3C52065E3CFCF6 /* AudioEngineController.swift */; };
 		225F74BFE0D21E2CA1733100 /* TrackRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADB93826B8AD141909A69E59 /* TrackRecorder.swift */; };
 		25E2FAA37E11DD3D3D480409 /* TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AEB2116153E60C0B264C44 /* TransportBar.swift */; };
 		3078C24E266A76C9E368178B /* CaptureWheel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1A9BC9F1428107D922B018 /* CaptureWheel.swift */; };
 		373D6D965219F9D8487F10DA /* TrackRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */; };
+		383473AADA66DEE9D9B83121 /* MetronomeRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC102DCD8BF33666A79EC3E7 /* MetronomeRowView.swift */; };
 		3D8E7563C0A132A4C6DE6631 /* RecordFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */; };
 		3F5820A4BA0B3BEBF2A55F13 /* FittedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F29F36DC7179183A9532339 /* FittedSheet.swift */; };
 		417A0285956B5D7B56E242A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62678A3ACAC43AD644B8F77C /* Assets.xcassets */; };
@@ -36,9 +39,11 @@
 		AD994ED964F5C382FDA43B2D /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAC1082458BADE454C9C6839 /* Track.swift */; };
 		C74E613D29ACDBF431F79FC4 /* Exporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C339619CA7533837060A4F /* Exporter.swift */; };
 		CFF682E5BD092D8BCB51E8AA /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80233F83100DBD15AD06CE76 /* ProjectStore.swift */; };
+		D221290AA1E1B10A7534EE27 /* MetronomeClick.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE90A8C9B28F3B30E090FBD7 /* MetronomeClick.swift */; };
 		DECE386A0BB6D862F705AAF5 /* LevelMeterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */; };
 		E3BA6A51F2534F52306AB145 /* PeakStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BCEE49143C0E2CCF63420D /* PeakStore.swift */; };
 		EA1FF872BA1372FDCEBB6B76 /* MeterTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB153B8D25AA800D8D238B2 /* MeterTap.swift */; };
+		FEA4725FA91B8FF3A3BD56E0 /* MetronomeBeatGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F603810D03C315FAE0550CD /* MetronomeBeatGridView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +69,7 @@
 		08AEB2116153E60C0B264C44 /* TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportBar.swift; sourceTree = "<group>"; };
 		113635C994053FA0433FE156 /* SwipeToDeleteRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeToDeleteRow.swift; sourceTree = "<group>"; };
 		12BCEE49143C0E2CCF63420D /* PeakStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeakStore.swift; sourceTree = "<group>"; };
+		1A23EF8819D114AE7462032A /* MetronomeClickTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeClickTests.swift; sourceTree = "<group>"; };
 		1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapeWaveformView.swift; sourceTree = "<group>"; };
 		29C339619CA7533837060A4F /* Exporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exporter.swift; sourceTree = "<group>"; };
 		32A520395A415465ECDA8922 /* ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListView.swift; sourceTree = "<group>"; };
@@ -71,15 +77,19 @@
 		3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRowView.swift; sourceTree = "<group>"; };
 		4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleRatePicker.swift; sourceTree = "<group>"; };
 		5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSupport.swift; sourceTree = "<group>"; };
+		5F603810D03C315FAE0550CD /* MetronomeBeatGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeBeatGridView.swift; sourceTree = "<group>"; };
 		62678A3ACAC43AD644B8F77C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		642BD84573D886156BD58DFD /* AufnTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AufnTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		694BCA64B54AF085C7FDBF06 /* MetronomeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeSettings.swift; sourceTree = "<group>"; };
 		6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelCodableTests.swift; sourceTree = "<group>"; };
 		7F29F36DC7179183A9532339 /* FittedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FittedSheet.swift; sourceTree = "<group>"; };
 		80233F83100DBD15AD06CE76 /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
 		875FC223D2F40A915B1311C5 /* TrackCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackCard.swift; sourceTree = "<group>"; };
 		90E0F36D39180002A95932DF /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
 		9CB153B8D25AA800D8D238B2 /* MeterTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterTap.swift; sourceTree = "<group>"; };
+		AC102DCD8BF33666A79EC3E7 /* MetronomeRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeRowView.swift; sourceTree = "<group>"; };
 		ADB93826B8AD141909A69E59 /* TrackRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRecorder.swift; sourceTree = "<group>"; };
+		AE90A8C9B28F3B30E090FBD7 /* MetronomeClick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeClick.swift; sourceTree = "<group>"; };
 		B1461DE290A21792CE5928EC /* CaptureMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureMode.swift; sourceTree = "<group>"; };
 		BE5B60D01674003C1EADF75F /* MixRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixRules.swift; sourceTree = "<group>"; };
 		C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputPicker.swift; sourceTree = "<group>"; };
@@ -106,6 +116,7 @@
 				B1461DE290A21792CE5928EC /* CaptureMode.swift */,
 				29C339619CA7533837060A4F /* Exporter.swift */,
 				9CB153B8D25AA800D8D238B2 /* MeterTap.swift */,
+				AE90A8C9B28F3B30E090FBD7 /* MetronomeClick.swift */,
 				12BCEE49143C0E2CCF63420D /* PeakStore.swift */,
 				ADB93826B8AD141909A69E59 /* TrackRecorder.swift */,
 			);
@@ -128,6 +139,7 @@
 		5C0F41E46571F02786F95FFC /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				694BCA64B54AF085C7FDBF06 /* MetronomeSettings.swift */,
 				BE5B60D01674003C1EADF75F /* MixRules.swift */,
 				CC5AA0A3C78D261AAA26F172 /* Project.swift */,
 				80233F83100DBD15AD06CE76 /* ProjectStore.swift */,
@@ -158,6 +170,7 @@
 			isa = PBXGroup;
 			children = (
 				C37B6BCF8C4EF20E3A2CB96B /* ExportPipelineTests.swift */,
+				1A23EF8819D114AE7462032A /* MetronomeClickTests.swift */,
 				6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */,
 			);
 			path = AufnTests;
@@ -181,6 +194,8 @@
 				7F29F36DC7179183A9532339 /* FittedSheet.swift */,
 				C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */,
 				EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */,
+				5F603810D03C315FAE0550CD /* MetronomeBeatGridView.swift */,
+				AC102DCD8BF33666A79EC3E7 /* MetronomeRowView.swift */,
 				CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */,
 				5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */,
 				90E0F36D39180002A95932DF /* ProjectDetailView.swift */,
@@ -308,6 +323,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				907456A2EB8A1ABAB713C38D /* ExportPipelineTests.swift in Sources */,
+				0F1D98DC77C99CC49DD3BB9D /* MetronomeClickTests.swift in Sources */,
 				7F52C940B17018BCB4D030B1 /* ModelCodableTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -335,6 +351,10 @@
 				4AB727D851FD6740046417F5 /* InputPicker.swift in Sources */,
 				DECE386A0BB6D862F705AAF5 /* LevelMeterView.swift in Sources */,
 				EA1FF872BA1372FDCEBB6B76 /* MeterTap.swift in Sources */,
+				FEA4725FA91B8FF3A3BD56E0 /* MetronomeBeatGridView.swift in Sources */,
+				D221290AA1E1B10A7534EE27 /* MetronomeClick.swift in Sources */,
+				383473AADA66DEE9D9B83121 /* MetronomeRowView.swift in Sources */,
+				13020CA1318F985FFFC6F519 /* MetronomeSettings.swift in Sources */,
 				A25179BD9EE57D1CB68319FC /* MixRules.swift in Sources */,
 				6EEA7A385C4ADEA43921F3B5 /* MixWaveformView.swift in Sources */,
 				E3BA6A51F2534F52306AB145 /* PeakStore.swift in Sources */,

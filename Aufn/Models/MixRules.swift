@@ -4,12 +4,18 @@ import Foundation
 /// the offline mixdown, and the UI. Pure and stateless so the non-main-actor
 /// Exporter can use it under strict concurrency.
 enum MixRules {
-    /// Mute wins over solo on the same track (M+S both lit = silent, matching
-    /// Logic/Pro Tools). When any track is soloed, only soloed tracks play.
-    static func isAudible(_ track: Track, anySoloed: Bool) -> Bool {
-        if track.isMuted { return false }
-        if anySoloed { return track.isSoloed }
+    /// Mute wins over solo on the same channel (M+S both lit = silent,
+    /// matching Logic/Pro Tools). When any channel is soloed, only soloed
+    /// channels play. Core rule on plain flags so tracks and the metronome
+    /// share one truth.
+    static func isAudible(muted: Bool, soloed: Bool, anySoloed: Bool) -> Bool {
+        if muted { return false }
+        if anySoloed { return soloed }
         return true
+    }
+
+    static func isAudible(_ track: Track, anySoloed: Bool) -> Bool {
+        isAudible(muted: track.isMuted, soloed: track.isSoloed, anySoloed: anySoloed)
     }
 
     static func effectiveVolume(for track: Track, anySoloed: Bool) -> Float {
@@ -18,15 +24,26 @@ enum MixRules {
 }
 
 extension Project {
-    var isAnyTrackSoloed: Bool {
-        tracks.contains { $0.isSoloed }
+    /// Any solo active anywhere — tracks or the metronome.
+    var isAnySoloed: Bool {
+        tracks.contains { $0.isSoloed } || (metronome?.isSoloed ?? false)
     }
 
     func isAudible(_ track: Track) -> Bool {
-        MixRules.isAudible(track, anySoloed: isAnyTrackSoloed)
+        MixRules.isAudible(track, anySoloed: isAnySoloed)
     }
 
     func effectiveVolume(for track: Track) -> Float {
-        MixRules.effectiveVolume(for: track, anySoloed: isAnyTrackSoloed)
+        MixRules.effectiveVolume(for: track, anySoloed: isAnySoloed)
+    }
+
+    var isMetronomeAudible: Bool {
+        guard let metronome else { return false }
+        return MixRules.isAudible(muted: metronome.isMuted, soloed: metronome.isSoloed, anySoloed: isAnySoloed)
+    }
+
+    var metronomeEffectiveVolume: Float {
+        guard let metronome, isMetronomeAudible else { return 0 }
+        return metronome.volume
     }
 }

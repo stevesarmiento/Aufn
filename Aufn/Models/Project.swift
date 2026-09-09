@@ -8,6 +8,8 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
     var sampleRate: Double?
     var tracks: [Track]
     var masterVolume: Float
+    /// nil until the user adds the metronome row.
+    var metronome: MetronomeSettings?
 
     init(
         id: UUID = UUID(),
@@ -15,7 +17,8 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
         createdAt: Date = .now,
         sampleRate: Double? = nil,
         tracks: [Track] = [],
-        masterVolume: Float = 1
+        masterVolume: Float = 1,
+        metronome: MetronomeSettings? = nil
     ) {
         self.id = id
         self.name = name
@@ -23,6 +26,7 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
         self.sampleRate = sampleRate
         self.tracks = tracks
         self.masterVolume = masterVolume
+        self.metronome = metronome
     }
 
     // Tolerates project.json files written before masterVolume existed.
@@ -34,5 +38,6 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
         sampleRate = try container.decodeIfPresent(Double.self, forKey: .sampleRate)
         tracks = try container.decode([Track].self, forKey: .tracks)
         masterVolume = try container.decodeIfPresent(Float.self, forKey: .masterVolume) ?? 1
+        metronome = try container.decodeIfPresent(MetronomeSettings.self, forKey: .metronome)
     }
 }

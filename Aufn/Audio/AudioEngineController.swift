@@ -27,6 +27,15 @@ final class AudioEngineController {
     private let store: ProjectStore
     private var players: [UUID: AVAudioPlayerNode] = [:]
     private var activePlayerCount = 0
+    // The metronome's looping click. Deliberately outside `players`: it has
+    // no completion handler and never counts toward activePlayerCount, so it
+    // can't hold up or trigger the auto-stop.
+    private var clickPlayer: AVAudioPlayerNode?
+    private var clickFormat: AVAudioFormat?
+    /// Wall-clock moment the click's beat 1 sounds — the pendulum visual's
+    /// phase anchor. Unlike transportStartDate it is NOT future-dated by a
+    /// count-in, so the pendulum swings through the count-in bars too.
+    private(set) var clickStartDate: Date?
     private var recorder: TrackRecorder?
     private var pendingTrack: PendingTrack?
     private var livePeakTask: Task<Void, Never>?
@@ -52,7 +61,8 @@ final class AudioEngineController {
         do {
             try session.configure(output: .loudspeakerIfBuiltIn)
             schedulePlayers(for: project)
-            guard !players.isEmpty else { return }
+            scheduleClick(for: project)
+            guard !players.isEmpty || clickPlayer != nil else { return }
             try engine.start()
         } catch {
             stopTransport()
@@ -64,6 +74,11 @@ final class AudioEngineController {
         for player in players.values {
             player.play(at: startTime)
         }
+        // No count-in on playback: the click's beat 1 == transport t=0.
+        // Metronome-only playback loops until the user stops (no completion
+        // handlers, so the auto-stop never fires).
+        clickPlayer?.play(at: startTime)
+        clickStartDate = clickPlayer != nil ? .now.addingTimeInterval(0.1) : nil
         state = .playing
         transportStartDate = .now
     }
@@ -82,13 +97,45 @@ final class AudioEngineController {
         engine.mainMixerNode.outputVolume = volume
     }
 
+    /// Live click level while dragging (the row passes EFFECTIVE volume,
+    /// like tracks).
+    func setMetronomeVolume(_ volume: Float) {
+        clickPlayer?.volume = volume
+    }
+
+    /// Live tempo/meter/sound change: re-schedule a fresh bar loop on the
+    /// existing node. stop/scheduleBuffer/play on an already-attached node
+    /// never mutates the graph, so this is safe even mid-recording. The beat
+    /// phase re-anchors to "now" (standard tempo-change behavior); the
+    /// persisted settings govern the next transport start.
+    func updateMetronome(_ settings: MetronomeSettings) {
+        guard state != .idle, let clickPlayer, let clickFormat,
+              let buffer = MetronomeClick.makeBarBuffer(settings: settings, format: clickFormat) else { return }
+        clickPlayer.stop()
+        clickPlayer.scheduleBuffer(buffer, at: nil, options: .loops)
+        clickPlayer.play()
+        clickStartDate = .now
+    }
+
+    /// Swipe-delete while the transport may be running: stop() silences the
+    /// click immediately without detaching (no graph mutation while a
+    /// recording tap is live); stopTransport() does the detach. Metronome-only
+    /// playback has nothing left to hear, so it stops entirely.
+    func removeMetronome() {
+        clickPlayer?.stop()
+        clickStartDate = nil
+        if players.isEmpty && state == .playing { stopTransport() }
+    }
+
     /// Stops and detaches a deleted track's player so its audio ceases
     /// immediately. Safe while idle (no player exists), playing, or recording.
     func removeTrack(trackID: UUID) {
         guard let player = players.removeValue(forKey: trackID) else { return }
         player.stop()
         engine.detach(player)
-        if players.isEmpty && state == .playing { stopTransport() }
+        // Deleting the last track keeps a running click going (same as
+        // metronome-only playback).
+        if players.isEmpty && clickPlayer == nil && state == .playing { stopTransport() }
     }
 
     // MARK: - Recording
@@ -108,13 +155,20 @@ final class AudioEngineController {
             try? engine.inputNode.setVoiceProcessingEnabled(CaptureMode.current.usesVoiceProcessing)
 
             schedulePlayers(for: project)
+            scheduleClick(for: project)
 
             let inputFormat = engine.inputNode.outputFormat(forBus: 0)
             guard inputFormat.sampleRate > 0 else { throw AufnError.noInput }
 
             let trackID = UUID()
             let fileURL = store.tracksDirectory(for: project).appending(path: "\(trackID.uuidString).caf")
-            let startTime = sharedStartTime()
+            // Count-in: the click starts at clickStart; transport t=0 (the
+            // recorder's frame gate and the overdub players) lands countIn
+            // seconds later, so file frame 0 == the post-count-in downbeat.
+            // Skipped when the click can't be heard — no silent dead air.
+            let countIn = project.isMetronomeAudible ? (project.metronome?.countInSeconds ?? 0) : 0
+            let clickStart = sharedStartTime()
+            let startTime = clickStart.offset(bySeconds: countIn)
             let recorder = try TrackRecorder(fileURL: fileURL, format: inputFormat, startHostTime: startTime.hostTime)
             self.recorder = recorder
             self.pendingTrack = PendingTrack(
@@ -137,9 +191,13 @@ final class AudioEngineController {
             for player in players.values {
                 player.play(at: startTime)
             }
+            clickPlayer?.play(at: clickStart)
+            clickStartDate = clickPlayer != nil ? .now.addingTimeInterval(0.1) : nil
 
             state = .recording
-            transportStartDate = .now
+            // Future-dated by the count-in; elapsedSeconds clamps to 0 so the
+            // clock sits at 0:00 until the take actually starts.
+            transportStartDate = .now.addingTimeInterval(countIn)
             liveRecordingPeaks = []
             startLivePeakCollection()
         } catch {
@@ -211,6 +269,13 @@ final class AudioEngineController {
         }
         players = [:]
         activePlayerCount = 0
+        if let clickPlayer {
+            clickPlayer.stop()
+            engine.detach(clickPlayer)
+        }
+        clickPlayer = nil
+        clickFormat = nil
+        clickStartDate = nil
         if engine.isRunning {
             engine.stop()
         }
@@ -222,7 +287,9 @@ final class AudioEngineController {
 
     var elapsedSeconds: TimeInterval {
         guard let transportStartDate else { return 0 }
-        return Date.now.timeIntervalSince(transportStartDate)
+        // Never negative: during a recording count-in the start date sits in
+        // the future and the clock holds at 0:00.
+        return max(0, Date.now.timeIntervalSince(transportStartDate))
     }
 
     func clearError() {
@@ -294,21 +361,41 @@ final class AudioEngineController {
         activePlayerCount = scheduled.count
     }
 
+    /// Attaches, connects, and schedules the metronome's looping bar buffer.
+    /// Must run BEFORE engine.start(), like schedulePlayers — the click node
+    /// is what instantiates the mixer graph on a first take, and attaching it
+    /// later would rebuild the graph under a live input tap. No completion
+    /// handler: the click never counts toward activePlayerCount.
+    private func scheduleClick(for project: Project) {
+        guard let settings = project.metronome else { return }
+        let rate = project.sampleRate ?? UserDefaults.standard.preferredSampleRate
+        guard let format = AVAudioFormat(standardFormatWithSampleRate: rate, channels: 1),
+              let buffer = MetronomeClick.makeBarBuffer(settings: settings, format: format) else { return }
+        let player = AVAudioPlayerNode()
+        engine.attach(player)
+        engine.connect(player, to: engine.mainMixerNode, format: format)
+        player.scheduleBuffer(buffer, at: nil, options: .loops)
+        clickPlayer = player
+        clickFormat = format
+    }
+
     /// Mixing properties (pan especially) only take hold once the engine has
     /// built its render graph — apply them after engine.start(). Skipped when
-    /// there's no playback: on a first take the input tap is live but the mixer
-    /// isn't instantiated yet, and touching mainMixerNode here would rebuild the
-    /// graph mid-capture and reset the tap (every frame then reads as pre-start
-    /// and gets dropped). With players present the mixer is already connected
-    /// before start, so setting properties is safe.
+    /// NOTHING is connected to the mixer: on a first take with no metronome
+    /// the input tap is live but the mixer isn't instantiated yet, and touching
+    /// mainMixerNode here would rebuild the graph mid-capture and reset the tap
+    /// (every frame then reads as pre-start and gets dropped). With any player
+    /// or the click node present the mixer is already connected before start,
+    /// so setting properties is safe.
     private func applyMixSettings(for project: Project) {
-        guard !players.isEmpty else { return }
+        guard !players.isEmpty || clickPlayer != nil else { return }
         engine.mainMixerNode.outputVolume = project.masterVolume
         for track in project.tracks {
             guard let player = players[track.id] else { continue }
             player.volume = project.effectiveVolume(for: track)
             player.pan = track.pan
         }
+        clickPlayer?.volume = project.metronomeEffectiveVolume
     }
 
     /// Re-derives effective per-track volumes (mute/solo) and master volume,
@@ -327,13 +414,10 @@ final class AudioEngineController {
         }
     }
 
-    /// Common start ~100 ms out; all players and the record gate share it.
+    /// Common start ~100 ms out; all players and the record gate share it
+    /// (the record gate offset further by any count-in).
     private func sharedStartTime() -> AVAudioTime {
-        var timebase = mach_timebase_info_data_t()
-        mach_timebase_info(&timebase)
-        let ticksPerSecond = Double(timebase.denom) / Double(timebase.numer) * 1_000_000_000
-        let delayTicks = UInt64(0.1 * ticksPerSecond)
-        return AVAudioTime(hostTime: mach_absolute_time() + delayTicks)
+        AVAudioTime(hostTime: mach_absolute_time() + AVAudioTime.hostTicks(forSeconds: 0.1))
     }
 
     private func startLivePeakCollection() {
@@ -358,6 +442,21 @@ enum AufnError: LocalizedError {
         case .noInput:
             "No audio input is available."
         }
+    }
+}
+
+extension AVAudioTime {
+    static func hostTicks(forSeconds seconds: TimeInterval) -> UInt64 {
+        var timebase = mach_timebase_info_data_t()
+        mach_timebase_info(&timebase)
+        let ticksPerSecond = Double(timebase.denom) / Double(timebase.numer) * 1_000_000_000
+        return UInt64(seconds * ticksPerSecond)
+    }
+
+    /// The same host-time anchor shifted later by `seconds`.
+    func offset(bySeconds seconds: TimeInterval) -> AVAudioTime {
+        guard seconds > 0 else { return self }
+        return AVAudioTime(hostTime: hostTime + Self.hostTicks(forSeconds: seconds))
     }
 }
 

@@ -80,6 +80,9 @@ struct MixWaveformView: View {
             hasher.combine(track.isMuted)
             hasher.combine(track.isSoloed)
         }
+        // Soloing the metronome silences every track, so the tape must
+        // recombine when its solo flips.
+        hasher.combine(project.metronome?.isSoloed ?? false)
         return hasher.finalize()
     }
 
@@ -96,7 +99,7 @@ struct MixWaveformView: View {
     }
 
     private func combine() {
-        let anySoloed = project.isAnyTrackSoloed
+        let anySoloed = project.isAnySoloed
         let maxBins = project.tracks.compactMap { trackPeaks[$0.id]?.count }.max() ?? 0
         guard maxBins > 0 else {
             combined = []

@@ -138,6 +138,8 @@ enum Exporter {
         // Mixing properties (pan especially) only take hold once the engine
         // has built the render graph — set them after start, before play.
         // Mixdown = what you hear, so mute/solo apply; stems stay raw/complete.
+        // Solo state comes from the stems only: exports ignore the metronome
+        // entirely, so a soloed click must not silence the mixdown.
         let anySoloed = stems.contains { $0.track.isSoloed }
         for (player, track) in players {
             player.volume = MixRules.effectiveVolume(for: track, anySoloed: anySoloed)

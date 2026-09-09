@@ -28,8 +28,29 @@ struct ProjectDetailView: View {
     private func content(for project: Project) -> some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                if project.tracks.isEmpty && engine.state != .recording {
+                if project.tracks.isEmpty && project.metronome == nil && engine.state != .recording {
                     emptyState
+                }
+                if let settings = project.metronome {
+                    SwipeToDeleteRow(
+                        id: MetronomeSettings.rowID,
+                        openRowID: $openSwipeTrackID,
+                        deleteTitle: "Remove Metronome?",
+                        deleteButtonTitle: "Remove Metronome",
+                        deleteMessage: "You can add it back from the menu.",
+                        deleteAccessibilityLabel: "Remove metronome",
+                        onDelete: {
+                            withAnimation(.snappy) {
+                                engine.removeMetronome()
+                                var updated = project
+                                updated.metronome = nil
+                                store.update(updated)
+                                openSwipeTrackID = nil
+                            }
+                        }
+                    ) {
+                        MetronomeRowView(settings: settings, project: project)
+                    }
                 }
                 ForEach(project.tracks) { track in
                     SwipeToDeleteRow(
@@ -64,6 +85,15 @@ struct ProjectDetailView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
+                    if project.metronome == nil {
+                        Button("Metronome", systemImage: "metronome") {
+                            withAnimation(.snappy) {
+                                var updated = project
+                                updated.metronome = MetronomeSettings()
+                                store.update(updated)
+                            }
+                        }
+                    }
                     Button("Export…", systemImage: "square.and.arrow.up") {
                         showingExport = true
                     }
@@ -85,7 +115,7 @@ struct ProjectDetailView: View {
         }
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 8) {
-                if engine.state == .recording && AudioSessionController.shared.isOutputBuiltInSpeaker && !project.tracks.isEmpty {
+                if engine.state == .recording && AudioSessionController.shared.isOutputBuiltInSpeaker && (!project.tracks.isEmpty || project.metronome != nil) {
                     Label("Use headphones for clean overdubs", systemImage: "headphones")
                         .font(.footnote)
                         .padding(.horizontal, 12)

@@ -147,7 +147,7 @@ struct TransportBar: View {
                 .frame(width: 40, height: 40)
         }
         .buttonStyle(.glass)
-        .disabled(isRecording || project.tracks.isEmpty)
+        .disabled(isRecording || (project.tracks.isEmpty && project.metronome == nil))
         .accessibilityLabel(isPlaying ? "Stop" : "Play")
     }
 

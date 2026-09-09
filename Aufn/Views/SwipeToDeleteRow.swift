@@ -12,6 +12,9 @@ struct SwipeToDeleteRow<Content: View>: View {
     let id: UUID
     @Binding var openRowID: UUID?
     let deleteTitle: String
+    var deleteButtonTitle: String = "Delete Track"
+    var deleteMessage: String = "This removes the audio file permanently."
+    var deleteAccessibilityLabel: String = "Delete track"
     let onDelete: () -> Void
     @ViewBuilder let content: () -> Content
 
@@ -69,7 +72,7 @@ struct SwipeToDeleteRow<Content: View>: View {
                 .opacity(revealProgress)
                 .scaleEffect(0.6 + 0.4 * revealProgress, anchor: .trailing)
                 .padding(.trailing, 8)
-                .accessibilityLabel("Delete track")
+                .accessibilityLabel(deleteAccessibilityLabel)
             }
 
             content()
@@ -85,9 +88,9 @@ struct SwipeToDeleteRow<Content: View>: View {
             isNowOpen ? .impact(weight: .light) : nil
         }
         .confirmationDialog(deleteTitle, isPresented: $confirmingDelete, titleVisibility: .visible) {
-            Button("Delete Track", role: .destructive) { onDelete() }
+            Button(deleteButtonTitle, role: .destructive) { onDelete() }
         } message: {
-            Text("This removes the audio file permanently.")
+            Text(deleteMessage)
         }
         .onChange(of: confirmingDelete) { _, showing in
             // Cancel/dismiss: don't leave the row sitting armed.

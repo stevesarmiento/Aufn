@@ -36,6 +36,7 @@ struct ModelCodableTests {
         #expect(project.tracks[0].volume == 1)
         #expect(project.tracks[0].pan == 0)
         #expect(project.tracks[0].isSoloed == false)
+        #expect(project.metronome == nil)
     }
 
     @Test func nonDefaultLevelsRoundTrip() throws {
@@ -71,8 +72,73 @@ struct ModelCodableTests {
         #expect(MixRules.effectiveVolume(for: plain, anySoloed: true) == 0)
 
         let project = Project(name: "P", tracks: [plain, soloed])
-        #expect(project.isAnyTrackSoloed)
+        #expect(project.isAnySoloed)
         #expect(!project.isAudible(plain))
         #expect(project.isAudible(soloed))
+    }
+
+    @Test func metronomeRoundTrip() throws {
+        let metronome = MetronomeSettings(bpm: 96, beatsPerBar: 3, sound: .wood, countInBars: 2, volume: 0.5, isSoloed: true)
+        let project = Project(name: "P", metronome: metronome)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(Project.self, from: encoder.encode(project))
+        #expect(decoded.metronome == metronome)
+
+        let plain = Project(name: "Q")
+        let decodedPlain = try decoder.decode(Project.self, from: encoder.encode(plain))
+        #expect(decodedPlain.metronome == nil)
+    }
+
+    @Test func metronomeDecodesWithMissingAndUnknownFields() throws {
+        // Partial/forward-schema JSON must fill defaults, not throw — a throw
+        // would silently drop the whole project via ProjectStore's try?.
+        let json = """
+        { "bpm": 100, "sound": "cowbell" }
+        """
+        let settings = try JSONDecoder().decode(MetronomeSettings.self, from: Data(json.utf8))
+        #expect(settings.bpm == 100)
+        #expect(settings.beatsPerBar == 4)
+        #expect(settings.sound == .click)
+        #expect(settings.countInBars == 0)
+        #expect(settings.volume == 0.8)
+        #expect(settings.isMuted == false)
+        #expect(settings.isSoloed == false)
+
+        let outOfRange = try JSONDecoder().decode(MetronomeSettings.self, from: Data("{ \"bpm\": 999, \"beatsPerBar\": 0, \"countInBars\": 9 }".utf8))
+        #expect(outOfRange.bpm == 240)
+        #expect(outOfRange.beatsPerBar == 1)
+        #expect(outOfRange.countInBars == 2)
+    }
+
+    @Test func mixRulesWithMetronome() {
+        let plain = Track(name: "A", fileName: "a.caf", sampleRate: 48_000)
+
+        // Metronome soloed: it plays, plain tracks don't.
+        let metronomeSoloed = Project(name: "P", tracks: [plain], metronome: MetronomeSettings(volume: 0.6, isSoloed: true))
+        #expect(metronomeSoloed.isAnySoloed)
+        #expect(!metronomeSoloed.isAudible(plain))
+        #expect(metronomeSoloed.isMetronomeAudible)
+        #expect(metronomeSoloed.metronomeEffectiveVolume == 0.6)
+
+        // A track soloed: the plain metronome goes silent.
+        var soloedTrack = plain
+        soloedTrack.isSoloed = true
+        let trackSoloed = Project(name: "P", tracks: [soloedTrack], metronome: MetronomeSettings())
+        #expect(!trackSoloed.isMetronomeAudible)
+        #expect(trackSoloed.metronomeEffectiveVolume == 0)
+
+        // Mute beats solo on the metronome too, but its solo still gates others.
+        let mutedAndSoloed = Project(name: "P", tracks: [plain], metronome: MetronomeSettings(isMuted: true, isSoloed: true))
+        #expect(mutedAndSoloed.isAnySoloed)
+        #expect(!mutedAndSoloed.isMetronomeAudible)
+        #expect(!mutedAndSoloed.isAudible(plain))
+
+        // No metronome: nothing changes.
+        let none = Project(name: "P", tracks: [plain])
+        #expect(!none.isAnySoloed)
+        #expect(none.metronomeEffectiveVolume == 0)
     }
 }
