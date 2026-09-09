@@ -1,20 +1,21 @@
-//
-//  AufnApp.swift
-//  Aufn
-//
-//  Created by Steven Sarmiento on 5/3/23.
-//
-
 import SwiftUI
 
 @main
 struct AufnApp: App {
-    @StateObject private var appSettings = AppSettings()
+    @State private var store: ProjectStore
+    @State private var engine: AudioEngineController
+
+    init() {
+        let store = ProjectStore()
+        _store = State(initialValue: store)
+        _engine = State(initialValue: AudioEngineController(store: store))
+    }
 
     var body: some Scene {
         WindowGroup {
-            MainView()
-                .environmentObject(appSettings)
+            ProjectListView()
+                .environment(store)
+                .environment(engine)
         }
     }
 }

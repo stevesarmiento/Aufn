@@ -1,23 +1,49 @@
-<img src="https://github.com/stevesarmiento/Aufn/blob/main/Aufn/Assets.xcassets/AppIcon.appiconset/AppIcon.png" alt="Aufn Logo" align="right" width="120" />
+<img src="Aufn/Assets.xcassets/AppIcon.appiconset/AppIcon.png" alt="Aufn Logo" align="right" width="120" />
 
 # 🔴 Aufn
 Record, ship, delete.
 
-<div align="left">
-    <a href="https://twitter.com/_Aufn">
-        <img src="https://img.shields.io/twitter/follow/_Aufn?label=Aufn&style=flat&logo=twitter&color=1DA1F2" alt="Aufn Twitter">
-    </a>
-</div>
+A simple multitrack overdub recorder for iPhone. Layer takes over each other, hear everything in sync, and ship per-track stems straight into your DAW.
 
 ## 🪄 Features
 
-- 🫰 **Simple UI** intuitive and easy-to-use interface, making it easy.
-- 💾 **High-Quality Recording** Record up to 96k MHz, save in WAV full uncumpressed.
-- 🎚️ **Preset Plugins** Enjoy 3 options for custom presets replicating vintage audio recording preamps and reverbs.
-- 🎤 **Microphone Presets** 4 different microphone options replicating real microphones.
-- 📱 **Easy Sharing** Once their recordings are complete, send it off.
+- 🎛️ **Multitrack overdubs** — record a new track while the existing ones play back, sample-aligned via a shared engine start time with per-track latency compensation.
+- 💾 **Highest-quality capture** — every take is 32-bit float PCM (CAF) at the hardware sample rate, up to 96 kHz.
+- 🎚️ **Mixing** — per-track volume and pan (tap the sliders button on a track to expand), DAW-style **M**ute and **S**olo buttons that work live during playback and overdubs (mute beats solo; solo silences everything else), plus a per-project master fader. Applied live and to the mixdown; stems always stay complete.
+- 🌊 **Mix waveform** — an aggregated project waveform in the transport, weighted by each track's effective level, with a playhead while the transport runs.
+- 🎤 **Input picker** — choose the recording device (built-in mic, USB interface, or a Bluetooth headset mic with a quality warning); your choice is remembered per device.
+- 📤 **Stem export** — each track as its own 24-bit WAV (individually, zipped, or as a stereo mixdown) for Logic, Ableton, or anywhere else. Stems are raw by default; toggle "Apply track volume" to bake levels in.
+- 🧊 **Liquid Glass UI** — built for iOS 26 with SwiftUI's glass effects; two screens, no clutter.
+- 🔊 **Loud playback** — playback routes to the loudspeaker (recording stays on the quieter receiver to minimize bleed); the app nudges you toward headphones for clean overdubs.
+
+## 🛠 Development
+
+The project is generated with [XcodeGen](https://github.com/yonaskolb/XcodeGen):
+
+```sh
+xcodegen generate
+xcodebuild -project Aufn.xcodeproj -scheme Aufn -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+```
+
+Tests cover the export pipeline (unit) and the record/overdub flow (UI, simulator mic = your Mac's input):
+
+```sh
+xcrun simctl privacy booted grant microphone co.lassidesign.Aufn
+xcodebuild -project Aufn.xcodeproj -scheme Aufn -destination 'platform=iOS Simulator,name=iPhone 17 Pro' test
+```
+
+> **Note** Overdub latency offsets are computed from `AVAudioSession` input/output latency and stored per track (never baked into audio files). Simulator latencies differ from hardware — fine-tune on a real device.
+
+> **Device-only checks** A few behaviors can't be verified in the simulator: loudspeaker-vs-receiver routing on playback/record, AirPods A2DP monitoring (no speaker override when headphones are connected), and selecting a Bluetooth/USB input. Verify these on hardware.
+
+> **Gotcha for contributors** Never touch `engine.mainMixerNode` after `engine.start()` while the input tap is live on a first take — lazily instantiating the mixer→output graph mid-capture resets the tap and every frame is dropped. Mix settings are applied only when playback players exist (mixer already connected before start). See `AudioEngineController.applyMixSettings`.
+
+## 🗃 Archive
+
+`archive/` holds the original 2023 single-take recorder built with GPT-4. It's kept for reference; none of its code is used by the current app.
 
 ## ✍️ Authors
 
 - Anon ([@_Aufn](https://twitter.com/_Aufn))
-- GPT4 ([@OpenAI](https://twitter.com/OpenAI))
+- GPT4 ([@OpenAI](https://twitter.com/OpenAI)) — 2023 original, now in `archive/`
+- Claude ([@AnthropicAI](https://twitter.com/AnthropicAI)) — 2026 rewrite

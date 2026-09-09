@@ -1,0 +1,62 @@
+name: Aufn
+options:
+  bundleIdPrefix: co.lassidesign
+  deploymentTarget:
+    iOS: "26.0"
+targets:
+  Aufn:
+    type: application
+    platform: iOS
+    sources: [Aufn]
+    info:
+      path: Aufn/Info.plist
+      properties:
+        CFBundleDisplayName: Aufn
+        LSApplicationCategoryType: public.app-category.music
+        NSMicrophoneUsageDescription: "Aufn records audio through the microphone so you can layer tracks."
+        UIBackgroundModes: [audio]
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UILaunchScreen: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.lassidesign.Aufn
+        DEVELOPMENT_TEAM: GZ2BM4VMQU
+        SWIFT_VERSION: "6.0"
+        SWIFT_STRICT_CONCURRENCY: complete
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        MARKETING_VERSION: "2.0"
+        CURRENT_PROJECT_VERSION: "1"
+  AufnTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [AufnTests]
+    dependencies:
+      - target: Aufn
+    settings:
+      base:
+        SWIFT_VERSION: "6.0"
+        GENERATE_INFOPLIST_FILE: YES
+  AufnUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [AufnUITests]
+    dependencies:
+      - target: Aufn
+    settings:
+      base:
+        SWIFT_VERSION: "6.0"
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Aufn:
+    build:
+      targets:
+        Aufn: all
+        AufnTests: [test]
+        AufnUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets: [AufnTests, AufnUITests]
