@@ -41,12 +41,14 @@ struct TransportBar: View {
             HStack {
                 playButton
                 Spacer()
-                volumeToggleButton
-                elapsedClock
+                VStack(alignment: .trailing, spacing: 8) {
+                    elapsedClock
+                    volumeToggleButton
+                }
             }
             recordHeadButton
         }
-        .frame(height: 92)
+        .frame(height: 108)
     }
 
     private var volumeToggleButton: some View {
@@ -115,14 +117,11 @@ struct TransportBar: View {
                 Task { await engine.startRecording(into: project) }
             }
         } label: {
-            RoundedRectangle(cornerRadius: isRecording ? 8 : 14, style: .continuous)
+            RoundedRectangle(cornerRadius: isRecording ? 9 : 15, style: .continuous)
                 .fill(Color(red: 1.0, green: 0.20, blue: 0.22))
-                .frame(width: isRecording ? 26 : 28, height: isRecording ? 26 : 52)
+                .frame(width: isRecording ? 28 : 30, height: isRecording ? 28 : 58)
                 .frame(width: TapeHead.size.width, height: TapeHead.size.height)
-                // .clear glass (the media-controls variant) stays transparent
-                // enough for the lens dots behind it while adding the real
-                // Liquid Glass rim and highlights that match the play button.
-                .glassEffect(.clear.interactive(), in: .capsule)
+                .glassEffect(.regular.interactive(), in: .capsule)
                 .contentShape(Capsule())
         }
         .buttonStyle(.plain)

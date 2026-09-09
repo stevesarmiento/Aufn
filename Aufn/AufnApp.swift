@@ -14,6 +14,7 @@ struct AufnApp: App {
     var body: some Scene {
         WindowGroup {
             ProjectListView()
+                .fontDesign(.rounded)
                 .environment(store)
                 .environment(engine)
         }
