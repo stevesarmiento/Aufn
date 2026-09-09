@@ -60,14 +60,14 @@ struct MixWaveformView: View {
         }
     }
 
-    /// Reload peak caches when the track set changes; durations included so a
-    /// just-finished take's late-arriving cache gets picked up.
+    /// Reload peak caches when the track set changes, and when the store
+    /// reports a cache landing late (the accurate peaks after a take).
     private var peaksFingerprint: Int {
         var hasher = Hasher()
         for track in project.tracks {
             hasher.combine(track.id)
-            hasher.combine(track.durationSeconds)
         }
+        hasher.combine(store.peaksRevision)
         return hasher.finalize()
     }
 
@@ -94,6 +94,9 @@ struct MixWaveformView: View {
                 PeakStore.loadPeaks(from: url) ?? []
             }.value
         }
+        // A superseded load (track set changed mid-flight) must not overwrite
+        // the newer result.
+        guard !Task.isCancelled else { return }
         trackPeaks = loaded
         combine()
     }

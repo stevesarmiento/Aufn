@@ -36,7 +36,7 @@ xcodebuild -project Aufn.xcodeproj -scheme Aufn -destination 'platform=iOS Simul
 
 > **Device-only checks** A few behaviors can't be verified in the simulator: loudspeaker-vs-receiver routing on playback/record, AirPods A2DP monitoring (no speaker override when headphones are connected), and selecting a Bluetooth/USB input. Verify these on hardware.
 
-> **Gotcha for contributors** Never touch `engine.mainMixerNode` after `engine.start()` while the input tap is live on a first take — lazily instantiating the mixer→output graph mid-capture resets the tap and every frame is dropped. Mix settings are applied only when playback players exist (mixer already connected before start). See `AudioEngineController.applyMixSettings`.
+> **Gotcha for contributors** Never touch `engine.mainMixerNode` after `engine.start()` while the input tap is live on a first take — lazily instantiating the mixer→output graph mid-capture resets the tap and every frame is dropped. Mix settings are applied only when playback players exist (mixer already connected before start). See `AudioEngineController.applyMixSettings`. Likewise never touch `engine.inputNode` before the session is configured for recording — its first access caches the input format, and an unconfigured session yields 0 Hz ("No audio input is available") — and never `detach` a node while a take is live (`removeTrack` only stops; `stopTransport` detaches).
 
 ## 🗃 Archive
 

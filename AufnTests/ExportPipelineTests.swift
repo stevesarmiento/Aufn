@@ -5,6 +5,9 @@ import Testing
 /// End-to-end coverage of the offline pipeline: synthesize a Float32 CAF the
 /// way TrackRecorder writes one, then verify peaks computation, stem export
 /// to 24-bit WAV (with latency-offset trimming), zip, and mixdown.
+/// Serialized: every export sweeps earlier export folders out of tmp, so
+/// parallel tests would delete each other's output.
+@Suite(.serialized)
 struct ExportPipelineTests {
     private func makeCAF(seconds: Double, sampleRate: Double = 48_000, frequency: Double = 440) throws -> URL {
         let url = FileManager.default.temporaryDirectory.appending(path: "\(UUID().uuidString).caf")
@@ -52,6 +55,17 @@ struct ExportPipelineTests {
         #expect(bitDepth == 24)
         // 2 s minus the 0.5 s latency offset.
         #expect(abs(Double(wav.length) / sampleRate - 1.5) < 0.01)
+    }
+
+    @Test func newExportSweepsPreviousExportFolders() throws {
+        let caf = try makeCAF(seconds: 0.2)
+        let track = Track(name: "Track 1", fileName: caf.lastPathComponent, durationSeconds: 0.2, sampleRate: 48_000)
+        let first = try Exporter.exportStems([.init(track: track, audioURL: caf)], projectName: "First")
+        #expect(FileManager.default.fileExists(atPath: first.path))
+        let second = try Exporter.exportStems([.init(track: track, audioURL: caf)], projectName: "Second")
+        #expect(FileManager.default.fileExists(atPath: second.path))
+        // The first export's top-level "Aufn Export <id>" folder is gone.
+        #expect(!FileManager.default.fileExists(atPath: first.deletingLastPathComponent().path))
     }
 
     @Test func zipProducesArchive() throws {
@@ -148,15 +162,17 @@ struct ExportPipelineTests {
         let soloed = Track(name: "A", fileName: cafA.lastPathComponent, isSoloed: true, durationSeconds: 0.5, sampleRate: sampleRate)
         let other = Track(name: "B", fileName: cafB.lastPathComponent, durationSeconds: 0.5, sampleRate: sampleRate)
 
+        // Each export sweeps the previous one out of tmp, so read the first
+        // render before producing the second.
         let soloMix = try Exporter.mixdown(
             [.init(track: soloed, audioURL: cafA), .init(track: other, audioURL: cafB)],
             projectName: "Solo", sampleRate: sampleRate
         )
+        let mixPeak = try channelPeaks(of: soloMix)[0]
         let soloAlone = try Exporter.mixdown(
             [.init(track: soloed, audioURL: cafA)],
             projectName: "SoloAlone", sampleRate: sampleRate
         )
-        let mixPeak = try channelPeaks(of: soloMix)[0]
         let alonePeak = try channelPeaks(of: soloAlone)[0]
         // Non-soloed track contributes nothing: mix matches the solo-only render.
         #expect(abs(mixPeak / alonePeak - 1) < 0.05)
@@ -176,9 +192,10 @@ struct ExportPipelineTests {
         let track = Track(name: "T", fileName: caf.lastPathComponent, durationSeconds: 0.5, sampleRate: sampleRate, volume: 0.5)
         let stem = Exporter.Stem(track: track, audioURL: caf)
 
+        // Read the raw stem before the baked export sweeps its folder.
         let rawFolder = try Exporter.exportStems([stem], projectName: "Raw")
-        let bakedFolder = try Exporter.exportStems([stem], projectName: "Baked", applyingVolume: true)
         let rawPeak = try channelPeaks(of: FileManager.default.contentsOfDirectory(at: rawFolder, includingPropertiesForKeys: nil)[0])[0]
+        let bakedFolder = try Exporter.exportStems([stem], projectName: "Baked", applyingVolume: true)
         let bakedPeak = try channelPeaks(of: FileManager.default.contentsOfDirectory(at: bakedFolder, includingPropertiesForKeys: nil)[0])[0]
         #expect(abs(bakedPeak / rawPeak - 0.5) < 0.05)
     }

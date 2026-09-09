@@ -22,11 +22,15 @@ final class AudioEngineController {
 
     let meter = MeterTap()
 
-    private let engine = AVAudioEngine()
+    // `var` only so a media-services reset can replace a dead engine.
+    private var engine = AVAudioEngine()
     private let session = AudioSessionController.shared
     private let store: ProjectStore
     private var players: [UUID: AVAudioPlayerNode] = [:]
     private var activePlayerCount = 0
+    /// Players stopped by a mid-transport delete. They stay attached until
+    /// `stopTransport` so the graph is never mutated under a live input tap.
+    private var retiredPlayers: [AVAudioPlayerNode] = []
     // The metronome's looping click. Deliberately outside `players`: it has
     // no completion handler and never counts toward activePlayerCount, so it
     // can't hold up or trigger the auto-stop.
@@ -40,6 +44,24 @@ final class AudioEngineController {
     private var pendingTrack: PendingTrack?
     private var livePeakTask: Task<Void, Never>?
     private var playbackGeneration = 0
+    /// Re-entrancy guard across the permission `await` in startRecording.
+    private var isStarting = false
+    /// True from installTap until removeTap. Lets teardown remove a tap
+    /// left by a failed start without touching `inputNode` at other times
+    /// (first access before the session is configured for recording caches
+    /// an empty input format; during playback it would enable input IO).
+    private var tapInstalled = false
+    /// Our own record of the input node's voice-processing state, so
+    /// playback can clear it without touching `inputNode` (which would
+    /// enable input IO on a playback-only session).
+    private var voiceProcessingEnabled = false
+    // Only written on the main actor and read in deinit (which Swift 6
+    // treats as nonisolated), hence the unsafe opt-out.
+    nonisolated(unsafe) private var sessionObservers: [NSObjectProtocol] = []
+    nonisolated(unsafe) private var engineObserver: NSObjectProtocol?
+
+    /// Scheduled start is ~100 ms out so every node shares one anchor.
+    private static let startLeadSeconds: TimeInterval = 0.1
 
     private struct PendingTrack {
         let id: UUID
@@ -52,6 +74,17 @@ final class AudioEngineController {
     init(store: ProjectStore) {
         self.store = store
         observeSessionNotifications()
+        observeEngineConfigurationChanges()
+    }
+
+    deinit {
+        let center = NotificationCenter.default
+        for observer in sessionObservers {
+            center.removeObserver(observer)
+        }
+        if let engineObserver {
+            center.removeObserver(engineObserver)
+        }
     }
 
     // MARK: - Playback
@@ -60,9 +93,22 @@ final class AudioEngineController {
         stopTransport()
         do {
             try session.configure(output: .loudspeakerIfBuiltIn)
+            // A VOICE take leaves the voice-processing IO unit on the engine
+            // (reset() doesn't clear it); playback through it is quieter and
+            // can collapse the stereo image. Engine is stopped here, so this
+            // is the safe moment to turn it off.
+            if voiceProcessingEnabled {
+                try? engine.inputNode.setVoiceProcessingEnabled(false)
+                voiceProcessingEnabled = false
+            }
             schedulePlayers(for: project)
             scheduleClick(for: project)
-            guard !players.isEmpty || clickPlayer != nil else { return }
+            guard !players.isEmpty || clickPlayer != nil else {
+                if !project.tracks.isEmpty {
+                    lastError = AufnError.missingAudio.localizedDescription
+                }
+                return
+            }
             try engine.start()
         } catch {
             stopTransport()
@@ -78,9 +124,9 @@ final class AudioEngineController {
         // Metronome-only playback loops until the user stops (no completion
         // handlers, so the auto-stop never fires).
         clickPlayer?.play(at: startTime)
-        clickStartDate = clickPlayer != nil ? .now.addingTimeInterval(0.1) : nil
+        clickStartDate = clickPlayer != nil ? .now.addingTimeInterval(Self.startLeadSeconds) : nil
         state = .playing
-        transportStartDate = .now
+        transportStartDate = .now.addingTimeInterval(Self.startLeadSeconds)
     }
 
     // MARK: - Live mix controls
@@ -127,12 +173,14 @@ final class AudioEngineController {
         if players.isEmpty && state == .playing { stopTransport() }
     }
 
-    /// Stops and detaches a deleted track's player so its audio ceases
-    /// immediately. Safe while idle (no player exists), playing, or recording.
+    /// Stops a deleted track's player so its audio ceases immediately. The
+    /// node stays attached until `stopTransport` — detaching would mutate
+    /// the graph, which under a live recording tap can reset the tap and
+    /// drop the rest of the take. Safe while idle, playing, or recording.
     func removeTrack(trackID: UUID) {
         guard let player = players.removeValue(forKey: trackID) else { return }
         player.stop()
-        engine.detach(player)
+        retiredPlayers.append(player)
         // Deleting the last track keeps a running click going (same as
         // metronome-only playback).
         if players.isEmpty && clickPlayer == nil && state == .playing { stopTransport() }
@@ -141,18 +189,28 @@ final class AudioEngineController {
     // MARK: - Recording
 
     func startRecording(into project: Project) async {
+        guard !isStarting else { return }
+        isStarting = true
+        defer { isStarting = false }
+
         stopTransport()
         guard await session.requestRecordPermission() else {
             lastError = AufnError.microphonePermissionDenied.localizedDescription
             return
         }
+        var createdFileURL: URL?
         do {
             try session.configure(preferredSampleRate: project.sampleRate ?? UserDefaults.standard.preferredSampleRate, output: .standard, recording: true)
 
             // Toggle the AEC/noise-suppression/AGC stack to match the capture
             // mode. Must happen while the engine is stopped and before we read
-            // the input format (it can change the format).
-            try? engine.inputNode.setVoiceProcessingEnabled(CaptureMode.current.usesVoiceProcessing)
+            // the input format (it can change the format). Toggling is a full
+            // IO-unit rebuild, so only do it when the mode actually changed.
+            let wantsVoiceProcessing = CaptureMode.current.usesVoiceProcessing
+            if engine.inputNode.isVoiceProcessingEnabled != wantsVoiceProcessing {
+                try? engine.inputNode.setVoiceProcessingEnabled(wantsVoiceProcessing)
+            }
+            voiceProcessingEnabled = engine.inputNode.isVoiceProcessingEnabled
 
             schedulePlayers(for: project)
             scheduleClick(for: project)
@@ -170,12 +228,18 @@ final class AudioEngineController {
             let clickStart = sharedStartTime()
             let startTime = clickStart.offset(bySeconds: countIn)
             let recorder = try TrackRecorder(fileURL: fileURL, format: inputFormat, startHostTime: startTime.hostTime)
+            createdFileURL = fileURL
             self.recorder = recorder
+            // Latency compensation only makes sense when the performer heard
+            // something to play against (overdub players or an audible click).
+            // A first take has no reference; trimming it would just cut its
+            // head off — by 200 ms or more on Bluetooth headphones.
+            let hasReference = !players.isEmpty || project.isMetronomeAudible
             self.pendingTrack = PendingTrack(
                 id: trackID,
                 fileURL: fileURL,
                 sampleRate: inputFormat.sampleRate,
-                latencyOffsetSamples: session.latencyOffsetSamples,
+                latencyOffsetSamples: hasReference ? session.latencyOffsetSamples : 0,
                 projectID: project.id
             )
 
@@ -184,6 +248,7 @@ final class AudioEngineController {
                 recorder.append(buffer, at: when)
                 meter.process(buffer)
             }
+            tapInstalled = true
 
             engine.prepare()
             try engine.start()
@@ -192,18 +257,24 @@ final class AudioEngineController {
                 player.play(at: startTime)
             }
             clickPlayer?.play(at: clickStart)
-            clickStartDate = clickPlayer != nil ? .now.addingTimeInterval(0.1) : nil
+            clickStartDate = clickPlayer != nil ? .now.addingTimeInterval(Self.startLeadSeconds) : nil
 
             state = .recording
-            // Future-dated by the count-in; elapsedSeconds clamps to 0 so the
-            // clock sits at 0:00 until the take actually starts.
-            transportStartDate = .now.addingTimeInterval(countIn)
+            // Future-dated by the start lead plus any count-in; elapsedSeconds
+            // clamps to 0 so the clock sits at 0:00 until the take starts.
+            transportStartDate = .now.addingTimeInterval(Self.startLeadSeconds + countIn)
             liveRecordingPeaks = []
             startLivePeakCollection()
         } catch {
             recorder = nil
             pendingTrack = nil
+            // stopTransport() removes any installed tap regardless of state,
+            // so a start that failed after installTap can't leak one onto
+            // bus 0 (a second installTap there is an uncatchable exception).
             stopTransport()
+            if let createdFileURL {
+                try? FileManager.default.removeItem(at: createdFileURL)
+            }
             lastError = error.localizedDescription
         }
     }
@@ -211,18 +282,30 @@ final class AudioEngineController {
     /// Stops recording, finalizes the CAF, persists the track, and kicks off
     /// the waveform-peaks computation.
     func stopRecording() {
-        guard state == .recording, let recorder, let pending = pendingTrack else {
+        guard state == .recording, let recorder = self.recorder, let pending = pendingTrack else {
             stopTransport()
             return
         }
-        engine.inputNode.removeTap(onBus: 0)
-        let frames = recorder.finalize()
+        // Whether the record gate had opened (the count-in and start lead had
+        // elapsed) — a zero-frame take after that point is a failure worth
+        // telling the user about, not a cancelled count-in.
+        let gateOpened = transportStartDate.map { Date.now.timeIntervalSince($0) > 0.25 } ?? false
+        removeTapIfInstalled()
+        let outcome = recorder.finalize()
+        let provisionalPeaks = liveRecordingPeaks
         self.recorder = nil
         self.pendingTrack = nil
         stopTransport()
 
-        guard frames > 0, let project = store.project(id: pending.projectID) else {
+        if let writeError = outcome.writeError {
+            lastError = AufnError.writeFailed(writeError.localizedDescription).localizedDescription
+        }
+
+        guard outcome.frames > 0, let project = store.project(id: pending.projectID) else {
             try? FileManager.default.removeItem(at: pending.fileURL)
+            if gateOpened, outcome.writeError == nil {
+                lastError = AufnError.nothingRecorded.localizedDescription
+            }
             return
         }
 
@@ -231,17 +314,22 @@ final class AudioEngineController {
             name: "Track \(project.tracks.count + 1)",
             fileName: pending.fileURL.lastPathComponent,
             latencyOffsetSamples: pending.latencyOffsetSamples,
-            durationSeconds: Double(frames) / pending.sampleRate,
+            durationSeconds: Double(outcome.frames) / pending.sampleRate,
             sampleRate: pending.sampleRate
         )
+
+        // Provisional cache from the live meter so the row and tape show a
+        // waveform the instant the track appears; the accurate file-derived
+        // peaks replace it below.
+        let peaksURL = store.peaksURL(for: track, in: project)
+        try? PeakStore.writePeaks(provisionalPeaks, to: peaksURL)
         store.addTrack(track, to: project)
 
-        if let updated = store.project(id: pending.projectID) {
-            let audioURL = store.audioURL(for: track, in: updated)
-            let peaksURL = store.peaksURL(for: track, in: updated)
-            Task.detached(priority: .utility) {
-                try? PeakStore.computePeaks(audioURL: audioURL, peaksURL: peaksURL)
-            }
+        let audioURL = store.audioURL(for: track, in: project)
+        let store = self.store
+        Task.detached(priority: .utility) {
+            try? PeakStore.computePeaks(audioURL: audioURL, peaksURL: peaksURL)
+            await store.notePeaksUpdated()
         }
     }
 
@@ -251,8 +339,10 @@ final class AudioEngineController {
     /// `stopRecording` by callers; reaching here mid-record (interruption
     /// fallback) discards the partial file.
     func stopTransport() {
+        // Keyed on the flag, not on `state`: a start that failed between
+        // installTap and `state = .recording` must not leave a tap behind.
+        removeTapIfInstalled()
         if state == .recording {
-            engine.inputNode.removeTap(onBus: 0)
             if let recorder, let pending = pendingTrack {
                 _ = recorder.finalize()
                 try? FileManager.default.removeItem(at: pending.fileURL)
@@ -269,6 +359,10 @@ final class AudioEngineController {
         }
         players = [:]
         activePlayerCount = 0
+        for player in retiredPlayers {
+            engine.detach(player)
+        }
+        retiredPlayers = []
         if let clickPlayer {
             clickPlayer.stop()
             engine.detach(clickPlayer)
@@ -283,6 +377,26 @@ final class AudioEngineController {
         state = .idle
         transportStartDate = nil
         meter.reset()
+    }
+
+    private func removeTapIfInstalled() {
+        guard tapInstalled else { return }
+        engine.inputNode.removeTap(onBus: 0)
+        tapInstalled = false
+    }
+
+    /// Lifecycle stop: keep a take in progress (finalize + persist), just
+    /// stop playback. Used for interruptions, route/config changes, and
+    /// leaving the project screen.
+    func stopForLifecycle() {
+        switch state {
+        case .recording:
+            stopRecording()
+        case .playing:
+            stopTransport()
+        case .idle:
+            break
+        }
     }
 
     var elapsedSeconds: TimeInterval {
@@ -300,34 +414,76 @@ final class AudioEngineController {
 
     private func observeSessionNotifications() {
         let center = NotificationCenter.default
-        center.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { note in
+        sessionObservers.append(center.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { [weak self] note in
             let began = (note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt)
                 .flatMap(AVAudioSession.InterruptionType.init) == .began
             guard began else { return }
             Task { @MainActor [weak self] in
-                self?.handleTransportLoss()
+                self?.stopForLifecycle()
             }
-        }
-        center.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) { note in
+        })
+        sessionObservers.append(center.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) { [weak self] note in
             let reason = (note.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt)
                 .flatMap(AVAudioSession.RouteChangeReason.init)
-            guard reason == .oldDeviceUnavailable else { return }
             Task { @MainActor [weak self] in
-                self?.handleTransportLoss()
+                self?.handleRouteChange(reason: reason)
+            }
+        })
+        sessionObservers.append(center.addObserver(forName: AVAudioSession.mediaServicesWereResetNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.handleMediaServicesReset()
+            }
+        })
+    }
+
+    /// The engine stops itself when the IO hardware's sample rate or channel
+    /// count changes (headphones in, USB/Bluetooth connect, rate switch) and
+    /// posts this per-engine notification. Without handling it the transport
+    /// would sit "running" with a dead engine.
+    private func observeEngineConfigurationChanges() {
+        engineObserver = NotificationCenter.default.addObserver(forName: .AVAudioEngineConfigurationChange, object: engine, queue: .main) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.handleConfigurationChange()
             }
         }
     }
 
-    /// Phone call or headphones yanked: keep the partial take, stop cleanly.
-    private func handleTransportLoss() {
-        switch state {
-        case .recording:
-            stopRecording()
-        case .playing:
-            stopTransport()
-        case .idle:
+    /// Headphones yanked stops everything (the user lost their monitor).
+    /// A new device mid-take is about to reconfigure the engine; stop
+    /// cleanly and keep the take rather than let it truncate silently.
+    private func handleRouteChange(reason: AVAudioSession.RouteChangeReason?) {
+        switch reason {
+        case .oldDeviceUnavailable:
+            stopForLifecycle()
+        case .newDeviceAvailable where state == .recording:
+            stopForLifecycle()
+            lastError = AufnError.deviceChanged.localizedDescription
+        default:
             break
         }
+    }
+
+    private func handleConfigurationChange() {
+        guard state != .idle else { return }
+        let wasRecording = state == .recording
+        stopForLifecycle()
+        if wasRecording {
+            lastError = AufnError.deviceChanged.localizedDescription
+        }
+    }
+
+    /// After a media-server reset every node is invalid; the only recovery
+    /// is a fresh engine.
+    private func handleMediaServicesReset() {
+        stopForLifecycle()
+        if let engineObserver {
+            NotificationCenter.default.removeObserver(engineObserver)
+        }
+        engine = AVAudioEngine()
+        voiceProcessingEnabled = false
+        tapInstalled = false
+        observeEngineConfigurationChanges()
+        lastError = AufnError.audioSystemReset.localizedDescription
     }
 
     // MARK: - Helpers
@@ -417,14 +573,18 @@ final class AudioEngineController {
     /// Common start ~100 ms out; all players and the record gate share it
     /// (the record gate offset further by any count-in).
     private func sharedStartTime() -> AVAudioTime {
-        AVAudioTime(hostTime: mach_absolute_time() + AVAudioTime.hostTicks(forSeconds: 0.1))
+        AVAudioTime(hostTime: mach_absolute_time() + AVAudioTime.hostTicks(forSeconds: Self.startLeadSeconds))
     }
 
+    /// Live bins start when the record gate opens, not when the button was
+    /// tapped: audio from the count-in isn't in the file, so it shouldn't be
+    /// on the tape either.
     private func startLivePeakCollection() {
         livePeakTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: .milliseconds(20))
                 guard let self, self.state == .recording else { return }
+                guard let start = self.transportStartDate, Date.now >= start else { continue }
                 self.liveRecordingPeaks.append(self.meter.levels.peak)
             }
         }
@@ -434,6 +594,11 @@ final class AudioEngineController {
 enum AufnError: LocalizedError {
     case microphonePermissionDenied
     case noInput
+    case nothingRecorded
+    case writeFailed(String)
+    case deviceChanged
+    case audioSystemReset
+    case missingAudio
 
     var errorDescription: String? {
         switch self {
@@ -441,6 +606,16 @@ enum AufnError: LocalizedError {
             "Microphone access is off. Enable it for Aufn in Settings to record."
         case .noInput:
             "No audio input is available."
+        case .nothingRecorded:
+            "Nothing was recorded. Check the microphone and try again."
+        case .writeFailed(let reason):
+            "The take could not be saved completely: \(reason)"
+        case .deviceChanged:
+            "The audio device changed. The take so far was saved."
+        case .audioSystemReset:
+            "The audio system was reset. Please try again."
+        case .missingAudio:
+            "The audio files for this project could not be opened."
         }
     }
 }

@@ -46,6 +46,12 @@ enum PeakStore {
             peaks.append(currentPeak)
         }
 
+        try writePeaks(peaks, to: peaksURL)
+    }
+
+    /// Writes a peaks cache in the same layout `loadPeaks` reads. Also used
+    /// for the provisional live-meter cache written the instant a take ends.
+    static func writePeaks(_ peaks: [Float], to peaksURL: URL) throws {
         let data = peaks.withUnsafeBufferPointer { Data(buffer: $0) }
         try FileManager.default.createDirectory(at: peaksURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         try data.write(to: peaksURL, options: .atomic)

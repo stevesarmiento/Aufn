@@ -21,7 +21,11 @@ struct ProjectDetailView: View {
             }
         }
         .onDisappear {
-            engine.stopTransport()
+            // Keep a take in progress (finalize + persist) rather than
+            // discard it, then hand the session back so other apps' audio
+            // can resume.
+            engine.stopForLifecycle()
+            AudioSessionController.shared.deactivate()
         }
     }
 
@@ -42,9 +46,12 @@ struct ProjectDetailView: View {
                         onDelete: {
                             withAnimation(.snappy) {
                                 engine.removeMetronome()
-                                var updated = project
-                                updated.metronome = nil
-                                store.update(updated)
+                                // Fresh copy, not the render-time snapshot: a take
+                                // may have landed since the row was drawn.
+                                if var fresh = store.project(id: projectID) {
+                                    fresh.metronome = nil
+                                    store.update(fresh)
+                                }
                                 openSwipeTrackID = nil
                             }
                         }
@@ -88,9 +95,10 @@ struct ProjectDetailView: View {
                     if project.metronome == nil {
                         Button("Metronome", systemImage: "metronome") {
                             withAnimation(.snappy) {
-                                var updated = project
-                                updated.metronome = MetronomeSettings()
-                                store.update(updated)
+                                if var fresh = store.project(id: projectID) {
+                                    fresh.metronome = MetronomeSettings()
+                                    store.update(fresh)
+                                }
                             }
                         }
                     }
@@ -102,12 +110,16 @@ struct ProjectDetailView: View {
                         showingMasterVolume = true
                     }
                     .disabled(project.tracks.isEmpty)
+                    // Both reconfigure the audio route; never while the
+                    // transport is running (it would stall a live take).
                     Button("Sample Rate…", systemImage: "dial.medium") {
                         showingSampleRate = true
                     }
+                    .disabled(engine.state != .idle)
                     Button("Microphone…", systemImage: "mic") {
                         showingInputPicker = true
                     }
+                    .disabled(engine.state != .idle)
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }

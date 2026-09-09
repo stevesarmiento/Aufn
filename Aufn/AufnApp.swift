@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct AufnApp: App {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var store: ProjectStore
     @State private var engine: AudioEngineController
 
@@ -18,6 +19,14 @@ struct AufnApp: App {
                 .preferredColorScheme(.dark)
                 .environment(store)
                 .environment(engine)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // Background audio keeps a running transport alive; an idle
+            // session has no reason to hold the audio route (and other apps'
+            // playback) hostage.
+            if phase == .background && engine.state == .idle {
+                AudioSessionController.shared.deactivate()
+            }
         }
     }
 }

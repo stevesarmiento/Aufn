@@ -7,6 +7,13 @@ import AVFAudio
 /// AVFoundation worker thread, not the realtime render thread, so a brief
 /// uncontended lock is safe there).
 final class TrackRecorder: @unchecked Sendable {
+    /// What `finalize()` hands back: frames on disk plus the first write
+    /// error, if any (a disk-full take is truncated, not silently "fine").
+    struct Outcome {
+        let frames: AVAudioFramePosition
+        let writeError: Error?
+    }
+
     private let file: AVAudioFile
     private let startHostTime: UInt64
     private let sampleRate: Double
@@ -16,6 +23,7 @@ final class TrackRecorder: @unchecked Sendable {
     private var passedStart = false
     private var finished = false
     private var framesWritten: AVAudioFramePosition = 0
+    private var writeError: Error?
 
     let fileURL: URL
 
@@ -49,6 +57,15 @@ final class TrackRecorder: @unchecked Sendable {
             return
         }
 
+        // No host clock on this buffer (seen after IO-unit rebuilds): there
+        // is nothing to gate against, so record rather than silently drop
+        // the whole take.
+        guard when.isHostTimeValid else {
+            passedStart = true
+            write(buffer)
+            return
+        }
+
         guard when.hostTime < startHostTime else {
             passedStart = true
             write(buffer)
@@ -56,7 +73,9 @@ final class TrackRecorder: @unchecked Sendable {
         }
 
         let secondsUntilStart = Double(startHostTime - when.hostTime) * hostTicksToSeconds
-        let framesToSkip = AVAudioFrameCount(secondsUntilStart * sampleRate)
+        // Clamp before converting: a bogus timestamp far in the past would
+        // otherwise overflow the UInt32 conversion and trap the tap thread.
+        let framesToSkip = AVAudioFrameCount(min(secondsUntilStart * sampleRate, Double(UInt32.max)))
         guard framesToSkip < buffer.frameLength else { return }
 
         passedStart = true
@@ -65,12 +84,16 @@ final class TrackRecorder: @unchecked Sendable {
         }
     }
 
-    /// Main-actor entry point after `removeTap`. Returns duration in frames.
-    func finalize() -> AVAudioFramePosition {
+    /// Main-actor entry point after `removeTap`. Closes the file so the CAF
+    /// header is final before anyone reads it (peaks, playback, export).
+    func finalize() -> Outcome {
         lock.lock()
         defer { lock.unlock() }
-        finished = true
-        return framesWritten
+        if !finished {
+            finished = true
+            file.close()
+        }
+        return Outcome(frames: framesWritten, writeError: writeError)
     }
 
     private func write(_ buffer: AVAudioPCMBuffer) {
@@ -78,7 +101,9 @@ final class TrackRecorder: @unchecked Sendable {
             try file.write(from: buffer)
             framesWritten += AVAudioFramePosition(buffer.frameLength)
         } catch {
+            writeError = error
             finished = true
+            file.close()
         }
     }
 

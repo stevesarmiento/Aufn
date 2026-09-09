@@ -70,6 +70,17 @@ final class AudioSessionController {
         isConfigured = true
     }
 
+    /// Releases the session when the app has no use for it (left the project
+    /// screen, went to the background while idle). A `.playAndRecord`
+    /// session left active keeps other apps' audio interrupted; deactivating
+    /// with the notify option lets them resume. `configure` reactivates.
+    func deactivate() {
+        try? session.setActive(false, options: .notifyOthersOnDeactivation)
+        speakerOverrideActive = false
+        appliedInputUID = nil
+        isConfigured = false
+    }
+
     func requestRecordPermission() async -> Bool {
         switch AVAudioApplication.shared.recordPermission {
         case .granted:

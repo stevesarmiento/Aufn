@@ -186,10 +186,25 @@ enum Exporter {
 
     // MARK: - Helpers
 
+    static let exportFolderPrefix = "Aufn Export "
+
+    /// One export set lives in tmp at a time: earlier folders (and their zip)
+    /// are removed before the new one is created, so repeated exports don't
+    /// pile up full-resolution WAVs.
+    static func removeStaleExports() {
+        let fileManager = FileManager.default
+        let tmp = fileManager.temporaryDirectory
+        let entries = (try? fileManager.contentsOfDirectory(at: tmp, includingPropertiesForKeys: nil)) ?? []
+        for url in entries where url.lastPathComponent.hasPrefix(exportFolderPrefix) {
+            try? fileManager.removeItem(at: url)
+        }
+    }
+
     private static func makeExportFolder(named projectName: String) throws -> URL {
+        removeStaleExports()
         let safeName = projectName.replacingOccurrences(of: "/", with: "-")
         let folder = FileManager.default.temporaryDirectory
-            .appending(path: "Aufn Export \(UUID().uuidString.prefix(8))", directoryHint: .isDirectory)
+            .appending(path: "\(exportFolderPrefix)\(UUID().uuidString.prefix(8))", directoryHint: .isDirectory)
             .appending(path: safeName, directoryHint: .isDirectory)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         return folder

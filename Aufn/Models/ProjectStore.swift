@@ -1,3 +1,4 @@
+import AVFAudio
 import Foundation
 import Observation
 
@@ -7,14 +8,17 @@ import Observation
 @Observable
 final class ProjectStore {
     private(set) var projects: [Project] = []
+    /// Bumped whenever a peaks cache lands on disk after its track already
+    /// exists (post-take recompute, recovered takes). Views key their cache
+    /// loads on it so a late-arriving waveform still shows up.
+    private(set) var peaksRevision = 0
 
     private let fileManager = FileManager.default
 
-    var rootDirectory: URL {
-        URL.documentsDirectory.appending(path: "Projects", directoryHint: .isDirectory)
-    }
+    let rootDirectory: URL
 
-    init() {
+    init(rootDirectory: URL = URL.documentsDirectory.appending(path: "Projects", directoryHint: .isDirectory)) {
+        self.rootDirectory = rootDirectory
         loadProjects()
     }
 
@@ -56,7 +60,72 @@ final class ProjectStore {
                 guard let data = try? Data(contentsOf: metadata) else { return nil }
                 return try? decoder.decode(Project.self, from: data)
             }
+            .map(recoveringOrphanTakes)
             .sorted { $0.createdAt > $1.createdAt }
+    }
+
+    /// A take's CAF is written incrementally but its Track entry only lands
+    /// when the take stops. A crash or kill mid-take leaves a complete,
+    /// playable file with no entry: adopt it as a track. Unreadable or empty
+    /// leftovers (a start that failed) and peaks caches with no track are
+    /// deleted.
+    private func recoveringOrphanTakes(_ project: Project) -> Project {
+        var project = project
+        let known = Set(project.tracks.map(\.fileName))
+        let audioFiles = (try? fileManager.contentsOfDirectory(
+            at: tracksDirectory(for: project),
+            includingPropertiesForKeys: [.contentModificationDateKey],
+            options: .skipsHiddenFiles
+        )) ?? []
+        var recovered: [Track] = []
+        for url in audioFiles where url.pathExtension == "caf" && !known.contains(url.lastPathComponent) {
+            guard let file = try? AVAudioFile(forReading: url), file.length > 0 else {
+                try? fileManager.removeItem(at: url)
+                continue
+            }
+            let rate = file.processingFormat.sampleRate
+            let modified = (try? url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? .now
+            let track = Track(
+                id: UUID(uuidString: url.deletingPathExtension().lastPathComponent) ?? UUID(),
+                name: "Track \(project.tracks.count + recovered.count + 1) (recovered)",
+                fileName: url.lastPathComponent,
+                createdAt: modified,
+                durationSeconds: Double(file.length) / rate,
+                sampleRate: rate
+            )
+            recovered.append(track)
+        }
+        if !recovered.isEmpty {
+            project.tracks.append(contentsOf: recovered)
+            if project.sampleRate == nil {
+                project.sampleRate = recovered.first?.sampleRate
+            }
+            try? persist(project)
+            for track in recovered {
+                let audioURL = audioURL(for: track, in: project)
+                let peaksURL = peaksURL(for: track, in: project)
+                Task.detached(priority: .utility) { [weak self] in
+                    try? PeakStore.computePeaks(audioURL: audioURL, peaksURL: peaksURL)
+                    await self?.notePeaksUpdated()
+                }
+            }
+        }
+
+        let wantedPeaks = Set(project.tracks.map { "\($0.id.uuidString).peaks" })
+        let peaksFiles = (try? fileManager.contentsOfDirectory(
+            at: peaksDirectory(for: project),
+            includingPropertiesForKeys: nil,
+            options: .skipsHiddenFiles
+        )) ?? []
+        for url in peaksFiles where !wantedPeaks.contains(url.lastPathComponent) {
+            try? fileManager.removeItem(at: url)
+        }
+        return project
+    }
+
+    /// Call after writing a peaks cache for a track that is already listed.
+    func notePeaksUpdated() {
+        peaksRevision += 1
     }
 
     // MARK: - Mutations

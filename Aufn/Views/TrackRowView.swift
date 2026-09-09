@@ -62,10 +62,17 @@ struct TrackRowView: View {
         .task(id: track.id) {
             volume = track.volume
             pan = track.pan
+        }
+        // Re-keyed on the store's peaks revision so the accurate cache that
+        // lands after a take (or a recovered take) replaces the provisional
+        // one without the row being recreated.
+        .task(id: PeaksLoadKey(trackID: track.id, revision: store.peaksRevision)) {
             let url = store.peaksURL(for: track, in: project)
-            peaks = await Task.detached(priority: .utility) {
+            let loaded = await Task.detached(priority: .utility) {
                 PeakStore.loadPeaks(from: url) ?? []
             }.value
+            guard !Task.isCancelled else { return }
+            peaks = loaded
         }
     }
 
@@ -137,6 +144,12 @@ struct TrackRowView: View {
             engine.updateMix(for: fresh)
         }
     }
+}
+
+/// Identity for a peaks-cache load: the track plus the store's cache revision.
+struct PeaksLoadKey: Hashable {
+    let trackID: UUID
+    let revision: Int
 }
 
 /// The in-progress take: renders the engine's live peak bins as they arrive.

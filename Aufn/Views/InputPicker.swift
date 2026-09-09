@@ -4,6 +4,7 @@ import SwiftUI
 /// Microphone selection, matching the SampleRatePicker card pattern.
 /// AVAudioSessionPortDescription values stay confined to this @MainActor view.
 struct InputPicker: View {
+    @Environment(AudioEngineController.self) private var engine
     @State private var inputs: [AVAudioSessionPortDescription] = []
     @State private var selectedUID: String?
 
@@ -21,6 +22,15 @@ struct InputPicker: View {
                 .sheetCard()
         }
         .onAppear(perform: refresh)
+        .onDisappear {
+            // The picker widened the category to HFP so Bluetooth mics would
+            // enumerate; put the route back to the persisted choice now
+            // rather than leaving AirPods in headset quality until the next
+            // transport start.
+            if engine.state == .idle {
+                try? session.configure()
+            }
+        }
         .task {
             // Devices can connect while the sheet is open.
             for await _ in NotificationCenter.default.notifications(named: AVAudioSession.routeChangeNotification).map({ _ in () }) {
@@ -115,6 +125,7 @@ struct InputPicker: View {
 #Preview("Microphone") {
     SheetPreviewHost {
         InputPicker()
+            .environment(AudioEngineController(store: ProjectStore()))
     }
     .preferredColorScheme(.dark)
 }
