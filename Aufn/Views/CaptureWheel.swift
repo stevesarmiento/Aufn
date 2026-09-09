@@ -8,6 +8,9 @@ import UIKit
 struct CaptureWheel: UIViewRepresentable {
     let modes: [CaptureMode]
     @Binding var selection: String
+    /// Called when the wheel settles on a row after the user lets go — commit
+    /// and dismiss in one motion.
+    var onCommit: () -> Void = {}
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
@@ -68,6 +71,7 @@ struct CaptureWheel: UIViewRepresentable {
         func pickerView(_: UIPickerView, didSelectRow row: Int, inComponent _: Int) {
             feedback.selectionChanged()
             parent.selection = parent.modes[row].rawValue
+            parent.onCommit()
         }
     }
 }

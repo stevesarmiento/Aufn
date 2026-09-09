@@ -88,8 +88,8 @@ struct TransportBar: View {
             Text(currentMode.label)
                 .font(.subheadline.weight(.heavy))
                 .foregroundStyle(Color.accentColor)
-                .padding(.horizontal, 14)
-                .frame(height: 44)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
         }
         .buttonStyle(.glass)
         .accessibilityLabel("Capture mode, \(currentMode.label)")
@@ -98,7 +98,9 @@ struct TransportBar: View {
     /// Custom UIPickerView wheel over a vertical black-to-transparent scrim,
     /// so the selected row sits on black like the timer, not a gray bubble.
     private var captureModeWheel: some View {
-        CaptureWheel(modes: CaptureMode.allCases, selection: $captureMode)
+        CaptureWheel(modes: CaptureMode.allCases, selection: $captureMode) {
+            choosingMode = false
+        }
             .frame(width: 150, height: 100)
             .clipped()
             .background(
