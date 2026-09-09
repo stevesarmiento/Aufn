@@ -106,6 +106,24 @@ final class AudioSessionController {
         preferredInputUID = uid
     }
 
+    /// Probes which capture rates the CURRENT input route actually grants:
+    /// request each candidate and read back what the hardware gives. The
+    /// preferred rate is restored afterwards; the next transport start
+    /// re-applies the user's real preference anyway. Only call while idle —
+    /// changing the preferred rate mid-transport reconfigures the route.
+    func supportedSampleRates(from candidates: [Double]) -> Set<Double> {
+        try? configure()
+        var supported: Set<Double> = []
+        for candidate in candidates {
+            try? session.setPreferredSampleRate(candidate)
+            if abs(session.sampleRate - candidate) < 1 {
+                supported.insert(candidate)
+            }
+        }
+        try? session.setPreferredSampleRate(UserDefaults.standard.preferredSampleRate)
+        return supported
+    }
+
     /// Inputs to show in the picker. Temporarily widens the category to
     /// include HFP so Bluetooth mics enumerate; the next transport start
     /// rebuilds options from the persisted choice.

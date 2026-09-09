@@ -88,7 +88,7 @@ struct ProjectDetailView: View {
             ExportSheet(project: project)
         }
         .sheet(isPresented: $showingSampleRate) {
-            SampleRatePicker()
+            SampleRatePicker(lockedRate: store.project(id: projectID)?.sampleRate)
                 .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showingInputPicker) {

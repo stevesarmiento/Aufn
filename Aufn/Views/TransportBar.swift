@@ -100,17 +100,10 @@ struct TransportBar: View {
                 Task { await engine.startRecording(into: project) }
             }
         } label: {
-            ZStack {
-                // Same shape under the glass pill, blurred, so the red reads
-                // as a glow bleeding through the frosted head.
-                pillShape
-                    .blur(radius: 14)
-                    .opacity(0.75)
-                pillShape
-            }
-            .frame(width: TapeHead.size.width, height: TapeHead.size.height)
-            .glassEffect(.regular.interactive(), in: .circle)
-            .contentShape(Circle())
+            pillShape
+                .frame(width: TapeHead.size.width, height: TapeHead.size.height)
+                .glassEffect(.regular.interactive(), in: .circle)
+                .contentShape(Circle())
         }
         .buttonStyle(.plain)
         .animation(.snappy, value: isRecording)
@@ -118,10 +111,14 @@ struct TransportBar: View {
     }
 
     /// Camera-style morph: red circle at rest, rounded stop square recording.
+    /// Rendered as red-tinted glass sitting on the head's glass.
     private var pillShape: some View {
-        RoundedRectangle(cornerRadius: isRecording ? 9 : 17, style: .continuous)
-            .fill(Color(red: 1.0, green: 0.20, blue: 0.22))
+        Color.clear
             .frame(width: isRecording ? 28 : 34, height: isRecording ? 28 : 34)
+            .glassEffect(
+                .regular.tint(Color(red: 1.0, green: 0.20, blue: 0.22)),
+                in: .rect(cornerRadius: isRecording ? 9 : 17)
+            )
     }
 
     private var elapsedClock: some View {

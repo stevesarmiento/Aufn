@@ -1,11 +1,19 @@
 import SwiftUI
 
 /// Preferred capture sample rate with the plain-English explainers carried
-/// over from the original Aufn. The hardware has the final say — this sets
-/// the preference requested before the first take of a project.
+/// over from the original Aufn. Rates the current input can't grant are shown
+/// disabled (probed live), and a project that already has takes shows its
+/// locked rate — the selection only shapes future first takes.
 struct SampleRatePicker: View {
+    @Environment(AudioEngineController.self) private var engine
     @Environment(\.dismiss) private var dismiss
     @AppStorage("preferredSampleRate") private var preferredSampleRate: Double = 48_000
+
+    /// The open project's locked rate, if it already has takes.
+    var lockedRate: Double? = nil
+
+    @State private var supportedRates: Set<Double> = []
+    @State private var didProbe = false
 
     private struct RateOption {
         let rate: Double
@@ -27,28 +35,24 @@ struct SampleRatePicker: View {
 
     var body: some View {
         NavigationStack {
-            List(options, id: \.rate) { option in
-                Button {
-                    preferredSampleRate = option.rate
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: option.icon)
-                            .font(.title2)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(option.badge) — \(option.rate / 1000, format: .number.precision(.fractionLength(0...1))) kHz")
-                                .font(.headline)
-                            Text(option.explainer)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        if preferredSampleRate == option.rate {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(.tint)
-                        }
+            List {
+                if let lockedRate {
+                    Section {
+                        Label(
+                            "This project is locked at \(formatted(lockedRate)) — set by its first take. Your selection here applies to new projects.",
+                            systemImage: "lock"
+                        )
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                     }
                 }
-                .foregroundStyle(.primary)
+                Section {
+                    ForEach(options, id: \.rate) { option in
+                        row(for: option)
+                    }
+                } footer: {
+                    Text("Recording always captures 32-bit float. Rates your current microphone can't reach are dimmed — a USB interface can unlock them.")
+                }
             }
             .navigationTitle("Sample Rate")
             .navigationBarTitleDisplayMode(.inline)
@@ -57,12 +61,47 @@ struct SampleRatePicker: View {
                     Button("Done") { dismiss() }
                 }
             }
-            .safeAreaInset(edge: .bottom) {
-                Text("Applies to new projects. Recording always captures 32-bit float; the hardware may adjust the rate.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .padding()
+            .onAppear(perform: probe)
+        }
+    }
+
+    private func row(for option: RateOption) -> some View {
+        let isSupported = !didProbe || supportedRates.contains(option.rate)
+        return Button {
+            preferredSampleRate = option.rate
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: option.icon)
+                    .font(.title2)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(option.badge) — \(option.rate / 1000, format: .number.precision(.fractionLength(0...1))) kHz")
+                        .font(.headline)
+                    Text(isSupported ? option.explainer : "Not supported by the current microphone.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                if preferredSampleRate == option.rate {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(.tint)
+                }
             }
         }
+        .foregroundStyle(.primary)
+        .disabled(!isSupported)
+        .opacity(isSupported ? 1 : 0.4)
+    }
+
+    /// Probe what the current route grants — only while the transport is idle
+    /// (changing the preferred rate mid-take would reconfigure the route).
+    private func probe() {
+        guard engine.state == .idle else { return }
+        supportedRates = AudioSessionController.shared.supportedSampleRates(from: options.map(\.rate))
+        didProbe = true
+    }
+
+    private func formatted(_ rate: Double) -> String {
+        let khz = rate / 1000
+        return khz == khz.rounded() ? "\(Int(khz)) kHz" : String(format: "%.1f kHz", khz)
     }
 }
