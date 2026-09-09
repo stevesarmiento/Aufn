@@ -21,13 +21,6 @@ struct TransportBar: View {
                 LevelMeterView(meter: engine.meter)
                     .padding(.horizontal, 4)
             }
-            if engine.state == .idle && choosingMode {
-                Text(currentMode.caption)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .transition(.opacity)
-            }
             tapeDeck
         }
         .animation(.snappy, value: engine.state)
@@ -40,10 +33,16 @@ struct TransportBar: View {
     }
 
     /// ZStack ordering matters: the strip is the bottom layer so the glass
-    /// record head above it refracts the dots passing beneath.
+    /// record head above it refracts the dots passing beneath. While choosing
+    /// a mode, a clear catcher behind the controls collapses on an outside tap.
     private var tapeDeck: some View {
         ZStack {
             MixWaveformView(project: project, engine: engine)
+            if choosingMode {
+                Color.clear
+                    .contentShape(.rect)
+                    .onTapGesture { choosingMode = false }
+            }
             HStack {
                 leftControl
                 Spacer()
@@ -55,21 +54,16 @@ struct TransportBar: View {
         .animation(.snappy, value: engine.state)
     }
 
-    /// Play at rest; a Done button while choosing the capture mode (which the
-    /// wheel replaces on the right). Play is unavailable mid-record anyway.
+    /// Play at rest; the selected mode's description while choosing (in the
+    /// play slot). Play is unavailable mid-record anyway.
     @ViewBuilder
     private var leftControl: some View {
         if engine.state == .idle && choosingMode {
-            Button {
-                choosingMode = false
-            } label: {
-                Image(systemName: "checkmark")
-                    .font(.title2)
-                    .frame(width: 44, height: 44)
-            }
-            .buttonStyle(.glass)
-            .transition(.opacity)
-            .accessibilityLabel("Done choosing capture mode")
+            Text(currentMode.caption)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .frame(width: 150, alignment: .leading)
+                .transition(.opacity)
         } else {
             playButton
         }
@@ -86,50 +80,39 @@ struct TransportBar: View {
         }
     }
 
-    /// Collapsed trigger showing the current mode; tap to reveal the wheel.
+    /// Collapsed trigger: just the mode name in a glass capsule.
     private var captureModeTrigger: some View {
         Button {
             choosingMode = true
         } label: {
-            HStack(spacing: 4) {
-                Text(currentMode.label)
-                    .font(.headline.weight(.heavy))
-                    .foregroundStyle(Color.accentColor)
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
+            Text(currentMode.label)
+                .font(.subheadline.weight(.heavy))
+                .foregroundStyle(Color.accentColor)
+                .padding(.horizontal, 14)
+                .frame(height: 44)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.glass)
         .accessibilityLabel("Capture mode, \(currentMode.label)")
     }
 
-    /// Standard SwiftUI wheel picker (UIPickerView) — native momentum, snap,
-    /// haptics — over a vertical black-to-transparent scrim matching the tape.
+    /// Custom UIPickerView wheel over a vertical black-to-transparent scrim,
+    /// so the selected row sits on black like the timer, not a gray bubble.
     private var captureModeWheel: some View {
-        Picker("Capture mode", selection: $captureMode) {
-            ForEach(CaptureMode.allCases) { mode in
-                Text(mode.label)
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(Color.accentColor)
-                    .tag(mode.rawValue)
-            }
-        }
-        .pickerStyle(.wheel)
-        .frame(width: 150, height: 100)
-        .clipped()
-        .background(
-            LinearGradient(
-                stops: [
-                    .init(color: .clear, location: 0),
-                    .init(color: .black.opacity(0.85), location: 0.5),
-                    .init(color: .clear, location: 1),
-                ],
-                startPoint: .top,
-                endPoint: .bottom
+        CaptureWheel(modes: CaptureMode.allCases, selection: $captureMode)
+            .frame(width: 150, height: 100)
+            .clipped()
+            .background(
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: 0),
+                        .init(color: .black.opacity(0.9), location: 0.5),
+                        .init(color: .clear, location: 1),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
             )
-        )
-        .transition(.opacity)
+            .transition(.opacity)
     }
 
     /// Just the elapsed time now — larger — over a soft scrim that fades to

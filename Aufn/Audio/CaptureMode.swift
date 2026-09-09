@@ -28,9 +28,9 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var caption: String {
         switch self {
-        case .raw: "Untouched — full dynamics, no processing"
-        case .standard: "Lightly balanced by iOS"
-        case .voice: "Cleaned for speech — not for music"
+        case .raw: "Untouched — full dynamics, nothing added."
+        case .standard: "Lightly balanced by iOS."
+        case .voice: "Cleaned for speech — not for music."
         }
     }
 
