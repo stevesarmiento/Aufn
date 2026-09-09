@@ -133,7 +133,6 @@ struct TransportBar: View {
         }
         .buttonStyle(.plain)
         .animation(.snappy, value: isRecording)
-        .disabled(isPlaying)
         .accessibilityLabel(isRecording ? "Stop recording" : "Record")
     }
 
