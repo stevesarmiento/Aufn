@@ -47,7 +47,9 @@ struct TrackRowView: View {
                         persistAndUpdateMix(updated)
                     }
                     RoundToggle(systemImage: "slider.horizontal.3", isOn: isMixerExpanded, tint: .accentColor, label: "Mixer for \(track.name)") {
-                        withAnimation(.snappy) { isMixerExpanded.toggle() }
+                        withAnimation(isMixerExpanded ? .discloseClose : .discloseOpen) {
+                            isMixerExpanded.toggle()
+                        }
                     }
                 }
                 .padding(.horizontal, 12)
@@ -62,7 +64,11 @@ struct TrackRowView: View {
                     mixerControls
                         .padding(.horizontal, 12)
                         .padding(.bottom, 12)
-                        .transition(.blurReplace.combined(with: .move(edge: .top)))
+                        // Unfolds down from under the waveform with the same
+                        // bouncy-in / snappy-out motion as the capture wheel.
+                        // The sliders wait a beat while the card grows so they
+                        // don't crowd the waveform before there's room.
+                        .transition(.disclose(anchor: .top, edge: .top, appearDelay: 0.06))
                         // Below the header/waveform so the expand reveals from
                         // underneath instead of sliding over the track.
                         .zIndex(-1)

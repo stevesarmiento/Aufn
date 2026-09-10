@@ -45,7 +45,9 @@ struct MetronomeRowView: View {
                         persist(updated)
                     }
                     RoundToggle(systemImage: "slider.horizontal.3", isOn: isExpanded, tint: .accentColor, label: "Metronome settings") {
-                        withAnimation(.snappy) { isExpanded.toggle() }
+                        withAnimation(isExpanded ? .discloseClose : .discloseOpen) {
+                            isExpanded.toggle()
+                        }
                     }
                 }
                 .padding(.horizontal, 12)
@@ -56,7 +58,9 @@ struct MetronomeRowView: View {
                     settingsControls
                         .padding(.horizontal, 12)
                         .padding(.bottom, 12)
-                        .transition(.blurReplace.combined(with: .move(edge: .top)))
+                        // Same bouncy-in / instant-out unfold as the track
+                        // mixer; the controls wait a beat while the card grows.
+                        .transition(.disclose(anchor: .top, edge: .top, appearDelay: 0.06))
                         // Below the header so the expand reveals from
                         // underneath instead of sliding over it.
                         .zIndex(-1)

@@ -24,13 +24,23 @@ struct TransportBar: View {
             tapeDeck
         }
         .animation(.snappy, value: engine.state)
-        .animation(.snappy, value: choosingMode)
         .padding(.horizontal, 20)
         .padding(.bottom, 4)
         .onChange(of: engine.state) { _, state in
-            if state != .idle { choosingMode = false }
+            if state != .idle { setChoosingMode(false) }
         }
     }
+
+    private func setChoosingMode(_ choosing: Bool) {
+        withAnimation(choosing ? .discloseOpen : .discloseClose) {
+            choosingMode = choosing
+        }
+    }
+
+    /// The wheel and its trigger swap through the trailing edge so one appears
+    /// to become the other; play and the mode label do the same on the left.
+    private var trailingSwap: AnyTransition { .disclose(anchor: .trailing) }
+    private var leadingSwap: AnyTransition { .disclose(anchor: .leading) }
 
     /// ZStack ordering matters: the strip is the bottom layer so the glass
     /// record head above it refracts the dots passing beneath. While choosing
@@ -41,7 +51,7 @@ struct TransportBar: View {
             if choosingMode {
                 Color.clear
                     .contentShape(.rect)
-                    .onTapGesture { choosingMode = false }
+                    .onTapGesture { setChoosingMode(false) }
             }
             HStack {
                 leftControl
@@ -63,9 +73,10 @@ struct TransportBar: View {
                 .font(.subheadline.weight(.heavy))
                 .foregroundStyle(.secondary)
                 .frame(width: 120, alignment: .trailing)
-                .transition(.opacity)
+                .transition(leadingSwap)
         } else {
             playButton
+                .transition(leadingSwap)
         }
     }
 
@@ -83,7 +94,7 @@ struct TransportBar: View {
     /// Collapsed trigger: just the mode name in a glass capsule.
     private var captureModeTrigger: some View {
         Button {
-            choosingMode = true
+            setChoosingMode(true)
         } label: {
             Text(currentMode.label)
                 .font(.footnote.weight(.heavy))
@@ -92,6 +103,7 @@ struct TransportBar: View {
                 .padding(.vertical, 6)
         }
         .buttonStyle(.glass)
+        .transition(trailingSwap)
         .accessibilityLabel("Capture mode, \(currentMode.label)")
     }
 
@@ -100,7 +112,7 @@ struct TransportBar: View {
     /// bubble) like the timer.
     private var captureModeWheel: some View {
         CaptureWheel(modes: CaptureMode.allCases, selection: $captureMode) {
-            choosingMode = false
+            setChoosingMode(false)
         }
             .frame(width: 130, height: 96)
             .clipped()
@@ -115,7 +127,7 @@ struct TransportBar: View {
                     endPoint: .trailing
                 )
             )
-            .transition(.opacity)
+            .transition(trailingSwap)
     }
 
     /// Just the elapsed time now — larger — over a soft scrim that fades to
