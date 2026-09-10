@@ -21,18 +21,22 @@ enum PeakStore {
         var currentPeak: Float = 0
         var framesInBin = 0
 
+        let channelCount = Int(format.channelCount)
         while file.framePosition < file.length {
             try file.read(into: buffer)
-            guard let channel = buffer.floatChannelData?[0] else { break }
+            guard let channels = buffer.floatChannelData else { break }
             let frameCount = Int(buffer.frameLength)
             guard frameCount > 0 else { break }
 
             var index = 0
             while index < frameCount {
                 let take = min(binFrames - framesInBin, frameCount - index)
-                var chunkPeak: Float = 0
-                vDSP_maxmgv(channel + index, 1, &chunkPeak, vDSP_Length(take))
-                currentPeak = max(currentPeak, chunkPeak)
+                // A bin's peak is the loudest sample on any channel.
+                for channel in 0..<channelCount {
+                    var chunkPeak: Float = 0
+                    vDSP_maxmgv(channels[channel] + index, 1, &chunkPeak, vDSP_Length(take))
+                    currentPeak = max(currentPeak, chunkPeak)
+                }
                 framesInBin += take
                 index += take
                 if framesInBin >= binFrames {

@@ -18,7 +18,7 @@ enum Exporter {
     /// Converts each track's Float32 CAF to a 24-bit WAV, skipping the stored
     /// latency-offset frames, into a fresh folder in tmp. Returns the folder.
     /// Stems are raw by default; `applyingVolume` bakes each track's volume in
-    /// (pan is not meaningful for mono stems and only affects the mixdown).
+    /// (pan is never baked into stems, mono or stereo; it only affects the mixdown).
     static func exportStems(_ stems: [Stem], projectName: String, applyingVolume: Bool = false) throws -> URL {
         let folder = try makeExportFolder(named: projectName)
         for (index, stem) in stems.enumerated() {

@@ -18,8 +18,12 @@ struct SwipeToDeleteRow<Content: View>: View {
     let onDelete: () -> Void
     @ViewBuilder let content: () -> Content
 
-    @State private var dragTranslation: CGFloat = 0
-    @State private var axisLock: Axis?
+    // @GestureState (not @State): when the ScrollView steals the touch the
+    // drag is CANCELLED — onEnded never runs — and only a gesture state's
+    // automatic reset puts the row back. With @State this left rows frozen
+    // mid-offset with a stale axis lock, which read as scroll glitches.
+    @GestureState(resetTransaction: Transaction(animation: .snappy))
+    private var drag = SwipeDrag()
     @State private var confirmingDelete = false
     @State private var rowWidth: CGFloat = 0
 
@@ -29,7 +33,7 @@ struct SwipeToDeleteRow<Content: View>: View {
     // Right-drag past closed rubber-bands; left drag is free so a full swipe
     // can travel the row (standard list behavior).
     private var offset: CGFloat {
-        let x = baseOffset + dragTranslation
+        let x = baseOffset + drag.translation
         return x > 0 ? x / 4 : x
     }
 
@@ -100,25 +104,33 @@ struct SwipeToDeleteRow<Content: View>: View {
         }
     }
 
-    /// Plain .gesture + explicit axis lock: the ScrollView keeps clearly
-    /// vertical pans, and the row never consumes a drag whose first
-    /// recognized delta is vertical.
+    /// Plain .gesture + explicit axis lock: the row only claims a drag that is
+    /// CLEARLY horizontal (1.5× wider than tall); anything ambiguous stays
+    /// unlocked so the ScrollView wins ties and scroll starts are never
+    /// hijacked by a slightly diagonal flick.
     private var dragGesture: some Gesture {
         DragGesture(minimumDistance: 12)
-            .onChanged { value in
-                if axisLock == nil {
-                    axisLock = abs(value.translation.width) > abs(value.translation.height)
-                        ? .horizontal : .vertical
-                    if axisLock == .horizontal, openRowID != nil, openRowID != id {
-                        withAnimation(.snappy) { openRowID = nil }
+            .updating($drag) { value, state, _ in
+                if state.axis == nil {
+                    if Self.isClearlyHorizontal(value.translation) {
+                        state.axis = .horizontal
+                    } else if abs(value.translation.height) > abs(value.translation.width) {
+                        state.axis = .vertical
                     }
                 }
-                guard axisLock == .horizontal else { return }
-                dragTranslation = value.translation.width
+                guard state.axis == .horizontal else { return }
+                state.translation = value.translation.width
+            }
+            .onChanged { value in
+                if Self.isClearlyHorizontal(value.translation),
+                   openRowID != nil, openRowID != id {
+                    withAnimation(.snappy) { openRowID = nil }
+                }
             }
             .onEnded { value in
-                defer { axisLock = nil }
-                guard axisLock == .horizontal else { return }
+                // Judged from the final translation: gesture state may already
+                // be reset inside onEnded.
+                guard Self.isClearlyHorizontal(value.translation) else { return }
                 // Commit needs the finger to actually travel most of the row —
                 // a fast flick (large PREDICTED translation) only snaps open.
                 let dragged = baseOffset + value.translation.width
@@ -132,8 +144,18 @@ struct SwipeToDeleteRow<Content: View>: View {
                     } else {
                         openRowID = projected < -revealWidth / 2 ? id : nil
                     }
-                    dragTranslation = 0
                 }
             }
     }
+
+    private static func isClearlyHorizontal(_ translation: CGSize) -> Bool {
+        abs(translation.width) > abs(translation.height) * 1.5
+    }
+}
+
+/// Transient drag: the row's live offset plus which axis the touch committed
+/// to (nil while still ambiguous).
+private struct SwipeDrag {
+    var translation: CGFloat = 0
+    var axis: Axis?
 }

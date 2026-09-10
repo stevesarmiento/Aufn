@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		03A7D114F8672BD5D5D2C087 /* ExportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0637C1D4B7BF55CCC6C39433 /* ExportSheet.swift */; };
 		0820CCC8D50347F23F06F9B1 /* ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A520395A415465ECDA8922 /* ProjectListView.swift */; };
+		090A23C73C4AB8679342F518 /* MeterTapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE70FC29BBD993DDA3530CD /* MeterTapTests.swift */; };
 		0A1C3E4246FF7C7436E160D8 /* SampleRatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */; };
 		0CFFEDE6ED09EA23F0021DC1 /* AudioSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9349C45AC65E7E803D41997 /* AudioSessionController.swift */; };
 		0F1D98DC77C99CC49DD3BB9D /* MetronomeClickTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A23EF8819D114AE7462032A /* MetronomeClickTests.swift */; };
@@ -35,14 +36,18 @@
 		80827C7451DDFAFEC6331831 /* PreviewSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */; };
 		907456A2EB8A1ABAB713C38D /* ExportPipelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37B6BCF8C4EF20E3A2CB96B /* ExportPipelineTests.swift */; };
 		9A20CF41E6028B2CCAD8689A /* TrackRecorderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3765D9494AA852719FF60240 /* TrackRecorderTests.swift */; };
+		9D82AC66E26D0C0A6D059FF8 /* MicPositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF1C1E167C37F36DC1A9B45 /* MicPositionTests.swift */; };
 		A25179BD9EE57D1CB68319FC /* MixRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5B60D01674003C1EADF75F /* MixRules.swift */; };
 		A38B185C8F3A3D161D11D198 /* AufnApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711EA42EDE83F0D800EE54A /* AufnApp.swift */; };
 		A9E7AFA81A0ED309071257A9 /* CaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1461DE290A21792CE5928EC /* CaptureMode.swift */; };
 		AD994ED964F5C382FDA43B2D /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAC1082458BADE454C9C6839 /* Track.swift */; };
+		B6B0B7DA3DFE671E448029AA /* CaptureModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59A2EB7A004F39AD53F6BFC /* CaptureModeTests.swift */; };
+		BA859AE312D2E3FF64AAD409 /* MicPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD02489BC12CA4735469D827 /* MicPosition.swift */; };
 		C74E613D29ACDBF431F79FC4 /* Exporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C339619CA7533837060A4F /* Exporter.swift */; };
 		CBFE6509948F3F7522DBA04A /* ProjectStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB15403DD69C7D8337DBFB9 /* ProjectStoreTests.swift */; };
 		CFF682E5BD092D8BCB51E8AA /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80233F83100DBD15AD06CE76 /* ProjectStore.swift */; };
 		D221290AA1E1B10A7534EE27 /* MetronomeClick.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE90A8C9B28F3B30E090FBD7 /* MetronomeClick.swift */; };
+		D6716A9CBD1F2D9171C3A41B /* MicPositionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8DDF60047B1F191D12CA8 /* MicPositionPicker.swift */; };
 		DECE386A0BB6D862F705AAF5 /* LevelMeterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */; };
 		E3BA6A51F2534F52306AB145 /* PeakStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BCEE49143C0E2CCF63420D /* PeakStore.swift */; };
 		EA1FF872BA1372FDCEBB6B76 /* MeterTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB153B8D25AA800D8D238B2 /* MeterTap.swift */; };
@@ -79,6 +84,7 @@
 		3765D9494AA852719FF60240 /* TrackRecorderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRecorderTests.swift; sourceTree = "<group>"; };
 		39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordFlowUITests.swift; sourceTree = "<group>"; };
 		3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRowView.swift; sourceTree = "<group>"; };
+		4AE70FC29BBD993DDA3530CD /* MeterTapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterTapTests.swift; sourceTree = "<group>"; };
 		4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleRatePicker.swift; sourceTree = "<group>"; };
 		5BB15403DD69C7D8337DBFB9 /* ProjectStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStoreTests.swift; sourceTree = "<group>"; };
 		5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSupport.swift; sourceTree = "<group>"; };
@@ -89,8 +95,10 @@
 		6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelCodableTests.swift; sourceTree = "<group>"; };
 		7F29F36DC7179183A9532339 /* FittedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FittedSheet.swift; sourceTree = "<group>"; };
 		80233F83100DBD15AD06CE76 /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
+		81F8DDF60047B1F191D12CA8 /* MicPositionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicPositionPicker.swift; sourceTree = "<group>"; };
 		875FC223D2F40A915B1311C5 /* TrackCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackCard.swift; sourceTree = "<group>"; };
 		90E0F36D39180002A95932DF /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
+		9AF1C1E167C37F36DC1A9B45 /* MicPositionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicPositionTests.swift; sourceTree = "<group>"; };
 		9CB153B8D25AA800D8D238B2 /* MeterTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterTap.swift; sourceTree = "<group>"; };
 		AC102DCD8BF33666A79EC3E7 /* MetronomeRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeRowView.swift; sourceTree = "<group>"; };
 		ADB93826B8AD141909A69E59 /* TrackRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRecorder.swift; sourceTree = "<group>"; };
@@ -99,6 +107,7 @@
 		BE5B60D01674003C1EADF75F /* MixRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixRules.swift; sourceTree = "<group>"; };
 		C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputPicker.swift; sourceTree = "<group>"; };
 		C37B6BCF8C4EF20E3A2CB96B /* ExportPipelineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportPipelineTests.swift; sourceTree = "<group>"; };
+		C59A2EB7A004F39AD53F6BFC /* CaptureModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureModeTests.swift; sourceTree = "<group>"; };
 		CC5AA0A3C78D261AAA26F172 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
 		CD353F7FF70F7D2567FD63C5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CE5212E762185BF2862EBD8B /* Aufn.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Aufn.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -106,6 +115,7 @@
 		D5A4A4430704E975A8D5F748 /* AufnUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AufnUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA0E39CE7F3C52065E3CFCF6 /* AudioEngineController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngineController.swift; sourceTree = "<group>"; };
 		DA1A9BC9F1428107D922B018 /* CaptureWheel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureWheel.swift; sourceTree = "<group>"; };
+		DD02489BC12CA4735469D827 /* MicPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicPosition.swift; sourceTree = "<group>"; };
 		E2C3E31CC0386771ECD012FD /* PeakStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeakStoreTests.swift; sourceTree = "<group>"; };
 		E9349C45AC65E7E803D41997 /* AudioSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionController.swift; sourceTree = "<group>"; };
 		EAC1082458BADE454C9C6839 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
@@ -123,6 +133,7 @@
 				29C339619CA7533837060A4F /* Exporter.swift */,
 				9CB153B8D25AA800D8D238B2 /* MeterTap.swift */,
 				AE90A8C9B28F3B30E090FBD7 /* MetronomeClick.swift */,
+				DD02489BC12CA4735469D827 /* MicPosition.swift */,
 				12BCEE49143C0E2CCF63420D /* PeakStore.swift */,
 				ADB93826B8AD141909A69E59 /* TrackRecorder.swift */,
 			);
@@ -175,8 +186,11 @@
 		E4F90E2C88AEF85B256E1439 /* AufnTests */ = {
 			isa = PBXGroup;
 			children = (
+				C59A2EB7A004F39AD53F6BFC /* CaptureModeTests.swift */,
 				C37B6BCF8C4EF20E3A2CB96B /* ExportPipelineTests.swift */,
+				4AE70FC29BBD993DDA3530CD /* MeterTapTests.swift */,
 				1A23EF8819D114AE7462032A /* MetronomeClickTests.swift */,
+				9AF1C1E167C37F36DC1A9B45 /* MicPositionTests.swift */,
 				6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */,
 				E2C3E31CC0386771ECD012FD /* PeakStoreTests.swift */,
 				5BB15403DD69C7D8337DBFB9 /* ProjectStoreTests.swift */,
@@ -205,6 +219,7 @@
 				EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */,
 				5F603810D03C315FAE0550CD /* MetronomeBeatGridView.swift */,
 				AC102DCD8BF33666A79EC3E7 /* MetronomeRowView.swift */,
+				81F8DDF60047B1F191D12CA8 /* MicPositionPicker.swift */,
 				CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */,
 				5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */,
 				90E0F36D39180002A95932DF /* ProjectDetailView.swift */,
@@ -331,8 +346,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6B0B7DA3DFE671E448029AA /* CaptureModeTests.swift in Sources */,
 				907456A2EB8A1ABAB713C38D /* ExportPipelineTests.swift in Sources */,
+				090A23C73C4AB8679342F518 /* MeterTapTests.swift in Sources */,
 				0F1D98DC77C99CC49DD3BB9D /* MetronomeClickTests.swift in Sources */,
+				9D82AC66E26D0C0A6D059FF8 /* MicPositionTests.swift in Sources */,
 				7F52C940B17018BCB4D030B1 /* ModelCodableTests.swift in Sources */,
 				5F1C187BE36B4515AECFCD09 /* PeakStoreTests.swift in Sources */,
 				CBFE6509948F3F7522DBA04A /* ProjectStoreTests.swift in Sources */,
@@ -367,6 +385,8 @@
 				D221290AA1E1B10A7534EE27 /* MetronomeClick.swift in Sources */,
 				383473AADA66DEE9D9B83121 /* MetronomeRowView.swift in Sources */,
 				13020CA1318F985FFFC6F519 /* MetronomeSettings.swift in Sources */,
+				BA859AE312D2E3FF64AAD409 /* MicPosition.swift in Sources */,
+				D6716A9CBD1F2D9171C3A41B /* MicPositionPicker.swift in Sources */,
 				A25179BD9EE57D1CB68319FC /* MixRules.swift in Sources */,
 				6EEA7A385C4ADEA43921F3B5 /* MixWaveformView.swift in Sources */,
 				E3BA6A51F2534F52306AB145 /* PeakStore.swift in Sources */,

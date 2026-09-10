@@ -91,7 +91,8 @@ final class ProjectStore {
                 fileName: url.lastPathComponent,
                 createdAt: modified,
                 durationSeconds: Double(file.length) / rate,
-                sampleRate: rate
+                sampleRate: rate,
+                channelCount: Int(file.processingFormat.channelCount)
             )
             recovered.append(track)
         }

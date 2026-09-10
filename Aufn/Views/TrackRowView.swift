@@ -21,6 +21,12 @@ struct TrackRowView: View {
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .layoutPriority(-1)
+                    if track.channelCount == 2 {
+                        Text("ST")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .accessibilityLabel("Stereo")
+                    }
                     Spacer(minLength: 8)
                     Text(track.durationSeconds.timecode)
                         .font(.caption.monospacedDigit())

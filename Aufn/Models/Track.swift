@@ -10,6 +10,7 @@ struct Track: Identifiable, Codable, Equatable, Hashable {
     var latencyOffsetSamples: Int
     var durationSeconds: Double
     var sampleRate: Double
+    var channelCount: Int
     var volume: Float
     var pan: Float
 
@@ -23,6 +24,7 @@ struct Track: Identifiable, Codable, Equatable, Hashable {
         latencyOffsetSamples: Int = 0,
         durationSeconds: Double = 0,
         sampleRate: Double,
+        channelCount: Int = 1,
         volume: Float = 1,
         pan: Float = 0
     ) {
@@ -35,6 +37,7 @@ struct Track: Identifiable, Codable, Equatable, Hashable {
         self.latencyOffsetSamples = latencyOffsetSamples
         self.durationSeconds = durationSeconds
         self.sampleRate = sampleRate
+        self.channelCount = channelCount
         self.volume = volume
         self.pan = pan
     }
@@ -53,6 +56,7 @@ struct Track: Identifiable, Codable, Equatable, Hashable {
         latencyOffsetSamples = try container.decode(Int.self, forKey: .latencyOffsetSamples)
         durationSeconds = try container.decode(Double.self, forKey: .durationSeconds)
         sampleRate = try container.decode(Double.self, forKey: .sampleRate)
+        channelCount = try container.decodeIfPresent(Int.self, forKey: .channelCount) ?? 1
         volume = try container.decodeIfPresent(Float.self, forKey: .volume) ?? 1
         pan = try container.decodeIfPresent(Float.self, forKey: .pan) ?? 0
     }

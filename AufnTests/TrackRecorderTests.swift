@@ -8,22 +8,34 @@ import Testing
 struct TrackRecorderTests {
     private let sampleRate = 48_000.0
 
-    private func makeRecorder(startInSeconds: Double) throws -> (TrackRecorder, URL) {
+    private func makeRecorder(startInSeconds: Double, channels: AVAudioChannelCount = 1) throws -> (TrackRecorder, URL) {
         let url = FileManager.default.temporaryDirectory.appending(path: "\(UUID().uuidString).caf")
-        let format = try #require(AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1))
+        let format = try #require(AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: channels))
         let start = mach_absolute_time() + AVAudioTime.hostTicks(forSeconds: startInSeconds)
         return (try TrackRecorder(fileURL: url, format: format, startHostTime: start), url)
     }
 
-    private func makeBuffer(seconds: Double) throws -> AVAudioPCMBuffer {
-        let format = try #require(AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1))
+    /// One level per channel (mono 0.25 by default).
+    private func makeBuffer(seconds: Double, channelLevels: [Float] = [0.25]) throws -> AVAudioPCMBuffer {
+        let format = try #require(AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: AVAudioChannelCount(channelLevels.count)))
         let frames = AVAudioFrameCount(seconds * sampleRate)
         let buffer = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frames))
         buffer.frameLength = frames
-        for frame in 0..<Int(frames) {
-            buffer.floatChannelData![0][frame] = 0.25
+        for (channel, level) in channelLevels.enumerated() {
+            for frame in 0..<Int(frames) {
+                buffer.floatChannelData![channel][frame] = level
+            }
         }
         return buffer
+    }
+
+    private func channelPeaks(of url: URL) throws -> [Float] {
+        let file = try AVAudioFile(forReading: url)
+        let buffer = try #require(AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: AVAudioFrameCount(file.length)))
+        try file.read(into: buffer)
+        return (0..<Int(file.processingFormat.channelCount)).map { channel in
+            (0..<Int(buffer.frameLength)).reduce(Float(0)) { max($0, abs(buffer.floatChannelData![channel][$1])) }
+        }
     }
 
     @Test func invalidHostTimeRecordsInsteadOfDropping() throws {
@@ -66,6 +78,34 @@ struct TrackRecorderTests {
         // Appends after finalize are ignored, not written.
         recorder.append(try makeBuffer(seconds: 1.0), at: AVAudioTime(hostTime: mach_absolute_time()))
         #expect(recorder.finalize().frames == outcome.frames)
+        try? FileManager.default.removeItem(at: url)
+    }
+
+    // MARK: - Stereo takes
+
+    @Test func stereoBuffersWriteBothChannels() throws {
+        let (recorder, url) = try makeRecorder(startInSeconds: 0, channels: 2)
+        recorder.append(try makeBuffer(seconds: 0.5, channelLevels: [0, 0.25]), at: AVAudioTime(hostTime: mach_absolute_time()))
+        recorder.append(try makeBuffer(seconds: 0.5, channelLevels: [0, 0.25]), at: AVAudioTime(hostTime: mach_absolute_time()))
+        let outcome = recorder.finalize()
+        #expect(outcome.frames == AVAudioFramePosition(sampleRate))
+        let reader = try AVAudioFile(forReading: url)
+        #expect(reader.processingFormat.channelCount == 2)
+        let peaks = try channelPeaks(of: url)
+        #expect(peaks[0] == 0)
+        #expect(abs(peaks[1] - 0.25) < 0.001)
+        try? FileManager.default.removeItem(at: url)
+    }
+
+    @Test func boundaryTrimKeepsBothChannels() throws {
+        let (recorder, url) = try makeRecorder(startInSeconds: 1.0, channels: 2)
+        let when = AVAudioTime(hostTime: mach_absolute_time() + AVAudioTime.hostTicks(forSeconds: 0.5))
+        recorder.append(try makeBuffer(seconds: 2.0, channelLevels: [0.1, 0.25]), at: when)
+        let frames = recorder.finalize().frames
+        #expect(abs(Double(frames) / sampleRate - 1.5) < 0.05)
+        let peaks = try channelPeaks(of: url)
+        #expect(abs(peaks[0] - 0.1) < 0.001)
+        #expect(abs(peaks[1] - 0.25) < 0.001)
         try? FileManager.default.removeItem(at: url)
     }
 }

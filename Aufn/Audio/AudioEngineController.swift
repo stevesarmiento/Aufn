@@ -51,10 +51,6 @@ final class AudioEngineController {
     /// (first access before the session is configured for recording caches
     /// an empty input format; during playback it would enable input IO).
     private var tapInstalled = false
-    /// Our own record of the input node's voice-processing state, so
-    /// playback can clear it without touching `inputNode` (which would
-    /// enable input IO on a playback-only session).
-    private var voiceProcessingEnabled = false
     // Only written on the main actor and read in deinit (which Swift 6
     // treats as nonisolated), hence the unsafe opt-out.
     nonisolated(unsafe) private var sessionObservers: [NSObjectProtocol] = []
@@ -67,6 +63,7 @@ final class AudioEngineController {
         let id: UUID
         let fileURL: URL
         let sampleRate: Double
+        let channelCount: Int
         let latencyOffsetSamples: Int
         let projectID: UUID
     }
@@ -93,14 +90,6 @@ final class AudioEngineController {
         stopTransport()
         do {
             try session.configure(output: .loudspeakerIfBuiltIn)
-            // A VOICE take leaves the voice-processing IO unit on the engine
-            // (reset() doesn't clear it); playback through it is quieter and
-            // can collapse the stereo image. Engine is stopped here, so this
-            // is the safe moment to turn it off.
-            if voiceProcessingEnabled {
-                try? engine.inputNode.setVoiceProcessingEnabled(false)
-                voiceProcessingEnabled = false
-            }
             schedulePlayers(for: project)
             scheduleClick(for: project)
             guard !players.isEmpty || clickPlayer != nil else {
@@ -202,16 +191,6 @@ final class AudioEngineController {
         do {
             try session.configure(preferredSampleRate: project.sampleRate ?? UserDefaults.standard.preferredSampleRate, output: .standard, recording: true)
 
-            // Toggle the AEC/noise-suppression/AGC stack to match the capture
-            // mode. Must happen while the engine is stopped and before we read
-            // the input format (it can change the format). Toggling is a full
-            // IO-unit rebuild, so only do it when the mode actually changed.
-            let wantsVoiceProcessing = CaptureMode.current.usesVoiceProcessing
-            if engine.inputNode.isVoiceProcessingEnabled != wantsVoiceProcessing {
-                try? engine.inputNode.setVoiceProcessingEnabled(wantsVoiceProcessing)
-            }
-            voiceProcessingEnabled = engine.inputNode.isVoiceProcessingEnabled
-
             schedulePlayers(for: project)
             scheduleClick(for: project)
 
@@ -239,6 +218,7 @@ final class AudioEngineController {
                 id: trackID,
                 fileURL: fileURL,
                 sampleRate: inputFormat.sampleRate,
+                channelCount: Int(inputFormat.channelCount),
                 latencyOffsetSamples: hasReference ? session.latencyOffsetSamples : 0,
                 projectID: project.id
             )
@@ -315,7 +295,8 @@ final class AudioEngineController {
             fileName: pending.fileURL.lastPathComponent,
             latencyOffsetSamples: pending.latencyOffsetSamples,
             durationSeconds: Double(outcome.frames) / pending.sampleRate,
-            sampleRate: pending.sampleRate
+            sampleRate: pending.sampleRate,
+            channelCount: pending.channelCount
         )
 
         // Provisional cache from the live meter so the row and tape show a
@@ -480,7 +461,6 @@ final class AudioEngineController {
             NotificationCenter.default.removeObserver(engineObserver)
         }
         engine = AVAudioEngine()
-        voiceProcessingEnabled = false
         tapInstalled = false
         observeEngineConfigurationChanges()
         lastError = AufnError.audioSystemReset.localizedDescription

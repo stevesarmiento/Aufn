@@ -9,12 +9,13 @@ import Testing
 /// parallel tests would delete each other's output.
 @Suite(.serialized)
 struct ExportPipelineTests {
-    private func makeCAF(seconds: Double, sampleRate: Double = 48_000, frequency: Double = 440) throws -> URL {
+    /// One entry per channel: the sine's amplitude on that channel.
+    private func makeCAF(seconds: Double, sampleRate: Double = 48_000, frequency: Double = 440, channelGains: [Float] = [0.5]) throws -> URL {
         let url = FileManager.default.temporaryDirectory.appending(path: "\(UUID().uuidString).caf")
         let settings: [String: Any] = [
             AVFormatIDKey: kAudioFormatLinearPCM,
             AVSampleRateKey: sampleRate,
-            AVNumberOfChannelsKey: 1,
+            AVNumberOfChannelsKey: channelGains.count,
             AVLinearPCMBitDepthKey: 32,
             AVLinearPCMIsFloatKey: true,
         ]
@@ -23,7 +24,10 @@ struct ExportPipelineTests {
         let frames = AVAudioFrameCount(seconds * sampleRate)
         let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frames)!
         for frame in 0..<Int(frames) {
-            buffer.floatChannelData![0][frame] = Float(sin(2 * .pi * frequency * Double(frame) / sampleRate)) * 0.5
+            let sample = Float(sin(2 * .pi * frequency * Double(frame) / sampleRate))
+            for (channel, gain) in channelGains.enumerated() {
+                buffer.floatChannelData![channel][frame] = sample * gain
+            }
         }
         buffer.frameLength = frames
         try file.write(from: buffer)
@@ -118,10 +122,10 @@ struct ExportPipelineTests {
         }
     }
 
-    private func mixdownPeaks(volume: Float = 1, pan: Float = 0, masterVolume: Float = 1) throws -> [Float] {
+    private func mixdownPeaks(volume: Float = 1, pan: Float = 0, masterVolume: Float = 1, channelGains: [Float] = [0.5]) throws -> [Float] {
         let sampleRate = 48_000.0
-        let caf = try makeCAF(seconds: 0.5, sampleRate: sampleRate)
-        let track = Track(name: "T", fileName: caf.lastPathComponent, durationSeconds: 0.5, sampleRate: sampleRate, volume: volume, pan: pan)
+        let caf = try makeCAF(seconds: 0.5, sampleRate: sampleRate, channelGains: channelGains)
+        let track = Track(name: "T", fileName: caf.lastPathComponent, durationSeconds: 0.5, sampleRate: sampleRate, channelCount: channelGains.count, volume: volume, pan: pan)
         let url = try Exporter.mixdown([.init(track: track, audioURL: caf)], projectName: "Levels", sampleRate: sampleRate, masterVolume: masterVolume)
         return try channelPeaks(of: url)
     }
@@ -198,5 +202,61 @@ struct ExportPipelineTests {
         let bakedFolder = try Exporter.exportStems([stem], projectName: "Baked", applyingVolume: true)
         let bakedPeak = try channelPeaks(of: FileManager.default.contentsOfDirectory(at: bakedFolder, includingPropertiesForKeys: nil)[0])[0]
         #expect(abs(bakedPeak / rawPeak - 0.5) < 0.05)
+    }
+
+    // MARK: - Stereo takes
+
+    @Test func peaksUseAllChannels() throws {
+        // Right-channel-only signal: peaks derived from channel 0 alone would be zero.
+        let caf = try makeCAF(seconds: 1.0, channelGains: [0, 0.5])
+        let peaksURL = FileManager.default.temporaryDirectory.appending(path: "\(UUID().uuidString).peaks")
+        try PeakStore.computePeaks(audioURL: caf, peaksURL: peaksURL)
+        let peaks = try #require(PeakStore.loadPeaks(from: peaksURL))
+        #expect(peaks.count == 50)
+        #expect(peaks.allSatisfy { $0 > 0.4 && $0 <= 0.51 })
+    }
+
+    @Test func stemExportPreservesStereoChannels() throws {
+        let sampleRate = 48_000.0
+        let caf = try makeCAF(seconds: 1.0, sampleRate: sampleRate, channelGains: [0, 0.5])
+        let track = Track(name: "Stereo", fileName: caf.lastPathComponent, durationSeconds: 1.0, sampleRate: sampleRate, channelCount: 2)
+        let folder = try Exporter.exportStems([.init(track: track, audioURL: caf)], projectName: "Stereo")
+        let wav = try #require(try FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil).first)
+        #expect(try AVAudioFile(forReading: wav).fileFormat.channelCount == 2)
+        let peaks = try channelPeaks(of: wav)
+        #expect(peaks[0] < 0.02)
+        #expect(peaks[1] > 0.4)
+    }
+
+    @Test func mixdownPreservesStereoImage() throws {
+        // A left-only stereo source at pan 0 must not be collapsed to mono.
+        let peaks = try mixdownPeaks(pan: 0, channelGains: [0.5, 0])
+        #expect(peaks[0] > 0.2)
+        #expect(peaks[1] < 0.02)
+    }
+
+    @Test func mixdownPanActsAsBalanceOnStereoTrack() throws {
+        let hardLeft = try mixdownPeaks(pan: -1, channelGains: [0.5, 0.5])
+        #expect(hardLeft[0] > 0.2)
+        #expect(hardLeft[1] < 0.02)
+        let hardRight = try mixdownPeaks(pan: 1, channelGains: [0.5, 0.5])
+        #expect(hardRight[0] < 0.02)
+        #expect(hardRight[1] > 0.2)
+    }
+
+    @Test func mixdownMixesMonoAndStereoTracks() throws {
+        let sampleRate = 48_000.0
+        let mono = try makeCAF(seconds: 1.0, sampleRate: sampleRate)
+        let stereo = try makeCAF(seconds: 1.5, sampleRate: sampleRate, channelGains: [0, 0.5])
+        let stems: [Exporter.Stem] = [
+            .init(track: Track(name: "Mono", fileName: mono.lastPathComponent, durationSeconds: 1.0, sampleRate: sampleRate), audioURL: mono),
+            .init(track: Track(name: "Stereo", fileName: stereo.lastPathComponent, durationSeconds: 1.5, sampleRate: sampleRate, channelCount: 2), audioURL: stereo),
+        ]
+        let url = try Exporter.mixdown(stems, projectName: "Mixed", sampleRate: sampleRate)
+        let file = try AVAudioFile(forReading: url)
+        #expect(abs(Double(file.length) / sampleRate - 1.5) < 0.05)
+        let peaks = try channelPeaks(of: url)
+        #expect(peaks[0] > 0.2)
+        #expect(peaks[1] > 0.2)
     }
 }

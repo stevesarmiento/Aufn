@@ -9,6 +9,7 @@ struct ProjectDetailView: View {
     @State private var showingExport = false
     @State private var showingSampleRate = false
     @State private var showingInputPicker = false
+    @State private var showingMicPosition = false
     @State private var showingMasterVolume = false
     @State private var openSwipeTrackID: UUID?
 
@@ -31,7 +32,10 @@ struct ProjectDetailView: View {
 
     private func content(for project: Project) -> some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
+            // Eager VStack on purpose: track counts are small, and a lazy
+            // stack's late row materialization made scrolling to the bottom
+            // hitch once rows had different heights (expanded mixers).
+            VStack(spacing: 12) {
                 if project.tracks.isEmpty && project.metronome == nil && engine.state != .recording {
                     emptyState
                 }
@@ -110,7 +114,7 @@ struct ProjectDetailView: View {
                         showingMasterVolume = true
                     }
                     .disabled(project.tracks.isEmpty)
-                    // Both reconfigure the audio route; never while the
+                    // These reconfigure the audio route; never while the
                     // transport is running (it would stall a live take).
                     Button("Sample Rate…", systemImage: "dial.medium") {
                         showingSampleRate = true
@@ -118,6 +122,10 @@ struct ProjectDetailView: View {
                     .disabled(engine.state != .idle)
                     Button("Microphone…", systemImage: "mic") {
                         showingInputPicker = true
+                    }
+                    .disabled(engine.state != .idle)
+                    Button("Mic Position…", systemImage: "dot.radiowaves.left.and.right") {
+                        showingMicPosition = true
                     }
                     .disabled(engine.state != .idle)
                 } label: {
@@ -137,6 +145,24 @@ struct ProjectDetailView: View {
                 TransportBar(engine: engine, project: project)
             }
             .padding(.bottom, 8)
+            // Scrim so track cards fade out under the floating transport
+            // instead of colliding with the tape dots. Overshoots the inset's
+            // top so the fade begins above the transport, and runs into the
+            // home-indicator area so nothing peeks out at the very bottom.
+            .background {
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: 0),
+                        .init(color: .black.opacity(0.85), location: 0.4),
+                        .init(color: .black, location: 0.75),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .padding(.top, -32)
+                .ignoresSafeArea(edges: .bottom)
+                .allowsHitTesting(false)
+            }
         }
         .sheet(isPresented: $showingExport) {
             ExportSheet(project: project)
@@ -146,6 +172,9 @@ struct ProjectDetailView: View {
         }
         .sheet(isPresented: $showingInputPicker) {
             InputPicker()
+        }
+        .sheet(isPresented: $showingMicPosition) {
+            MicPositionPicker()
         }
         .sheet(isPresented: $showingMasterVolume) {
             MasterVolumeSheet(projectID: projectID)

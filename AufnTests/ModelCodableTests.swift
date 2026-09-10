@@ -36,11 +36,12 @@ struct ModelCodableTests {
         #expect(project.tracks[0].volume == 1)
         #expect(project.tracks[0].pan == 0)
         #expect(project.tracks[0].isSoloed == false)
+        #expect(project.tracks[0].channelCount == 1)
         #expect(project.metronome == nil)
     }
 
     @Test func nonDefaultLevelsRoundTrip() throws {
-        let track = Track(name: "T", fileName: "t.caf", isSoloed: true, sampleRate: 48_000, volume: 0.4, pan: -0.7)
+        let track = Track(name: "T", fileName: "t.caf", isSoloed: true, sampleRate: 48_000, channelCount: 2, volume: 0.4, pan: -0.7)
         let project = Project(name: "P", sampleRate: 48_000, tracks: [track], masterVolume: 0.8)
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -51,6 +52,7 @@ struct ModelCodableTests {
         #expect(decoded.tracks[0].volume == 0.4)
         #expect(decoded.tracks[0].pan == -0.7)
         #expect(decoded.tracks[0].isSoloed == true)
+        #expect(decoded.tracks[0].channelCount == 2)
     }
 
     @Test func mixRulesAudibility() {
