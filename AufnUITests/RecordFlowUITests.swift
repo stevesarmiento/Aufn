@@ -21,7 +21,7 @@ final class RecordFlowUITests: XCTestCase {
         let newProject = app.buttons["New Project"].firstMatch
         XCTAssertTrue(newProject.waitForExistence(timeout: 5))
         newProject.tap()
-        let projectRow = app.cells.firstMatch
+        let projectRow = app.buttons.matching(identifier: "ProjectCard").firstMatch
         XCTAssertTrue(projectRow.waitForExistence(timeout: 5))
         projectRow.tap()
 

@@ -19,28 +19,55 @@ struct MixWaveformView: View {
     @State private var combined: [Float] = []
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 0.05, paused: engine.state == .idle)) { _ in
-            ZStack {
-                TapeWaveformView(bins: currentBins, centerBin: currentCenterBin)
-                // The record head's "refraction": the same tape, magnified
-                // around the head's center and clipped to its capsule. Real
-                // glassEffect can't sample siblings inside the transport's
-                // GlassEffectContainer, so the lens is drawn by hand.
-                TapeWaveformView(bins: currentBins, centerBin: currentCenterBin)
-                    .scaleEffect(TapeHead.magnification, anchor: .center)
-                    .mask(
-                        Circle()
-                            .frame(width: TapeHead.size.width, height: TapeHead.size.height)
-                    )
+        GeometryReader { geometry in
+            TimelineView(.animation(minimumInterval: 0.05, paused: engine.state == .idle)) { _ in
+                ZStack {
+                    TapeWaveformView(bins: currentBins, centerBin: currentCenterBin)
+                    // The record head's "refraction": the same tape, magnified
+                    // around the head's center and clipped to its capsule. Real
+                    // glassEffect can't sample siblings inside the transport's
+                    // GlassEffectContainer, so the lens is drawn by hand.
+                    TapeWaveformView(bins: currentBins, centerBin: currentCenterBin)
+                        .scaleEffect(TapeHead.magnification, anchor: .center)
+                        .mask(
+                            Circle()
+                                .frame(width: TapeHead.size.width, height: TapeHead.size.height)
+                        )
+                }
+            }
+            // The head is fixed at center and the tape scrolls under it, so a
+            // tap's distance from center IS its distance in time. Playback
+            // only; the transport buttons above this layer keep winning their
+            // own taps.
+            .contentShape(.rect)
+            .onTapGesture { location in
+                seek(toTapAt: location.x, width: geometry.size.width)
             }
         }
         .frame(height: 48)
-        .allowsHitTesting(false)
         .accessibilityElement()
         .accessibilityIdentifier("MixWaveform")
         .accessibilityLabel("Project waveform")
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment: engine.seek(to: engine.elapsedSeconds + 5)
+            case .decrement: engine.seek(to: engine.elapsedSeconds - 5)
+            @unknown default: break
+            }
+        }
         .task(id: peaksFingerprint) { await loadPeaks() }
         .task(id: mixFingerprint) { combine() }
+    }
+
+    private func seek(toTapAt x: CGFloat, width: CGFloat) {
+        guard engine.state == .playing else { return }
+        engine.seek(to: TransportRules.seekTarget(
+            tapX: x,
+            midX: width / 2,
+            position: engine.elapsedSeconds,
+            pointsPerSecond: TapeWaveformView.pointsPerSecond,
+            duration: engine.durationSeconds
+        ))
     }
 
     /// State table: idle = mix cued at 0; playing = mix scrolling under the

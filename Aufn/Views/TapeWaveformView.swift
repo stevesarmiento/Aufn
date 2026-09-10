@@ -20,6 +20,9 @@ struct TapeWaveformView: View {
     var playedTint: Color = .accentColor
 
     // One column per 100 ms of tape; 6 pt pitch -> 60 pt/s scroll speed.
+    /// The scroll speed, exposed so tap-to-seek inverts the same geometry
+    /// this Canvas draws with.
+    static var pointsPerSecond: Double { Double(columnPitch) / Double(binsPerColumn) / PeakStore.binDuration }
     private static let columnPitch: CGFloat = 6
     private static let dotDiameter: CGFloat = 3
     private static let dotPitch: CGFloat = 6

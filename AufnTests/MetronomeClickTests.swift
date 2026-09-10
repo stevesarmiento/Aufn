@@ -59,6 +59,26 @@ struct MetronomeClickTests {
         #expect(peak <= 1)
     }
 
+    @Test func leadInResumesOnTheNextBeat() throws {
+        let bar = try makeBuffer(bpm: 120, beatsPerBar: 4)   // 96 000 frames, 24 000 per beat
+        let barSamples = try samples(of: bar)
+        let lead = try #require(MetronomeClick.leadIn(bar: bar, phaseFrames: 30_000, beatFrames: 24_000))
+        let leadSamples = try samples(of: lead)
+        #expect(leadSamples.count == 66_000)
+        #expect(leadSamples[..<18_000].allSatisfy { $0 == 0 })
+        #expect(Array(leadSamples[18_000...]) == Array(barSamples[48_000...]))
+    }
+
+    @Test func leadInEdges() throws {
+        let bar = try makeBuffer(bpm: 120, beatsPerBar: 4)
+        #expect(MetronomeClick.leadIn(bar: bar, phaseFrames: 0, beatFrames: 24_000) == nil)
+        // Past the last beat: the remainder is pure silence to the bar line.
+        let tail = try #require(MetronomeClick.leadIn(bar: bar, phaseFrames: 95_000, beatFrames: 24_000))
+        let tailSamples = try samples(of: tail)
+        #expect(tailSamples.count == 1_000)
+        #expect(tailSamples.allSatisfy { $0 == 0 })
+    }
+
     @Test func countInMath() {
         let settings = MetronomeSettings(bpm: 120, beatsPerBar: 4, countInBars: 2)
         #expect(settings.barDuration == 2.0)

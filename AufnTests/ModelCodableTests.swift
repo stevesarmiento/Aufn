@@ -39,6 +39,29 @@ struct ModelCodableTests {
         #expect(project.tracks[0].channelCount == 1)
         #expect(project.tracks[0].captureMode == .raw)
         #expect(project.metronome == nil)
+        #expect(project.repeatPlayback == false)
+        #expect(project.tint == .graphite)
+    }
+
+    @Test func appearanceRoundTrips() throws {
+        let project = Project(name: "P", tint: .indigo)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(Project.self, from: encoder.encode(project))
+        #expect(decoded.tint == .indigo)
+    }
+
+    @Test func unknownTintFallsBack() throws {
+        let json = legacyProjectJSON.replacingOccurrences(
+            of: "\"name\" : \"Legacy Project\",",
+            with: "\"name\" : \"Legacy Project\", \"tint\" : \"chartreuse\","
+        )
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let project = try decoder.decode(Project.self, from: Data(json.utf8))
+        #expect(project.tint == .graphite)
     }
 
     @Test func retiredCaptureModeDecodesToTape() throws {
@@ -51,7 +74,7 @@ struct ModelCodableTests {
 
     @Test func nonDefaultLevelsRoundTrip() throws {
         let track = Track(name: "T", fileName: "t.caf", isSoloed: true, sampleRate: 48_000, channelCount: 2, volume: 0.4, pan: -0.7, captureMode: .warm)
-        let project = Project(name: "P", sampleRate: 48_000, tracks: [track], masterVolume: 0.8)
+        let project = Project(name: "P", sampleRate: 48_000, tracks: [track], masterVolume: 0.8, repeatPlayback: true)
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         let decoder = JSONDecoder()
@@ -63,6 +86,7 @@ struct ModelCodableTests {
         #expect(decoded.tracks[0].isSoloed == true)
         #expect(decoded.tracks[0].channelCount == 2)
         #expect(decoded.tracks[0].captureMode == .warm)
+        #expect(decoded.repeatPlayback == true)
     }
 
     @Test func mixRulesAudibility() {

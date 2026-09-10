@@ -133,7 +133,7 @@ final class ProjectStore {
 
     @discardableResult
     func createProject(named name: String) throws -> Project {
-        let project = Project(name: name)
+        let project = Project(name: name, tint: .rotating(index: projects.count))
         try fileManager.createDirectory(at: tracksDirectory(for: project), withIntermediateDirectories: true)
         try fileManager.createDirectory(at: peaksDirectory(for: project), withIntermediateDirectories: true)
         try persist(project)

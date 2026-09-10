@@ -1,9 +1,9 @@
 import AVFAudio
 import SwiftUI
 
-/// Microphone selection, matching the SampleRatePicker card pattern.
+/// The input-device half of the Microphone settings page.
 /// AVAudioSessionPortDescription values stay confined to this @MainActor view.
-struct InputPicker: View {
+struct InputDeviceSection: View {
     @Environment(AudioEngineController.self) private var engine
     @State private var inputs: [AVAudioSessionPortDescription] = []
     @State private var selectedUID: String?
@@ -11,15 +11,13 @@ struct InputPicker: View {
     private let session = AudioSessionController.shared
 
     var body: some View {
-        FittedSheet(title: "Microphone") {
+        Group {
+            SettingsSectionHeader("Input Device")
             autoRow
             ForEach(inputs, id: \.uid) { input in
                 row(for: input)
             }
-            Text("Your choice is remembered per device — if it disconnects, Aufn falls back to Auto until it returns.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .sheetCard()
+            SettingsFootnote("Your choice is remembered per device — if it disconnects, Aufn falls back to Auto until it returns.")
         }
         .onAppear(perform: refresh)
         .onDisappear {
@@ -40,55 +38,29 @@ struct InputPicker: View {
     }
 
     private var autoRow: some View {
-        Button {
+        SettingsOptionRow(
+            iconName: "wand.and.stars",
+            title: "Auto",
+            caption: "Let iOS pick the best available microphone.",
+            selected: selectedUID == nil,
+            accessibilityLabelOverride: "Input device, Auto"
+        ) {
             session.selectInput(uid: nil, portType: nil)
             selectedUID = nil
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "wand.and.stars")
-                    .font(.title2)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Auto")
-                        .font(.headline)
-                    Text("Let iOS pick the best available microphone.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                if selectedUID == nil {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(.tint)
-                }
-            }
-            .sheetCard()
         }
-        .buttonStyle(.plain)
     }
 
     private func row(for input: AVAudioSessionPortDescription) -> some View {
-        Button {
+        SettingsOptionRow(
+            iconName: icon(for: input.portType),
+            title: input.portName,
+            caption: explainer(for: input.portType),
+            selected: selectedUID == input.uid,
+            accessibilityLabelOverride: "Input device, \(input.portName)"
+        ) {
             session.selectInput(uid: input.uid, portType: input.portType.rawValue)
             selectedUID = input.uid
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: icon(for: input.portType))
-                    .font(.title2)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(input.portName)
-                        .font(.headline)
-                    Text(explainer(for: input.portType))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                if selectedUID == input.uid {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(.tint)
-                }
-            }
-            .sheetCard()
         }
-        .buttonStyle(.plain)
     }
 
     private func refresh() {
@@ -123,8 +95,8 @@ struct InputPicker: View {
 }
 
 #Preview("Microphone") {
-    SheetPreviewHost {
-        InputPicker()
+    NavigationStack {
+        MicrophoneSettingsView()
             .environment(AudioEngineController(store: ProjectStore()))
     }
     .preferredColorScheme(.dark)

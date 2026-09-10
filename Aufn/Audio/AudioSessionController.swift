@@ -53,6 +53,11 @@ final class AudioSessionController {
         return options
     }
 
+    /// Any of this (mode, sample rate, buffer duration, input, speaker
+    /// override) can reconfigure the audio IO unit; a live AVAudioEngine
+    /// reports that as a configuration change and may stop itself. The
+    /// engine treats a configuration change arriving right after its own
+    /// configure as self-inflicted.
     func configure(preferredSampleRate: Double = 48_000, output: OutputRoutingPolicy = .standard, recording: Bool = false) throws {
         // Takes run in `.measurement` so Apple's input chain stays out of the
         // way and grades print on the untouched mic; keep playback on

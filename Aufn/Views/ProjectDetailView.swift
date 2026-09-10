@@ -6,11 +6,7 @@ struct ProjectDetailView: View {
 
     let projectID: UUID
 
-    @State private var showingExport = false
-    @State private var showingSampleRate = false
-    @State private var showingInputPicker = false
-    @State private var showingMicPosition = false
-    @State private var showingMasterVolume = false
+    @State private var showingSettings = false
     @State private var openSwipeTrackID: UUID?
 
     var body: some View {
@@ -19,6 +15,13 @@ struct ProjectDetailView: View {
                 content(for: project)
             } else {
                 ContentUnavailableView("Project not found", systemImage: "questionmark.folder")
+            }
+        }
+        .onAppear {
+            // Playback started from the projects grid for another project
+            // must not leak into this workspace's transport.
+            if engine.playingProjectID != projectID {
+                engine.stopForLifecycle()
             }
         }
         .onDisappear {
@@ -94,43 +97,30 @@ struct ProjectDetailView: View {
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            // A pill of two: + creates workspace content (metronome now,
+            // loop tracks later — audio takes stay on the record head), the
+            // ellipsis opens the workspace drawer with everything else.
+            ToolbarItemGroup(placement: .primaryAction) {
                 Menu {
-                    if project.metronome == nil {
-                        Button("Metronome", systemImage: "metronome") {
-                            withAnimation(.snappy) {
-                                if var fresh = store.project(id: projectID) {
-                                    fresh.metronome = MetronomeSettings()
-                                    store.update(fresh)
-                                }
+                    Button("Metronome", systemImage: "metronome") {
+                        withAnimation(.snappy) {
+                            if var fresh = store.project(id: projectID) {
+                                fresh.metronome = MetronomeSettings()
+                                store.update(fresh)
                             }
                         }
                     }
-                    Button("Export…", systemImage: "square.and.arrow.up") {
-                        showingExport = true
-                    }
-                    .disabled(project.tracks.isEmpty)
-                    Button("Master Volume…", systemImage: "speaker.wave.2") {
-                        showingMasterVolume = true
-                    }
-                    .disabled(project.tracks.isEmpty)
-                    // These reconfigure the audio route; never while the
-                    // transport is running (it would stall a live take).
-                    Button("Sample Rate…", systemImage: "dial.medium") {
-                        showingSampleRate = true
-                    }
-                    .disabled(engine.state != .idle)
-                    Button("Microphone…", systemImage: "mic") {
-                        showingInputPicker = true
-                    }
-                    .disabled(engine.state != .idle)
-                    Button("Mic Position…", systemImage: "dot.radiowaves.left.and.right") {
-                        showingMicPosition = true
-                    }
-                    .disabled(engine.state != .idle)
+                    .disabled(project.metronome != nil)
                 } label: {
-                    Image(systemName: "ellipsis.circle")
+                    Image(systemName: "plus")
                 }
+                .accessibilityLabel("Add")
+                Button {
+                    showingSettings = true
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
+                .accessibilityLabel("Settings")
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -164,20 +154,8 @@ struct ProjectDetailView: View {
                 .allowsHitTesting(false)
             }
         }
-        .sheet(isPresented: $showingExport) {
-            ExportSheet(project: project)
-        }
-        .sheet(isPresented: $showingSampleRate) {
-            SampleRatePicker(lockedRate: store.project(id: projectID)?.sampleRate)
-        }
-        .sheet(isPresented: $showingInputPicker) {
-            InputPicker()
-        }
-        .sheet(isPresented: $showingMicPosition) {
-            MicPositionPicker()
-        }
-        .sheet(isPresented: $showingMasterVolume) {
-            MasterVolumeSheet(projectID: projectID)
+        .sheet(isPresented: $showingSettings) {
+            WorkspaceSettingsView(projectID: projectID)
         }
         .alert("Audio Error", isPresented: engineErrorShown) {
             Button("OK", role: .cancel) { engine.clearError() }
@@ -206,50 +184,6 @@ struct ProjectDetailView: View {
     }
 }
 
-/// Master volume as a tucked-away mix setting: live while dragging, persisted
-/// to the project (and thus the mixdown export) on release. Deliberately
-/// separate from the phone's hardware volume, which only controls loudness.
-struct MasterVolumeSheet: View {
-    @Environment(ProjectStore.self) private var store
-    @Environment(AudioEngineController.self) private var engine
-
-    let projectID: UUID
-
-    @State private var masterVolume: Float = 1
-
-    var body: some View {
-        FittedSheet(title: "Master Volume") {
-            HStack(spacing: 12) {
-                Image(systemName: "speaker.wave.1")
-                    .foregroundStyle(.secondary)
-                Slider(
-                    value: Binding(
-                        get: { masterVolume },
-                        set: { masterVolume = $0; engine.setMasterVolume($0) }
-                    ),
-                    in: 0...1
-                ) { editing in
-                    if !editing, var project = store.project(id: projectID) {
-                        project.masterVolume = masterVolume
-                        store.update(project)
-                    }
-                }
-                .accessibilityLabel("Master volume")
-                Image(systemName: "speaker.wave.3")
-                    .foregroundStyle(.secondary)
-            }
-            .sheetCard()
-            Text("Part of the project's mix — applied to playback and the stereo mixdown. Use the volume buttons for loudness.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .sheetCard()
-        }
-        .task {
-            masterVolume = store.project(id: projectID)?.masterVolume ?? 1
-        }
-    }
-}
-
 #Preview("Project") {
     let store = PreviewData.store()
     NavigationStack {
@@ -272,12 +206,3 @@ struct MasterVolumeSheet: View {
     .preferredColorScheme(.dark)
 }
 
-#Preview("Master Volume") {
-    let store = PreviewData.store()
-    SheetPreviewHost {
-        MasterVolumeSheet(projectID: PreviewData.demoProject(in: store).id)
-            .environment(store)
-            .environment(AudioEngineController(store: store))
-    }
-    .preferredColorScheme(.dark)
-}

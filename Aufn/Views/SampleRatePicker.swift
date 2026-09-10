@@ -34,27 +34,21 @@ struct SampleRatePicker: View {
     ]
 
     var body: some View {
-        FittedSheet(title: "Sample Rate") {
+        SettingsSubPage(title: "Sample Rate") {
             if let lockedRate {
-                Label(
+                SettingsFootnote(
                     "This project is locked at \(formatted(lockedRate)) — set by its first take. Your selection here applies to new projects.",
-                    systemImage: "lock"
+                    systemImageName: "lock"
                 )
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .sheetCard()
             }
             ForEach(options, id: \.rate) { option in
                 row(for: option)
             }
             if didProbe && supportedRates.count < options.count {
-                Label(
+                SettingsFootnote(
                     "Sample rates marked unavailable are not supported by the current microphone. A USB microphone can unlock more sample rates.",
-                    systemImage: "cable.connector"
+                    systemImageName: "cable.connector"
                 )
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .sheetCard()
             }
         }
         .onAppear(perform: probe)
@@ -62,40 +56,19 @@ struct SampleRatePicker: View {
 
     private func row(for option: RateOption) -> some View {
         let isSupported = !didProbe || supportedRates.contains(option.rate)
-        return Button {
+        let khz = option.rate / 1000
+        let title = "\(option.badge) — \(khz == khz.rounded() ? String(Int(khz)) : String(khz)) kHz"
+        return SettingsOptionRow(
+            iconName: option.icon,
+            title: title,
+            caption: option.explainer,
+            badge: isSupported ? nil : "Unavailable",
+            selected: preferredSampleRate == option.rate,
+            enabled: isSupported,
+            accessibilityLabelOverride: "Sample rate, \(title)"
+        ) {
             preferredSampleRate = option.rate
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: option.icon)
-                    .font(.title2)
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 6) {
-                        Text("\(option.badge) — \(option.rate / 1000, format: .number.precision(.fractionLength(0...1))) kHz")
-                            .font(.headline)
-                        if !isSupported {
-                            Text("Unavailable")
-                                .font(.caption2.weight(.semibold))
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(.quaternary, in: .capsule)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    Text(option.explainer)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                if preferredSampleRate == option.rate {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(.tint)
-                }
-            }
-            .sheetCard()
         }
-        .buttonStyle(.plain)
-        .disabled(!isSupported)
-        .opacity(isSupported ? 1 : 0.55)
     }
 
     /// Probe what the current route grants — only while the transport is idle
@@ -113,7 +86,7 @@ struct SampleRatePicker: View {
 }
 
 #Preview("Unlocked") {
-    SheetPreviewHost {
+    NavigationStack {
         SampleRatePicker()
             .environment(AudioEngineController(store: ProjectStore()))
     }
@@ -121,7 +94,7 @@ struct SampleRatePicker: View {
 }
 
 #Preview("Locked project") {
-    SheetPreviewHost {
+    NavigationStack {
         SampleRatePicker(lockedRate: 48_000)
             .environment(AudioEngineController(store: ProjectStore()))
     }

@@ -1,10 +1,11 @@
 import AVFAudio
 import SwiftUI
 
-/// Which built-in capsule (and implied pickup pattern) a take uses. Matches
-/// the Microphone sheet's card rows; positions the device can't honor get an
-/// "Unavailable" badge (probed live). Inert for external inputs.
-struct MicPositionPicker: View {
+/// The mic-position half of the Microphone settings page: which built-in
+/// capsule (and implied pickup pattern) a take uses. Positions the device
+/// can't honor get an "Unavailable" badge (probed live). Inert for external
+/// inputs.
+struct MicPositionSection: View {
     @Environment(AudioEngineController.self) private var engine
     @AppStorage(MicPosition.storageKey) private var micPosition = MicPosition.auto.rawValue
 
@@ -15,25 +16,17 @@ struct MicPositionPicker: View {
     private let session = AudioSessionController.shared
 
     var body: some View {
-        FittedSheet(title: "Mic Position") {
+        Group {
+            SettingsSectionHeader("Mic Position")
             ForEach(MicPosition.allCases) { position in
                 row(for: position)
             }
             if let status, didProbe, !status.isBuiltInMic {
-                Label("An external microphone is active — mic position only applies to the iPhone's built-in mic.", systemImage: "cable.connector")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .sheetCard()
+                SettingsFootnote("An external microphone is active — mic position only applies to the iPhone's built-in mic.", systemImageName: "cable.connector")
             }
-            Text("Chooses which built-in capsule and pickup pattern iOS uses while recording. Ignored for USB, Bluetooth, and wired mics.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .sheetCard()
+            SettingsFootnote("Chooses which built-in capsule and pickup pattern iOS uses while recording. Ignored for USB, Bluetooth, and wired mics.")
             if let status, status.isBuiltInMic {
-                Text("Now: \(statusLine(status))")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                    .padding(.horizontal, 4)
+                SettingsFootnote("Now: \(statusLine(status))")
             }
         }
         .onAppear(perform: probe)
@@ -54,43 +47,19 @@ struct MicPositionPicker: View {
     private func row(for position: MicPosition) -> some View {
         let availability = didProbe ? (availability[position] ?? .unavailable) : .available
         let isAvailable = availability == .available
-        return Button {
+        return SettingsOptionRow(
+            iconName: position.symbol,
+            title: position.name,
+            caption: position.caption,
+            badge: isAvailable ? nil : "Unavailable",
+            selected: micPosition == position.rawValue,
+            enabled: isAvailable,
+            accessibilityLabelOverride: "Mic position, \(position.name)"
+        ) {
             micPosition = position.rawValue
             session.selectMicPosition(position)
             status = session.micStatus
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: position.symbol)
-                    .font(.title2)
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 6) {
-                        Text(position.name)
-                            .font(.headline)
-                        if !isAvailable {
-                            Text("Unavailable")
-                                .font(.caption2.weight(.semibold))
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(.quaternary, in: .capsule)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    Text(position.caption)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                if micPosition == position.rawValue {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(.tint)
-                }
-            }
-            .sheetCard()
         }
-        .buttonStyle(.plain)
-        .disabled(!isAvailable)
-        .opacity(isAvailable ? 1 : 0.55)
-        .accessibilityLabel("Mic position, \(position.name)")
     }
 
     /// Probe only while idle — it reconfigures the session.
@@ -108,9 +77,4 @@ struct MicPositionPicker: View {
     }
 }
 
-#Preview("Mic Position") {
-    SheetPreviewHost {
-        MicPositionPicker()
-    }
-    .preferredColorScheme(.dark)
-}
+

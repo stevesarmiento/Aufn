@@ -74,6 +74,9 @@ struct TransportBar: View {
                 .foregroundStyle(.secondary)
                 .frame(width: 120, alignment: .trailing)
                 .transition(leadingSwap)
+        } else if isPlaying {
+            skipBackButton
+                .transition(leadingSwap)
         } else {
             playButton
                 .transition(leadingSwap)
@@ -89,6 +92,20 @@ struct TransportBar: View {
         } else {
             captureModeTrigger
         }
+    }
+
+    /// While playing, the play slot becomes skip-back — the record head is
+    /// the stop button — so the layout never changes shape.
+    private var skipBackButton: some View {
+        Button {
+            engine.skipBack()
+        } label: {
+            Image(systemName: "gobackward.10")
+                .font(.title2)
+                .frame(width: 40, height: 40)
+        }
+        .buttonStyle(.glass)
+        .accessibilityLabel("Skip back 10 seconds")
     }
 
     /// Collapsed trigger: just the mode name in a glass capsule.
@@ -148,31 +165,32 @@ struct TransportBar: View {
 
     private var playButton: some View {
         Button {
-            if isPlaying {
-                engine.stopTransport()
-            } else {
-                engine.startPlayback(of: project)
-            }
+            engine.startPlayback(of: project)
         } label: {
-            Image(systemName: isPlaying ? "stop.fill" : "play.fill")
+            Image(systemName: "play.fill")
                 .font(.title2)
                 .frame(width: 40, height: 40)
         }
         .buttonStyle(.glass)
         .disabled(isRecording || (project.tracks.isEmpty && project.metronome == nil))
-        .accessibilityLabel(isPlaying ? "Stop" : "Play")
+        .accessibilityLabel("Play")
     }
 
-    /// Tall clear "lens" capsule with a red pill inside; the pill morphs into
-    /// a stop square while recording. The magnified tape showing through it is
-    /// drawn by MixWaveformView (glassEffect can't sample siblings inside the
-    /// transport's GlassEffectContainer, and .regular glass would frost the
-    /// dots away) — this button only supplies the rim chrome and the pill.
+    /// Tall clear "lens" capsule with a pill inside; the pill morphs into a
+    /// stop square while the transport runs — red for recording, white for
+    /// playback (the head IS the stop button while playing). The magnified
+    /// tape showing through it is drawn by MixWaveformView (glassEffect
+    /// can't sample siblings inside the transport's GlassEffectContainer,
+    /// and .regular glass would frost the dots away) — this button only
+    /// supplies the rim chrome and the pill.
     private var recordHeadButton: some View {
         Button {
-            if isRecording {
+            switch engine.state {
+            case .recording:
                 engine.stopRecording()
-            } else {
+            case .playing:
+                engine.stopTransport()
+            case .idle:
                 Task { await engine.startRecording(into: project) }
             }
         } label: {
@@ -182,18 +200,27 @@ struct TransportBar: View {
                 .contentShape(Circle())
         }
         .buttonStyle(.plain)
-        .animation(.snappy, value: isRecording)
-        .accessibilityLabel(isRecording ? "Stop recording" : "Record")
+        .animation(.snappy, value: engine.state)
+        .accessibilityLabel(headLabel)
     }
 
-    /// Camera-style morph: red circle at rest, rounded stop square recording.
-    /// Rendered as red-tinted glass sitting on the head's glass.
+    private var headLabel: String {
+        switch engine.state {
+        case .recording: "Stop recording"
+        case .playing: "Stop"
+        case .idle: "Record"
+        }
+    }
+
+    /// Camera-style morph: red circle at rest, rounded stop square while the
+    /// transport runs — red-tinted glass for a take, white for playback.
     private var pillShape: some View {
-        Color.clear
-            .frame(width: isRecording ? 28 : 34, height: isRecording ? 28 : 34)
+        let running = engine.state != .idle
+        return Color.clear
+            .frame(width: running ? 28 : 34, height: running ? 28 : 34)
             .glassEffect(
-                .regular.tint(Color(red: 1.0, green: 0.20, blue: 0.22)),
-                in: .rect(cornerRadius: isRecording ? 9 : 17)
+                .regular.tint(isPlaying ? .white : Color(red: 1.0, green: 0.20, blue: 0.22)),
+                in: .rect(cornerRadius: running ? 9 : 17)
             )
     }
 

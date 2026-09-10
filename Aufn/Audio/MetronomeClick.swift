@@ -33,6 +33,27 @@ enum MetronomeClick {
         return buffer
     }
 
+    /// The partial bar that lets a mid-bar seek rejoin the click grid: from
+    /// `phaseFrames` into the bar, silence up to the next beat boundary, then
+    /// the bar's own remaining content. Scheduled once before the looping
+    /// bar, so the click resumes on the next beat instead of the next bar.
+    /// nil at phase 0 (the loop alone is already in phase).
+    static func leadIn(bar: AVAudioPCMBuffer, phaseFrames: Int, beatFrames: Int) -> AVAudioPCMBuffer? {
+        let barFrames = Int(bar.frameLength)
+        guard phaseFrames > 0, phaseFrames < barFrames, beatFrames > 0,
+              let source = bar.floatChannelData?[0] else { return nil }
+        let nextBeat = min(barFrames, ((phaseFrames + beatFrames - 1) / beatFrames) * beatFrames)
+        let length = barFrames - phaseFrames
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: bar.format, frameCapacity: AVAudioFrameCount(length)),
+              let channel = buffer.floatChannelData?[0] else { return nil }
+        buffer.frameLength = AVAudioFrameCount(length)
+        channel.update(repeating: 0, count: length)
+        if nextBeat < barFrames {
+            (channel + (nextBeat - phaseFrames)).update(from: source + nextBeat, count: barFrames - nextBeat)
+        }
+        return buffer
+    }
+
     /// A decaying-sine tick, ≤ 30 ms — inaudible by ~15 ms, well inside even
     /// the 250 ms beat period at 240 BPM. The accent is the same sound at
     /// 1.5× pitch and higher gain.

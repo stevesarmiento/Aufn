@@ -10,6 +10,10 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
     var masterVolume: Float
     /// nil until the user adds the metronome row.
     var metronome: MetronomeSettings?
+    /// Playback wraps from the end back to the start until stopped.
+    var repeatPlayback: Bool
+    /// Grid card fill; cosmetic only.
+    var tint: ProjectTint
 
     init(
         id: UUID = UUID(),
@@ -18,7 +22,9 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
         sampleRate: Double? = nil,
         tracks: [Track] = [],
         masterVolume: Float = 1,
-        metronome: MetronomeSettings? = nil
+        metronome: MetronomeSettings? = nil,
+        repeatPlayback: Bool = false,
+        tint: ProjectTint = .graphite
     ) {
         self.id = id
         self.name = name
@@ -27,6 +33,8 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
         self.tracks = tracks
         self.masterVolume = masterVolume
         self.metronome = metronome
+        self.repeatPlayback = repeatPlayback
+        self.tint = tint
     }
 
     // Tolerates project.json files written before masterVolume existed.
@@ -39,5 +47,10 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
         tracks = try container.decode([Track].self, forKey: .tracks)
         masterVolume = try container.decodeIfPresent(Float.self, forKey: .masterVolume) ?? 1
         metronome = try container.decodeIfPresent(MetronomeSettings.self, forKey: .metronome)
+        repeatPlayback = try container.decodeIfPresent(Bool.self, forKey: .repeatPlayback) ?? false
+        // Unknown tint names (a newer build's palette) fall back rather than
+        // failing the decode.
+        let tintName = try container.decodeIfPresent(String.self, forKey: .tint)
+        tint = tintName.flatMap(ProjectTint.init(rawValue:)) ?? .graphite
     }
 }

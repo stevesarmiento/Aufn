@@ -32,6 +32,10 @@ xcrun simctl privacy booted grant microphone co.lassidesign.Aufn
 xcodebuild -project Aufn.xcodeproj -scheme Aufn -destination 'platform=iOS Simulator,name=iPhone 17 Pro' test
 ```
 
+### Alternate app icons
+
+Settings (gear on the Projects screen) → App Icon lists every icon in the asset catalog. To add one, create `Aufn/Assets.xcassets/<name>.appiconset/` holding a 1024×1024 PNG and a `Contents.json` shaped like `AppIcon.appiconset`'s, then `xcodegen generate`. The picker discovers it from the built Info.plist (`ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS`); optionally add a pretty name in `AppIconCatalog.displayNames` and an order in `preferredOrder`.
+
 > **Note** Overdub latency offsets are computed from `AVAudioSession` input/output latency and stored per track (never baked into audio files). Simulator latencies differ from hardware — fine-tune on a real device.
 
 > **Device-only checks** A few behaviors can't be verified in the simulator: loudspeaker-vs-receiver routing on playback/record, AirPods A2DP monitoring (no speaker override when headphones are connected), and selecting a Bluetooth/USB input. Verify these on hardware.

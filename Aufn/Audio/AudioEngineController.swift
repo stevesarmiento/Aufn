@@ -26,8 +26,40 @@ final class AudioEngineController {
     private var engine = AVAudioEngine()
     private let session = AudioSessionController.shared
     private let store: ProjectStore
-    private var players: [UUID: AVAudioPlayerNode] = [:]
+    private var players: [UUID: PlayerSlot] = [:]
     private var activePlayerCount = 0
+    /// One playback pass of a track: the node stays attached and the file
+    /// stays open across reschedules (seek, repeat toggling), so mid-play
+    /// restarts never touch the graph or the filesystem.
+    private struct PlayerSlot {
+        let node: AVAudioPlayerNode
+        let file: AVAudioFile
+        let segment: TrackSegment
+        var nextPass = 0
+    }
+    /// Whether playback wraps; mirrors project.repeatPlayback at play start.
+    private var isRepeating = false
+    /// Non-nil only while playing with repeat on and at least one track.
+    private var loop: LoopLength?
+    /// Longest scheduled track, unquantized — the seek range without repeat.
+    private var mixDurationSeconds: TimeInterval = 0
+    /// Where the current schedule began; elapsedSeconds counts from here.
+    private var startPositionSeconds: TimeInterval = 0
+    /// The click's bar buffer and beat length, kept so a seek can rebuild
+    /// the lead-in without re-deriving from settings.
+    private var clickBar: AVAudioPCMBuffer?
+    private var clickBeatFrames = 0
+    /// The project playback started from, kept for a one-shot restart.
+    private var playbackProject: Project?
+    /// When startPlayback last reconfigured the session. Under a live IO
+    /// unit that can make the engine report a configuration change and stop
+    /// itself right after starting; a change arriving inside this window is
+    /// treated as self-inflicted and playback restarts once instead of
+    /// surfacing "device changed" and leaving the play button blinking.
+    private var selfReconfigureDate: Date?
+    /// One restart per user-initiated play, so a device that really does
+    /// reconfigure on every start can't loop.
+    private var playbackRetried = false
     /// Players stopped by a mid-transport delete. They stay attached until
     /// `stopTransport` so the graph is never mutated under a live input tap.
     private var retiredPlayers: [AVAudioPlayerNode] = []
@@ -87,10 +119,23 @@ final class AudioEngineController {
 
     // MARK: - Playback
 
+    /// The project whose mix is playing, or nil when the transport isn't
+    /// playing. Lets the projects grid show which card owns the transport.
+    var playingProjectID: UUID? {
+        state == .playing ? playbackProject?.id : nil
+    }
+
     func startPlayback(of project: Project) {
+        playbackRetried = false
+        beginPlayback(of: project)
+    }
+
+    private func beginPlayback(of project: Project) {
         stopTransport()
         do {
             try session.configure(output: .loudspeakerIfBuiltIn)
+            selfReconfigureDate = .now
+            playbackProject = project
             schedulePlayers(for: project)
             scheduleClick(for: project)
             guard !players.isEmpty || clickPlayer != nil else {
@@ -99,6 +144,9 @@ final class AudioEngineController {
                 }
                 return
             }
+            isRepeating = project.repeatPlayback
+            schedulePasses(from: 0, repeating: isRepeating)
+            scheduleClickPasses(from: 0)
             try engine.start()
         } catch {
             stopTransport()
@@ -107,8 +155,8 @@ final class AudioEngineController {
         }
         applyMixSettings(for: project)
         let startTime = sharedStartTime()
-        for player in players.values {
-            player.play(at: startTime)
+        for slot in players.values {
+            slot.node.play(at: startTime)
         }
         // No count-in on playback: the click's beat 1 == transport t=0.
         // Metronome-only playback loops until the user stops (no completion
@@ -117,16 +165,76 @@ final class AudioEngineController {
         clickStartDate = clickPlayer != nil ? .now.addingTimeInterval(Self.startLeadSeconds) : nil
         state = .playing
         transportStartDate = .now.addingTimeInterval(Self.startLeadSeconds)
+        startPositionSeconds = 0
+    }
+
+    // MARK: - Seek & repeat
+
+    /// The seek range: the loop while repeating, else the longest track.
+    var durationSeconds: TimeInterval { loop?.seconds ?? mixDurationSeconds }
+
+    /// Jump playback to `seconds`. Playback-only; recording is linear.
+    func seek(to seconds: TimeInterval) {
+        guard state == .playing else { return }
+        let clamped = min(max(0, seconds), max(0, durationSeconds - TransportRules.endGuardSeconds))
+        reschedule(from: clamped)
+    }
+
+    func skipBack(_ seconds: TimeInterval = 10) {
+        seek(to: elapsedSeconds - seconds)
+    }
+
+    /// Repeat is playback-only; toggling mid-play reschedules from the
+    /// current position (accepting the ~100 ms restart seam) so queued or
+    /// missing passes match the new setting.
+    func setRepeat(_ repeating: Bool) {
+        guard isRepeating != repeating else { return }
+        isRepeating = repeating
+        if state == .playing {
+            reschedule(from: elapsedSeconds)
+        }
+    }
+
+    /// Restart playback from `position` on the existing nodes. Generation
+    /// bumps BEFORE the first stop(): completion handlers may fire on
+    /// stop(), possibly synchronously, and must all be stale by then.
+    private func reschedule(from position: TimeInterval) {
+        guard state == .playing else { return }
+        playbackGeneration += 1
+        for slot in players.values {
+            slot.node.stop()
+        }
+        clickPlayer?.stop()
+        schedulePasses(from: position, repeating: isRepeating)
+        scheduleClickPasses(from: position)
+        // A seek past every track's end with nothing to wrap into and no
+        // click leaves nothing audible.
+        let anyAudio = activePlayerCount > 0 || (loop != nil && !players.isEmpty) || clickPlayer != nil
+        guard anyAudio else {
+            stopTransport()
+            return
+        }
+        let startTime = sharedStartTime()
+        for slot in players.values {
+            slot.node.play(at: startTime)
+        }
+        clickPlayer?.play(at: startTime)
+        transportStartDate = .now.addingTimeInterval(Self.startLeadSeconds)
+        startPositionSeconds = position
+        if let clickBar {
+            let phase = TransportRules.clickPhaseFrames(position: position, barFrames: Int(clickBar.frameLength), rate: clickBar.format.sampleRate)
+            clickStartDate = .now.addingTimeInterval(Self.startLeadSeconds - Double(phase) / clickBar.format.sampleRate)
+        }
     }
 
     // MARK: - Live mix controls
 
     func setTrackVolume(_ volume: Float, trackID: UUID) {
-        players[trackID]?.volume = volume
+        players[trackID]?.node.volume = volume
     }
 
     func setTrackPan(_ pan: Float, trackID: UUID) {
-        players[trackID]?.pan = pan
+        players[trackID]?.node.pan = pan
     }
 
     func setMasterVolume(_ volume: Float) {
@@ -151,6 +259,8 @@ final class AudioEngineController {
         clickPlayer.scheduleBuffer(buffer, at: nil, options: .loops)
         clickPlayer.play()
         clickStartDate = .now
+        clickBar = buffer
+        clickBeatFrames = Int(buffer.frameLength) / settings.beatsPerBar.clamped(to: MetronomeSettings.beatsPerBarRange)
     }
 
     /// Swipe-delete while the transport may be running: stop() silences the
@@ -168,9 +278,9 @@ final class AudioEngineController {
     /// the graph, which under a live recording tap can reset the tap and
     /// drop the rest of the take. Safe while idle, playing, or recording.
     func removeTrack(trackID: UUID) {
-        guard let player = players.removeValue(forKey: trackID) else { return }
-        player.stop()
-        retiredPlayers.append(player)
+        guard let slot = players.removeValue(forKey: trackID) else { return }
+        slot.node.stop()
+        retiredPlayers.append(slot.node)
         // Deleting the last track keeps a running click going (same as
         // metronome-only playback).
         if players.isEmpty && clickPlayer == nil && state == .playing { stopTransport() }
@@ -194,6 +304,9 @@ final class AudioEngineController {
 
             schedulePlayers(for: project)
             scheduleClick(for: project)
+            // Recording is linear: no loop regardless of the repeat flag.
+            schedulePasses(from: 0, repeating: false)
+            scheduleClickPasses(from: 0)
 
             let inputFormat = engine.inputNode.outputFormat(forBus: 0)
             guard inputFormat.sampleRate > 0 else { throw AufnError.noInput }
@@ -244,8 +357,8 @@ final class AudioEngineController {
             engine.prepare()
             try engine.start()
             applyMixSettings(for: project)
-            for player in players.values {
-                player.play(at: startTime)
+            for slot in players.values {
+                slot.node.play(at: startTime)
             }
             clickPlayer?.play(at: clickStart)
             clickStartDate = clickPlayer != nil ? .now.addingTimeInterval(Self.startLeadSeconds) : nil
@@ -254,6 +367,7 @@ final class AudioEngineController {
             // Future-dated by the start lead plus any count-in; elapsedSeconds
             // clamps to 0 so the clock sits at 0:00 until the take starts.
             transportStartDate = .now.addingTimeInterval(Self.startLeadSeconds + countIn)
+            startPositionSeconds = 0
             liveRecordingPeaks = []
             startLivePeakCollection()
         } catch {
@@ -287,6 +401,12 @@ final class AudioEngineController {
         self.recorder = nil
         self.pendingTrack = nil
         stopTransport()
+        // Settle the session into the full playback configuration now, while
+        // idle — mode AND the loudspeaker override — so the next play's
+        // configure changes nothing. Whatever configuration change this
+        // causes lands on an idle transport and is ignored, instead of
+        // under a freshly started engine.
+        try? session.configure(output: .loudspeakerIfBuiltIn)
 
         if let writeError = outcome.writeError {
             lastError = AufnError.writeFailed(writeError.localizedDescription).localizedDescription
@@ -346,12 +466,17 @@ final class AudioEngineController {
         livePeakTask?.cancel()
         livePeakTask = nil
         playbackGeneration += 1
-        for player in players.values {
-            player.stop()
-            engine.detach(player)
+        for slot in players.values {
+            slot.node.stop()
+            engine.detach(slot.node)
         }
         players = [:]
         activePlayerCount = 0
+        loop = nil
+        mixDurationSeconds = 0
+        startPositionSeconds = 0
+        playbackProject = nil
+        selfReconfigureDate = nil
         for player in retiredPlayers {
             engine.detach(player)
         }
@@ -363,6 +488,8 @@ final class AudioEngineController {
         clickPlayer = nil
         clickFormat = nil
         clickStartDate = nil
+        clickBar = nil
+        clickBeatFrames = 0
         if engine.isRunning {
             engine.stop()
         }
@@ -394,9 +521,13 @@ final class AudioEngineController {
 
     var elapsedSeconds: TimeInterval {
         guard let transportStartDate else { return 0 }
-        // Never negative: during a recording count-in the start date sits in
-        // the future and the clock holds at 0:00.
-        return max(0, Date.now.timeIntervalSince(transportStartDate))
+        // Floored at 0 (a recording count-in future-dates the start, holding
+        // the clock at 0:00) and wrapped into the loop while repeating.
+        return TransportRules.wrappedPosition(
+            start: startPositionSeconds,
+            elapsed: Date.now.timeIntervalSince(transportStartDate),
+            loop: state == .playing ? loop?.seconds : nil
+        )
     }
 
     func clearError() {
@@ -462,8 +593,18 @@ final class AudioEngineController {
     /// runs the session in `.default`, takes in `.measurement`, and the IO
     /// unit reports the mode flip as a configuration change), queued on the
     /// main queue, and delivered after `engine.start()` already absorbed it.
+    ///
+    /// When our own flip DID stop the engine (it can, when the IO format
+    /// changes with the mode), playback restarts once: the mode is settled
+    /// by then, so the second start doesn't flip and sticks.
     private func handleConfigurationChange() {
         guard state != .idle, !engine.isRunning else { return }
+        if state == .playing, !playbackRetried, let project = playbackProject,
+           let configured = selfReconfigureDate, Date.now.timeIntervalSince(configured) < 2 {
+            playbackRetried = true
+            beginPlayback(of: project)
+            return
+        }
         let wasRecording = state == .recording
         stopForLifecycle()
         if wasRecording {
@@ -486,40 +627,99 @@ final class AudioEngineController {
 
     // MARK: - Helpers
 
-    /// Attaches and schedules a player for EVERY track — muted/solo-silenced
-    /// tracks play at effective volume 0 so mute/solo toggles work live during
-    /// playback. Player start frame skips the stored latency offset so what
-    /// you hear lines up with t=0.
+    /// Attaches and connects a player for EVERY track — muted/solo-silenced
+    /// tracks play at effective volume 0 so mute/solo toggles work live
+    /// during playback. Opens each file once and keeps it on the slot; all
+    /// scheduling happens in schedulePasses so a mid-play reschedule never
+    /// reopens a file or touches the graph. Segment start frames skip the
+    /// stored latency offset so what you hear lines up with t=0.
     private func schedulePlayers(for project: Project) {
-        let generation = playbackGeneration
-        var scheduled: [UUID: AVAudioPlayerNode] = [:]
-
+        var scheduled: [UUID: PlayerSlot] = [:]
+        var longest: TimeInterval = 0
         for track in project.tracks {
             let url = store.audioURL(for: track, in: project)
             guard let file = try? AVAudioFile(forReading: url) else { continue }
-            let offset = AVAudioFramePosition(track.latencyOffsetSamples)
-            let frameCount = AVAudioFrameCount(max(0, file.length - offset))
-            guard frameCount > 0 else { continue }
+            let offset = Int64(track.latencyOffsetSamples)
+            let frames = file.length - offset
+            guard frames > 0 else { continue }
 
             let player = AVAudioPlayerNode()
             engine.attach(player)
             engine.connect(player, to: engine.mainMixerNode, format: file.processingFormat)
-            player.scheduleSegment(file, startingFrame: offset, frameCount: frameCount, at: nil, completionCallbackType: .dataPlayedBack) { @Sendable [weak self] _ in
-                Task { @MainActor [weak self] in
-                    self?.playerFinished(generation: generation)
-                }
-            }
-            scheduled[track.id] = player
+            let segment = TrackSegment(offsetFrames: offset, frames: frames, rate: file.processingFormat.sampleRate)
+            scheduled[track.id] = PlayerSlot(node: player, file: file, segment: segment)
+            longest = max(longest, segment.seconds)
         }
         players = scheduled
-        activePlayerCount = scheduled.count
+        mixDurationSeconds = longest
     }
 
-    /// Attaches, connects, and schedules the metronome's looping bar buffer.
+    /// Queues segments on every slot from `position`. Without repeat: one
+    /// final pass per track with the `.dataPlayedBack` auto-stop handler
+    /// (fires at the true audible end, even over Bluetooth latency). With
+    /// repeat: `queueDepth` passes per track with `.dataConsumed` refill
+    /// handlers — the earliest completion signal, so the queue is topped up
+    /// long before the render reaches the wrap, making it gapless.
+    private func schedulePasses(from position: TimeInterval, repeating: Bool) {
+        let bar = clickBar.map { (frames: Int($0.frameLength), rate: $0.format.sampleRate) }
+        loop = repeating ? TransportRules.loopLength(tracks: players.values.map(\.segment), bar: bar) : nil
+        activePlayerCount = 0
+        let generation = playbackGeneration
+        for trackID in players.keys {
+            players[trackID]?.nextPass = 0
+            if let loop {
+                for _ in 0..<TransportRules.queueDepth(loopSeconds: loop.seconds) {
+                    enqueueLoopPass(trackID: trackID, from: position, generation: generation)
+                }
+            } else if let slot = players[trackID],
+                      let pass = TransportRules.pass(0, track: slot.segment, from: position, loop: nil) {
+                activePlayerCount += 1
+                slot.node.scheduleSegment(slot.file, startingFrame: pass.startingFrame, frameCount: AVAudioFrameCount(pass.frameCount), at: nil, completionCallbackType: .dataPlayedBack) { @Sendable [weak self] _ in
+                    Task { @MainActor [weak self] in
+                        self?.playerFinished(generation: generation)
+                    }
+                }
+            }
+        }
+    }
+
+    /// Queues the slot's next audible pass. Player sample time 0 is pinned
+    /// to `position` by the play(at:) that follows scheduling, so every
+    /// anchor is absolute in the player timeline and rounding never
+    /// accumulates. Only pass 0 can be silent (a seek past a short track's
+    /// end); it is skipped without consuming a queue slot's callback.
+    private func enqueueLoopPass(trackID: UUID, from position: TimeInterval, generation: Int) {
+        guard let loop, let slot = players[trackID] else { return }
+        var n = slot.nextPass
+        var schedule = TransportRules.pass(n, track: slot.segment, from: position, loop: loop)
+        if schedule == nil {
+            n += 1
+            schedule = TransportRules.pass(n, track: slot.segment, from: position, loop: loop)
+        }
+        players[trackID]?.nextPass = n + 1
+        guard let schedule else { return }
+        slot.node.scheduleSegment(slot.file, startingFrame: schedule.startingFrame, frameCount: AVAudioFrameCount(schedule.frameCount), at: AVAudioTime(sampleTime: schedule.playerSampleTime, atRate: slot.segment.rate), completionCallbackType: .dataConsumed) { @Sendable [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.loopPassConsumed(trackID: trackID, generation: generation)
+            }
+        }
+    }
+
+    /// Refill: one consumed pass queues one more, keeping the depth
+    /// constant. Guarded against stale generations (reschedules and stop()
+    /// both fire handlers), a transport that left playing, and a track
+    /// removed mid-play.
+    private func loopPassConsumed(trackID: UUID, generation: Int) {
+        guard playbackGeneration == generation, state == .playing, players[trackID] != nil else { return }
+        enqueueLoopPass(trackID: trackID, from: startPositionSeconds, generation: generation)
+    }
+
+    /// Attaches and connects the metronome node and keeps its bar buffer.
     /// Must run BEFORE engine.start(), like schedulePlayers — the click node
     /// is what instantiates the mixer graph on a first take, and attaching it
     /// later would rebuild the graph under a live input tap. No completion
-    /// handler: the click never counts toward activePlayerCount.
+    /// handler: the click never counts toward activePlayerCount. Scheduling
+    /// happens in scheduleClickPasses.
     private func scheduleClick(for project: Project) {
         guard let settings = project.metronome else { return }
         let rate = project.sampleRate ?? UserDefaults.standard.preferredSampleRate
@@ -528,9 +728,23 @@ final class AudioEngineController {
         let player = AVAudioPlayerNode()
         engine.attach(player)
         engine.connect(player, to: engine.mainMixerNode, format: format)
-        player.scheduleBuffer(buffer, at: nil, options: .loops)
         clickPlayer = player
         clickFormat = format
+        clickBar = buffer
+        clickBeatFrames = Int(buffer.frameLength) / settings.beatsPerBar.clamped(to: MetronomeSettings.beatsPerBarRange)
+    }
+
+    /// Queues the click from `position`: mid-bar, a one-shot lead-in
+    /// (silence to the next beat, then the rest of the bar) followed by the
+    /// looping bar — so a seek rejoins the grid on the next beat. At a bar
+    /// boundary the loop alone is already in phase.
+    private func scheduleClickPasses(from position: TimeInterval) {
+        guard let clickPlayer, let clickBar else { return }
+        let phase = TransportRules.clickPhaseFrames(position: position, barFrames: Int(clickBar.frameLength), rate: clickBar.format.sampleRate)
+        if let lead = MetronomeClick.leadIn(bar: clickBar, phaseFrames: phase, beatFrames: clickBeatFrames) {
+            clickPlayer.scheduleBuffer(lead)
+        }
+        clickPlayer.scheduleBuffer(clickBar, at: nil, options: .loops)
     }
 
     /// Mixing properties (pan especially) only take hold once the engine has
@@ -545,9 +759,9 @@ final class AudioEngineController {
         guard !players.isEmpty || clickPlayer != nil else { return }
         engine.mainMixerNode.outputVolume = project.masterVolume
         for track in project.tracks {
-            guard let player = players[track.id] else { continue }
-            player.volume = project.effectiveVolume(for: track)
-            player.pan = track.pan
+            guard let slot = players[track.id] else { continue }
+            slot.node.volume = project.effectiveVolume(for: track)
+            slot.node.pan = track.pan
         }
         clickPlayer?.volume = project.metronomeEffectiveVolume
     }
@@ -557,6 +771,7 @@ final class AudioEngineController {
     /// no-op when idle or during a first take (input-tap protection intact).
     func updateMix(for project: Project) {
         applyMixSettings(for: project)
+        setRepeat(project.repeatPlayback)
     }
 
     /// Auto-stop playback when the last track finishes (recording keeps going).

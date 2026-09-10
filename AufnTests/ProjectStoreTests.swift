@@ -72,4 +72,17 @@ struct ProjectStoreTests {
         store.notePeaksUpdated()
         #expect(store.peaksRevision == before + 1)
     }
+
+    @Test func consecutiveProjectsRotateTints() throws {
+        let root = makeRoot()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = ProjectStore(rootDirectory: root)
+        let a = try store.createProject(named: "A")
+        let b = try store.createProject(named: "B")
+        let c = try store.createProject(named: "C")
+        #expect(a.tint == ProjectTint.rotating(index: 0))
+        #expect(b.tint == ProjectTint.rotating(index: 1))
+        #expect(c.tint == ProjectTint.rotating(index: 2))
+        #expect(Set([a.tint, b.tint, c.tint]).count == 3)
+    }
 }
