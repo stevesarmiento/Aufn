@@ -54,9 +54,10 @@ final class AudioSessionController {
     }
 
     func configure(preferredSampleRate: Double = 48_000, output: OutputRoutingPolicy = .standard, recording: Bool = false) throws {
-        // The capture mode's session mode only matters while recording; keep
-        // playback on .default for normal output behavior.
-        let mode: AVAudioSession.Mode = recording ? CaptureMode.current.sessionMode : .default
+        // Takes run in `.measurement` so Apple's input chain stays out of the
+        // way and grades print on the untouched mic; keep playback on
+        // .default for normal output behavior.
+        let mode: AVAudioSession.Mode = recording ? .measurement : .default
         try session.setCategory(.playAndRecord, mode: mode, options: categoryOptions)
         try? session.setPreferredSampleRate(preferredSampleRate)
         try? session.setPreferredIOBufferDuration(0.005)
@@ -66,6 +67,11 @@ final class AudioSessionController {
         // the route rebuild.
         if recording {
             applyMicPosition()
+            // `.measurement` has no automatic gain; the built-in mic's own
+            // gain stage is the cleanest place to make up for that.
+            if isBuiltInMicActive, session.isInputGainSettable, session.inputGain < 1 {
+                try? session.setInputGain(1)
+            }
         }
         switch output {
         case .loudspeakerIfBuiltIn where !hasExternalOutput:
@@ -190,7 +196,6 @@ final class AudioSessionController {
         var dataSourceName: String?
         var orientation: AVAudioSession.Orientation?
         var polarPattern: AVAudioSession.PolarPattern?
-        var inputOrientation: AVAudioSession.StereoOrientation
         var inputChannels: Int
     }
 
@@ -206,7 +211,6 @@ final class AudioSessionController {
             dataSourceName: session.inputDataSource?.dataSourceName,
             orientation: session.inputDataSource?.orientation,
             polarPattern: session.inputDataSource?.selectedPolarPattern,
-            inputOrientation: session.inputOrientation,
             inputChannels: session.inputNumberOfChannels
         )
     }
@@ -222,55 +226,24 @@ final class AudioSessionController {
 
     enum MicPositionAvailability {
         case available
-        /// Offered by the hardware, but not under RAW: iOS withholds the
-        /// stereo beamform in `.measurement` mode (it is processing).
-        case requiresTape
         case unavailable
     }
 
-    /// What each position would get on this device. Probes under the real
-    /// capture mode and, when that is RAW, under TAPE as well so the sheet
-    /// can say "TAPE only" instead of a bare "Unavailable". Reads the
-    /// built-in mic port from `availableInputs`, so it works even while an
-    /// external mic is routed. Only call while idle — it reconfigures the
-    /// session (and leaves it configured for recording, position applied).
+    /// What each position would get on this device: a capsule present is
+    /// enough (an unsupported cardioid falls back to omni on that capsule
+    /// at apply time). Reads the built-in mic port from `availableInputs`,
+    /// so it works even while an external mic is routed. Only call while
+    /// idle — it configures the session for recording, position applied.
     func micPositionAvailability() -> [MicPosition: MicPositionAvailability] {
-        let mode = CaptureMode.current
-        let underCurrent = positionsOffered(inMode: mode.sessionMode)
-        let underTape = mode == .standard ? underCurrent : positionsOffered(inMode: CaptureMode.standard.sessionMode)
         try? configure(recording: true)
-
-        var availability: [MicPosition: MicPositionAvailability] = [:]
-        for position in MicPosition.allCases {
-            availability[position] = if underCurrent.contains(position) {
-                .available
-            } else if underTape.contains(position) {
-                .requiresTape
-            } else {
-                .unavailable
-            }
-        }
-        return availability
-    }
-
-    private func positionsOffered(inMode mode: AVAudioSession.Mode) -> Set<MicPosition> {
-        try? session.setCategory(.playAndRecord, mode: mode, options: categoryOptions)
-        try? session.setActive(true)
-        var offered: Set<MicPosition> = [.auto]
         let builtIn = session.availableInputs?.first { $0.portType == .builtInMic }
         let sources = builtIn?.dataSources ?? []
-        for position in MicPosition.allCases where position != .auto {
-            if position == .stereo {
-                if sources.contains(where: { $0.supportedPolarPatterns?.contains(.stereo) == true }) {
-                    offered.insert(position)
-                }
-            } else if sources.contains(where: { $0.orientation == position.orientation }) {
-                // Capsule present is enough: an unsupported cardioid falls
-                // back to omni on that capsule at apply time.
-                offered.insert(position)
-            }
+        var availability: [MicPosition: MicPositionAvailability] = [:]
+        for position in MicPosition.allCases {
+            let offered = position == .auto || sources.contains { $0.orientation == position.orientation }
+            availability[position] = offered ? .available : .unavailable
         }
-        return offered
+        return availability
     }
 
     /// Selects the capsule and pattern for the persisted position on the
@@ -285,11 +258,7 @@ final class AudioSessionController {
             return
         }
 
-        var target = sources.first { $0.orientation == position.orientation }
-        if position == .stereo, target?.supportedPolarPatterns?.contains(.stereo) != true {
-            target = sources.first { $0.supportedPolarPatterns?.contains(.stereo) == true }
-        }
-        guard let target else {
+        guard let target = sources.first(where: { $0.orientation == position.orientation }) else {
             // This device lacks the capsule: behave as Auto for the take.
             clearMicPositionIfApplied(sources: sources)
             return
@@ -301,26 +270,15 @@ final class AudioSessionController {
         let live = session.inputDataSource
         let sourceMatches = live?.dataSourceID == target.dataSourceID
         let patternMatches = pattern == nil || live?.selectedPolarPattern == pattern
-        let orientationMatches = !position.requiresInputOrientation || session.preferredInputOrientation == .portrait
-        if sourceMatches && patternMatches && orientationMatches {
+        if sourceMatches && patternMatches {
             appliedMicPosition = position
             return
         }
 
-        // Pattern on the (possibly inactive) source first, orientation next
-        // (no route change), then the selection — the one call that rebuilds
-        // the route.
+        // Pattern on the (possibly inactive) source first (no route change),
+        // then the selection — the one call that rebuilds the route.
         if let pattern, target.preferredPolarPattern != pattern {
             try? target.setPreferredPolarPattern(pattern)
-        }
-        if position.requiresInputOrientation {
-            if session.preferredInputOrientation != .portrait {
-                try? session.setPreferredInputOrientation(.portrait)
-            }
-            try? session.setPreferredInputNumberOfChannels(2)
-        } else if appliedMicPosition == .stereo {
-            try? session.setPreferredInputOrientation(.none)
-            try? session.setPreferredInputNumberOfChannels(1)
         }
         try? session.setInputDataSource(target)
         appliedMicPosition = position
@@ -331,10 +289,6 @@ final class AudioSessionController {
         for source in sources where source.preferredPolarPattern != nil {
             try? source.setPreferredPolarPattern(nil)
         }
-        if session.preferredInputOrientation != .none {
-            try? session.setPreferredInputOrientation(.none)
-        }
-        try? session.setPreferredInputNumberOfChannels(1)
         try? session.setInputDataSource(nil)
         appliedMicPosition = nil
     }

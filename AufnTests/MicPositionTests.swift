@@ -6,10 +6,12 @@ import Testing
 /// off-device.
 struct MicPositionTests {
     @Test func casesAndDefault() {
-        #expect(MicPosition.allCases == [.auto, .front, .bottom, .back, .stereo])
+        #expect(MicPosition.allCases == [.auto, .front, .bottom, .back])
         #expect(MicPosition.from(stored: nil) == .auto)
         #expect(MicPosition.from(stored: "sideways") == .auto)
-        #expect(MicPosition.from(stored: "stereo") == .stereo)
+        // Stereo was retired; a device that persisted it lands on auto.
+        #expect(MicPosition.from(stored: "stereo") == .auto)
+        #expect(MicPosition.from(stored: "back") == .back)
     }
 
     @Test(arguments: [
@@ -17,17 +19,10 @@ struct MicPositionTests {
         (.front, .front, .cardioid),
         (.bottom, .bottom, .omnidirectional),
         (.back, .back, .cardioid),
-        (.stereo, .back, .stereo),
     ])
     func capsuleAndPattern(position: MicPosition, orientation: AVAudioSession.Orientation?, pattern: AVAudioSession.PolarPattern?) {
         #expect(position.orientation == orientation)
         #expect(position.polarPattern == pattern)
-    }
-
-    @Test func onlyStereoNeedsInputOrientation() {
-        for position in MicPosition.allCases {
-            #expect(position.requiresInputOrientation == (position == .stereo))
-        }
     }
 
     @Test func presentationIsCompleteAndUnique() {

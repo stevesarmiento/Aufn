@@ -2,15 +2,16 @@ import AVFAudio
 import Foundation
 
 /// Which built-in capsule (and the pickup pattern it implies) Aufn asks iOS
-/// for while recording. Orthogonal to CaptureMode: that is processing, this
-/// is the microphone. Inert unless the built-in mic is the active input.
+/// for while recording. Orthogonal to CaptureMode: that is the printed grade,
+/// this is the microphone. Inert unless the built-in mic is the active input.
+/// Every position records under `.measurement`; the stereo beamform was
+/// dropped because it only exists inside Apple's input chain.
 /// Persisted under "micPosition"; defaults to auto.
 enum MicPosition: String, CaseIterable, Identifiable {
     case auto
     case front
     case bottom
     case back
-    case stereo
 
     var id: String { rawValue }
 
@@ -30,7 +31,6 @@ enum MicPosition: String, CaseIterable, Identifiable {
         case .front: "Front"
         case .bottom: "Bottom"
         case .back: "Back"
-        case .stereo: "Stereo"
         }
     }
 
@@ -40,7 +40,6 @@ enum MicPosition: String, CaseIterable, Identifiable {
         case .front: "Screen-side capsule, cardioid — rejects sound from behind the phone."
         case .bottom: "Bottom capsule, omnidirectional — picks up the whole room."
         case .back: "Camera-side capsule, cardioid — point the back of the phone at the source."
-        case .stereo: "Two-channel take from the back capsules. Hold the phone upright."
         }
     }
 
@@ -50,7 +49,6 @@ enum MicPosition: String, CaseIterable, Identifiable {
         case .front: "iphone"
         case .bottom: "arrow.down.to.line"
         case .back: "camera"
-        case .stereo: "waveform.badge.mic"
         }
     }
 
@@ -60,7 +58,7 @@ enum MicPosition: String, CaseIterable, Identifiable {
         case .auto: nil
         case .front: .front
         case .bottom: .bottom
-        case .back, .stereo: .back
+        case .back: .back
         }
     }
 
@@ -70,10 +68,6 @@ enum MicPosition: String, CaseIterable, Identifiable {
         case .auto: nil
         case .front, .back: .cardioid
         case .bottom: .omnidirectional
-        case .stereo: .stereo
         }
     }
-
-    /// Stereo beamforming needs the session told which way is left/right.
-    var requiresInputOrientation: Bool { self == .stereo }
 }

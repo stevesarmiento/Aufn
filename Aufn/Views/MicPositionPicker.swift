@@ -25,7 +25,7 @@ struct MicPositionPicker: View {
                     .foregroundStyle(.secondary)
                     .sheetCard()
             }
-            Text("Chooses which built-in capsule and pickup pattern iOS uses while recording. Ignored for USB, Bluetooth, and wired mics. Stereo records a two-channel take and needs the TAPE capture mode — RAW skips the processing that builds it.")
+            Text("Chooses which built-in capsule and pickup pattern iOS uses while recording. Ignored for USB, Bluetooth, and wired mics.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .sheetCard()
@@ -67,7 +67,7 @@ struct MicPositionPicker: View {
                         Text(position.name)
                             .font(.headline)
                         if !isAvailable {
-                            Text(availability == .requiresTape ? "TAPE only" : "Unavailable")
+                            Text("Unavailable")
                                 .font(.caption2.weight(.semibold))
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)

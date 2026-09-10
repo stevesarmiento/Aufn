@@ -13,6 +13,8 @@ struct Track: Identifiable, Codable, Equatable, Hashable {
     var channelCount: Int
     var volume: Float
     var pan: Float
+    /// The grade printed onto the file at record time.
+    var captureMode: CaptureMode
 
     init(
         id: UUID = UUID(),
@@ -26,7 +28,8 @@ struct Track: Identifiable, Codable, Equatable, Hashable {
         sampleRate: Double,
         channelCount: Int = 1,
         volume: Float = 1,
-        pan: Float = 0
+        pan: Float = 0,
+        captureMode: CaptureMode = .raw
     ) {
         self.id = id
         self.name = name
@@ -40,6 +43,7 @@ struct Track: Identifiable, Codable, Equatable, Hashable {
         self.channelCount = channelCount
         self.volume = volume
         self.pan = pan
+        self.captureMode = captureMode
     }
 
     // Custom decoding so project.json files written before volume/pan existed
@@ -59,5 +63,6 @@ struct Track: Identifiable, Codable, Equatable, Hashable {
         channelCount = try container.decodeIfPresent(Int.self, forKey: .channelCount) ?? 1
         volume = try container.decodeIfPresent(Float.self, forKey: .volume) ?? 1
         pan = try container.decodeIfPresent(Float.self, forKey: .pan) ?? 0
+        captureMode = CaptureMode.from(stored: try container.decodeIfPresent(String.self, forKey: .captureMode))
     }
 }

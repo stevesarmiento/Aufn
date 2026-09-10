@@ -21,6 +21,10 @@ struct TrackRowView: View {
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .layoutPriority(-1)
+                    if let letter = track.captureMode.badgeLetter {
+                        GradeSeal(letter: letter)
+                            .accessibilityLabel("Grade, \(track.captureMode.label)")
+                    }
                     if track.channelCount == 2 {
                         Text("ST")
                             .font(.caption2.weight(.semibold))
@@ -215,4 +219,22 @@ extension Double {
     .environment(store)
     .environment(engine)
     .preferredColorScheme(.dark)
+}
+
+/// The grade printed onto a take: a small seal with its letter, sitting
+/// beside the track name. RAW has no seal.
+struct GradeSeal: View {
+    let letter: String
+
+    var body: some View {
+        Text(letter)
+            .font(.system(size: 8, weight: .heavy, design: .rounded))
+            .foregroundStyle(Color(.systemBackground))
+            .frame(width: 15, height: 15)
+            .background {
+                Image(systemName: "seal.fill")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.secondary)
+            }
+    }
 }

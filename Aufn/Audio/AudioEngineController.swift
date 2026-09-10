@@ -66,6 +66,7 @@ final class AudioEngineController {
         let channelCount: Int
         let latencyOffsetSamples: Int
         let projectID: UUID
+        let captureMode: CaptureMode
     }
 
     init(store: ProjectStore) {
@@ -214,17 +215,27 @@ final class AudioEngineController {
             // A first take has no reference; trimming it would just cut its
             // head off — by 200 ms or more on Bluetooth headphones.
             let hasReference = !players.isEmpty || project.isMetronomeAudible
+            // Read once at start: the wheel can change while the take runs,
+            // and the file carries whatever grade it was printed with.
+            let captureMode = CaptureMode.current
             self.pendingTrack = PendingTrack(
                 id: trackID,
                 fileURL: fileURL,
                 sampleRate: inputFormat.sampleRate,
                 channelCount: Int(inputFormat.channelCount),
                 latencyOffsetSamples: hasReference ? session.latencyOffsetSamples : 0,
-                projectID: project.id
+                projectID: project.id,
+                captureMode: captureMode
             )
 
+            // The grade is printed: it runs on the tap buffer before the
+            // recorder writes it. Nil for RAW. Its state warms up on count-in
+            // audio the recorder's gate drops. Metered post-grade so the
+            // meter and provisional waveform show what lands on disk.
+            let processor = GradeProcessor(settings: captureMode.grade, sampleRate: inputFormat.sampleRate, channelCount: Int(inputFormat.channelCount))
             let meter = self.meter
             engine.inputNode.installTap(onBus: 0, bufferSize: 4096, format: inputFormat) { @Sendable buffer, when in
+                processor?.process(buffer)
                 recorder.append(buffer, at: when)
                 meter.process(buffer)
             }
@@ -296,7 +307,8 @@ final class AudioEngineController {
             latencyOffsetSamples: pending.latencyOffsetSamples,
             durationSeconds: Double(outcome.frames) / pending.sampleRate,
             sampleRate: pending.sampleRate,
-            channelCount: pending.channelCount
+            channelCount: pending.channelCount,
+            captureMode: pending.captureMode
         )
 
         // Provisional cache from the live meter so the row and tape show a
@@ -444,8 +456,14 @@ final class AudioEngineController {
         }
     }
 
+    /// A real hardware change stops the engine before this notification is
+    /// posted, so a running engine means the notification is stale: it was
+    /// raised by our own session reconfigure at transport start (playback
+    /// runs the session in `.default`, takes in `.measurement`, and the IO
+    /// unit reports the mode flip as a configuration change), queued on the
+    /// main queue, and delivered after `engine.start()` already absorbed it.
     private func handleConfigurationChange() {
-        guard state != .idle else { return }
+        guard state != .idle, !engine.isRunning else { return }
         let wasRecording = state == .recording
         stopForLifecycle()
         if wasRecording {
