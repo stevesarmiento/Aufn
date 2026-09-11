@@ -9,15 +9,21 @@ struct MetronomeRowView: View {
 
     let settings: MetronomeSettings
     let project: Project
+    var isSelected = false
+    var inSelectionMode = false
 
     @State private var isExpanded = false
     @State private var bpm: Double = 120
     @State private var volume: Float = 0.8
 
     var body: some View {
-        TrackCard {
+        TrackCard(selected: isSelected) {
             VStack(spacing: 8) {
                 HStack(spacing: 8) {
+                    if inSelectionMode {
+                        SelectionCheck(isSelected: isSelected)
+                            .transition(.disclose(anchor: .leading, edge: .leading))
+                    }
                     // Passing nil while silenced parks the grid as a dim
                     // static glyph, so it both stills and quiets with the click.
                     MetronomeBeatGridView(
@@ -66,8 +72,8 @@ struct MetronomeRowView: View {
                         .zIndex(-1)
                 }
             }
-            // Never shorter than SwipeToDeleteRow's delete underlay (~74 pt),
-            // so the row's height can't jump while swiping.
+            // Design minimum only: a header-only card would read as a thin
+            // strip beside the ~106 pt track cards.
             .frame(minHeight: 80)
         }
         .task(id: settings) {
@@ -212,6 +218,7 @@ struct MetronomeRowView: View {
 
 #Preview("Metronome row") {
     @Previewable @State var openID: UUID?
+    @Previewable @State var selection: Set<UUID> = []
     let store = PreviewData.store()
     let project: Project = {
         var project = PreviewData.demoProject(in: store)
@@ -222,13 +229,21 @@ struct MetronomeRowView: View {
     ScrollView {
         LazyVStack(spacing: 12) {
             if let settings = project.metronome {
-                SwipeToDeleteRow(
+                SwipeRow(
                     id: MetronomeSettings.rowID,
                     openRowID: $openID,
+                    isSelected: selection.contains(MetronomeSettings.rowID),
+                    inSelectionMode: !selection.isEmpty,
+                    onToggleSelection: { selection.formSymmetricDifference([MetronomeSettings.rowID]) },
                     deleteTitle: "Remove Metronome?",
                     onDelete: {}
                 ) {
-                    MetronomeRowView(settings: settings, project: project)
+                    MetronomeRowView(
+                        settings: settings,
+                        project: project,
+                        isSelected: selection.contains(MetronomeSettings.rowID),
+                        inSelectionMode: !selection.isEmpty
+                    )
                 }
             }
         }

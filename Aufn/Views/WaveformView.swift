@@ -3,9 +3,15 @@ import SwiftUI
 /// Dot-matrix waveform rendered from cached peak bins — same visual language
 /// as the transport's tape strip (3 pt dots on a 6 pt pitch, amplitude = dot
 /// count). Downsamples bins to columns in a Canvas — never touches audio files.
+/// An optional playhead tints the column at the current position yellow.
 struct WaveformView: View {
     let peaks: [Float]
     var tint: Color = .gray.opacity(0.45)
+    /// Playback position as a fraction of the waveform's span (0…1). The
+    /// column under the playhead renders yellow; nil draws no playhead.
+    var progress: Double? = nil
+
+    static let playheadTint = Color.yellow
 
     private static let columnPitch: CGFloat = 6
     private static let dotDiameter: CGFloat = 3
@@ -21,7 +27,10 @@ struct WaveformView: View {
             let midY = size.height / 2
             let radius = Self.dotDiameter / 2
 
+            let playheadColumn = Self.playheadColumn(progress: progress, peakCount: peaks.count, binsPerColumn: binsPerColumn)
+
             var path = Path()
+            var playheadPath = Path()
             for column in 0..<columns {
                 let start = column * binsPerColumn
                 guard start < peaks.count else { break }
@@ -33,11 +42,36 @@ struct WaveformView: View {
                 let x = CGFloat(column) * Self.columnPitch + Self.columnPitch / 2
                 for index in 0..<dotCount {
                     let y = midY + (CGFloat(index) - CGFloat(dotCount - 1) / 2) * Self.dotPitch
-                    path.addEllipse(in: CGRect(x: x - radius, y: y - radius, width: Self.dotDiameter, height: Self.dotDiameter))
+                    let dot = CGRect(x: x - radius, y: y - radius, width: Self.dotDiameter, height: Self.dotDiameter)
+                    if column == playheadColumn {
+                        playheadPath.addEllipse(in: dot)
+                    } else {
+                        path.addEllipse(in: dot)
+                    }
                 }
             }
             context.fill(path, with: .color(tint))
+            context.fill(playheadPath, with: .color(Self.playheadTint))
         }
+    }
+
+    /// The column whose bins contain the playhead, mapped through the same
+    /// downsampling as the drawing loop; nil when there's no playhead.
+    static func playheadColumn(progress: Double?, peakCount: Int, binsPerColumn: Int) -> Int? {
+        guard let progress, peakCount > 0, binsPerColumn > 0 else { return nil }
+        let bin = min(peakCount - 1, max(0, Int(Double(peakCount) * progress)))
+        return bin / binsPerColumn
+    }
+
+    /// Fraction of `duration` that `elapsed` covers, or nil when the waveform
+    /// has no playhead to show: transport inactive, zero length, or already
+    /// past this waveform's end (a short track sits finished while longer
+    /// ones keep the mix playing).
+    static func playbackProgress(elapsed: Double, duration: Double, isActive: Bool) -> Double? {
+        guard isActive, duration > 0 else { return nil }
+        let fraction = elapsed / duration
+        guard fraction <= 1 else { return nil }
+        return max(0, fraction)
     }
 }
 
@@ -49,6 +83,8 @@ struct WaveformView: View {
             .frame(height: 48)
             .opacity(0.4)
         WaveformView(peaks: PreviewData.peaks(bins: 300), tint: .red)
+            .frame(height: 48)
+        WaveformView(peaks: PreviewData.peaks(), progress: 0.4)
             .frame(height: 48)
     }
     .padding()

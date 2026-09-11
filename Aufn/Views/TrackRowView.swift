@@ -6,6 +6,8 @@ struct TrackRowView: View {
 
     let track: Track
     let project: Project
+    var isSelected = false
+    var inSelectionMode = false
 
     @State private var peaks: [Float] = []
     @State private var isMixerExpanded = false
@@ -13,9 +15,13 @@ struct TrackRowView: View {
     @State private var pan: Float = 0
 
     var body: some View {
-        TrackCard {
+        TrackCard(selected: isSelected) {
             VStack(spacing: 8) {
                 HStack(spacing: 6) {
+                    if inSelectionMode {
+                        SelectionCheck(isSelected: isSelected)
+                            .transition(.disclose(anchor: .leading, edge: .leading))
+                    }
                     Text(track.name)
                         .font(.subheadline.weight(.semibold))
                         .lineLimit(1)
@@ -55,10 +61,23 @@ struct TrackRowView: View {
                 .padding(.horizontal, 12)
                 .padding(.top, 12)
 
-                WaveformView(peaks: peaks, tint: .gray.opacity(0.45))
-                    .frame(height: 48)
-                    .opacity(project.isAudible(track) ? 1 : 0.4)
-                    .padding(.bottom, isMixerExpanded ? 0 : 12)
+                // Redraws on a timeline while this project plays so the
+                // yellow playhead column tracks the transport; paused (and
+                // playhead-less) otherwise.
+                TimelineView(.animation(minimumInterval: 0.1, paused: engine.playingProjectID != project.id)) { _ in
+                    WaveformView(
+                        peaks: peaks,
+                        tint: .gray.opacity(0.45),
+                        progress: WaveformView.playbackProgress(
+                            elapsed: engine.elapsedSeconds,
+                            duration: track.durationSeconds,
+                            isActive: engine.playingProjectID == project.id
+                        )
+                    )
+                }
+                .frame(height: 48)
+                .opacity(project.isAudible(track) ? 1 : 0.4)
+                .padding(.bottom, isMixerExpanded ? 0 : 12)
 
                 if isMixerExpanded {
                     mixerControls
@@ -202,19 +221,28 @@ extension Double {
 
 #Preview("Track rows") {
     @Previewable @State var openID: UUID?
+    @Previewable @State var selection: Set<UUID> = []
     let store = PreviewData.store()
     let project = PreviewData.demoProject(in: store)
     let engine = AudioEngineController(store: store)
     ScrollView {
         LazyVStack(spacing: 12) {
             ForEach(project.tracks) { track in
-                SwipeToDeleteRow(
+                SwipeRow(
                     id: track.id,
                     openRowID: $openID,
+                    isSelected: selection.contains(track.id),
+                    inSelectionMode: !selection.isEmpty,
+                    onToggleSelection: { selection.formSymmetricDifference([track.id]) },
                     deleteTitle: "Delete \"\(track.name)\"?",
                     onDelete: {}
                 ) {
-                    TrackRowView(track: track, project: project)
+                    TrackRowView(
+                        track: track,
+                        project: project,
+                        isSelected: selection.contains(track.id),
+                        inSelectionMode: !selection.isEmpty
+                    )
                 }
             }
             LiveTrackRowView(engine: engine)

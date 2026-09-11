@@ -98,6 +98,7 @@ struct TransportBar: View {
     /// the stop button — so the layout never changes shape.
     private var skipBackButton: some View {
         Button {
+            Haptics.tap()
             engine.skipBack()
         } label: {
             Image(systemName: "gobackward.10")
@@ -111,6 +112,7 @@ struct TransportBar: View {
     /// Collapsed trigger: just the mode name in a glass capsule.
     private var captureModeTrigger: some View {
         Button {
+            Haptics.tap()
             setChoosingMode(true)
         } label: {
             Text(currentMode.label)
@@ -165,6 +167,7 @@ struct TransportBar: View {
 
     private var playButton: some View {
         Button {
+            Haptics.tap()
             engine.startPlayback(of: project)
         } label: {
             Image(systemName: "play.fill")
@@ -187,10 +190,14 @@ struct TransportBar: View {
         Button {
             switch engine.state {
             case .recording:
+                Haptics.tap()
                 engine.stopRecording()
             case .playing:
+                Haptics.tap()
                 engine.stopTransport()
             case .idle:
+                // Heavier than a tap: starting a take is the app's defining action.
+                Haptics.heavy()
                 Task { await engine.startRecording(into: project) }
             }
         } label: {

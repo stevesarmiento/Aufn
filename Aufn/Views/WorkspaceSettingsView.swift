@@ -15,7 +15,6 @@ struct WorkspaceSettingsView: View {
     @State private var path = NavigationPath()
     @State private var masterVolume: Float = 1
     @State private var showingExport = false
-    @AppStorage("preferredSampleRate") private var preferredSampleRate: Double = 48_000
 
     enum Route: Hashable {
         case sampleRate
@@ -34,20 +33,12 @@ struct WorkspaceSettingsView: View {
                 SettingsFootnote("Master volume is part of the workspace's mix — applied to playback and the stereo mixdown. Repeat wraps playback from the end back to the start until you stop it.")
 
                 SettingsSectionHeader("Capture")
-                SettingsLinkRow(
-                    iconName: "dial.medium",
-                    title: "Sample Rate",
-                    description: "Recording at \(formattedRate)."
-                ) {
+                SettingsLinkRow(iconName: "dial.medium", title: "Sample Rate") {
                     path.append(Route.sampleRate)
                 }
                 .disabled(!isIdle)
                 .opacity(isIdle ? 1 : 0.5)
-                SettingsLinkRow(
-                    iconName: "mic",
-                    title: "Microphone",
-                    description: "Input device and mic position."
-                ) {
+                SettingsLinkRow(iconName: "mic", title: "Microphone") {
                     path.append(Route.microphone)
                 }
                 .disabled(!isIdle)
@@ -74,7 +65,7 @@ struct WorkspaceSettingsView: View {
                 // the corner, results in a drawer over the sheet.
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        Haptics.soft()
+                        Haptics.tap()
                         showingExport = true
                     } label: {
                         Image(systemName: "square.and.arrow.up")
@@ -158,11 +149,6 @@ struct WorkspaceSettingsView: View {
                 engine.updateMix(for: project)
             }
         )
-    }
-
-    private var formattedRate: String {
-        let khz = preferredSampleRate / 1000
-        return khz == khz.rounded() ? "\(Int(khz)) kHz" : "\(khz) kHz"
     }
 }
 

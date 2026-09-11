@@ -9,6 +9,8 @@ struct ExportDrawer: View {
     @Environment(\.dismiss) private var dismiss
 
     let project: Project
+    /// Scope the drawer to a selection; `nil` exports the whole project.
+    var trackIDs: Set<UUID>? = nil
 
     @State private var isExporting = false
     @State private var shareItems: ShareItems?
@@ -19,6 +21,10 @@ struct ExportDrawer: View {
         let id = UUID()
         let urls: [URL]
     }
+
+    /// The tracks this drawer exports, in project order.
+    private var exportTracks: [Track] { project.tracks(limitedTo: trackIDs) }
+    private var isScoped: Bool { trackIDs != nil && exportTracks.count != project.tracks.count }
 
     var body: some View {
         NavigationStack {
@@ -62,6 +68,9 @@ struct ExportDrawer: View {
 
     @ViewBuilder
     private var content: some View {
+            if isScoped {
+                SettingsFootnote("Exporting \(exportTracks.count) of \(project.tracks.count) tracks.")
+            }
             SettingsSectionHeader("Stems")
             exportRow("Export Stems (WAV)", iconName: "square.stack.3d.up", capturing: bakeTrackVolume) { bake in
                 { stems, name in
@@ -101,12 +110,12 @@ struct ExportDrawer: View {
         return SettingsLinkRow(iconName: iconName, title: title, chevronIconName: "square.and.arrow.up") {
             runExport(job)
         }
-        .disabled(isExporting || project.tracks.isEmpty)
-        .opacity(isExporting || project.tracks.isEmpty ? 0.5 : 1)
+        .disabled(isExporting || exportTracks.isEmpty)
+        .opacity(isExporting || exportTracks.isEmpty ? 0.5 : 1)
     }
 
     private func runExport(_ work: @escaping @Sendable ([Exporter.Stem], String) throws -> [URL]) {
-        let stems = project.tracks.map { Exporter.Stem(track: $0, audioURL: store.audioURL(for: $0, in: project)) }
+        let stems = exportTracks.map { Exporter.Stem(track: $0, audioURL: store.audioURL(for: $0, in: project)) }
         let name = project.name
         isExporting = true
         Task {

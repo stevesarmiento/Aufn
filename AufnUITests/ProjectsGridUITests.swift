@@ -19,10 +19,18 @@ final class ProjectsGridUITests: XCTestCase {
         // Gear → Settings → App Icon page lists the default icon.
         app.buttons["App Settings"].tap()
         XCTAssertTrue(app.buttons["App Icon"].waitForExistence(timeout: 5))
+        // The permissions switch reflects mic status; don't flip it (with the
+        // choice already made, flipping only leaves for the system Settings).
+        XCTAssertTrue(app.switches["Microphone"].exists)
         attach(app, name: "app-settings")
         app.buttons["App Icon"].tap()
         XCTAssertTrue(app.buttons["Default"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Default"].isSelected)
+        // The shipped alternates, in catalog order. Tapping one can't be
+        // verified in the simulator (the system icon-change alert fails to
+        // load there), so this only checks they're offered.
+        XCTAssertTrue(app.buttons["Retro"].exists)
+        XCTAssertTrue(app.buttons["Blueprint"].exists)
         attach(app, name: "app-icon")
         app.navigationBars.buttons.firstMatch.tap() // back
         XCTAssertTrue(app.buttons["Close"].waitForExistence(timeout: 5))

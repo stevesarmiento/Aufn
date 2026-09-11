@@ -259,4 +259,14 @@ struct ExportPipelineTests {
         #expect(peaks[0] > 0.2)
         #expect(peaks[1] > 0.2)
     }
+
+    @Test func exportScopeKeepsProjectOrderAndIgnoresUnknownIDs() {
+        let t1 = Track(name: "1", fileName: "1.caf", sampleRate: 48_000)
+        let t2 = Track(name: "2", fileName: "2.caf", sampleRate: 48_000)
+        let t3 = Track(name: "3", fileName: "3.caf", sampleRate: 48_000)
+        let project = Project(name: "P", tracks: [t1, t2, t3])
+        #expect(project.tracks(limitedTo: nil).map(\.id) == [t1.id, t2.id, t3.id])
+        #expect(project.tracks(limitedTo: [t3.id, t1.id, UUID()]).map(\.id) == [t1.id, t3.id])
+        #expect(project.tracks(limitedTo: []).isEmpty)
+    }
 }

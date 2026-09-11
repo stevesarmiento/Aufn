@@ -129,21 +129,7 @@ struct MixWaveformView: View {
     }
 
     private func combine() {
-        let anySoloed = project.isAnySoloed
-        let maxBins = project.tracks.compactMap { trackPeaks[$0.id]?.count }.max() ?? 0
-        guard maxBins > 0 else {
-            combined = []
-            return
-        }
-        var mix = [Float](repeating: 0, count: maxBins)
-        for track in project.tracks {
-            let gain = MixRules.effectiveVolume(for: track, anySoloed: anySoloed)
-            guard gain > 0, let peaks = trackPeaks[track.id] else { continue }
-            for index in peaks.indices {
-                mix[index] += peaks[index] * gain
-            }
-        }
-        combined = mix.map { min($0, 1) }
+        combined = project.combinedMixPeaks(from: trackPeaks)
     }
 
 }

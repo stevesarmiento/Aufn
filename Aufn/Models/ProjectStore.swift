@@ -176,10 +176,23 @@ final class ProjectStore {
     }
 
     func deleteTrack(_ track: Track, from project: Project) {
+        deleteTracks(ids: [track.id], from: project)
+    }
+
+    /// Batched removal with ONE metadata write. Unknown ids are ignored; each
+    /// removed track's CAF and peaks cache go with it. `removingMetronome`
+    /// rides along so a mixed selection is still a single persist.
+    func deleteTracks(ids: Set<UUID>, removingMetronome: Bool = false, from project: Project) {
         guard var current = self.project(id: project.id) else { return }
-        current.tracks.removeAll { $0.id == track.id }
-        try? fileManager.removeItem(at: audioURL(for: track, in: project))
-        try? fileManager.removeItem(at: peaksURL(for: track, in: project))
+        // Derived from the fresh copy, not the caller's snapshot.
+        let doomed = current.tracks.filter { ids.contains($0.id) }
+        guard !doomed.isEmpty || (removingMetronome && current.metronome != nil) else { return }
+        current.tracks.removeAll { ids.contains($0.id) }
+        if removingMetronome { current.metronome = nil }
+        for track in doomed {
+            try? fileManager.removeItem(at: audioURL(for: track, in: current))
+            try? fileManager.removeItem(at: peaksURL(for: track, in: current))
+        }
         update(current)
     }
 

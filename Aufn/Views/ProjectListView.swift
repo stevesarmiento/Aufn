@@ -34,7 +34,7 @@ struct ProjectListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("App Settings", systemImage: "gearshape") {
-                        Haptics.soft()
+                        Haptics.tap()
                         showingSettings = true
                     }
                 }
@@ -62,10 +62,9 @@ struct ProjectListView: View {
             }
             Button("Cancel", role: .cancel) { renamingProject = nil }
         }
-        .confirmationDialog(
+        .alert(
             "Delete \(deletingProject?.name ?? "Project")?",
-            isPresented: deleteDialogShown,
-            titleVisibility: .visible
+            isPresented: deleteDialogShown
         ) {
             Button("Delete Project", role: .destructive) {
                 if let project = deletingProject {
@@ -172,6 +171,7 @@ struct ProjectListView: View {
     }
 
     private func createProject() {
+        Haptics.tap()
         let number = store.projects.count + 1
         withAnimation(.snappy) {
             _ = try? store.createProject(named: "Project \(number)")

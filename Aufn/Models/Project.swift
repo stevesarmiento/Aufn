@@ -54,3 +54,13 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
         tint = tintName.flatMap(ProjectTint.init(rawValue:)) ?? .graphite
     }
 }
+
+extension Project {
+    /// The tracks a scoped operation (export of a selection) applies to:
+    /// `nil` means the whole project. Project order is preserved and unknown
+    /// ids are ignored.
+    func tracks(limitedTo ids: Set<UUID>?) -> [Track] {
+        guard let ids else { return tracks }
+        return tracks.filter { ids.contains($0.id) }
+    }
+}

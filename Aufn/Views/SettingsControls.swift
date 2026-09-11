@@ -12,17 +12,26 @@ import UIKit
 /// generator deallocates before its player runs.
 @MainActor
 enum Haptics {
-    private static let softGenerator = UIImpactFeedbackGenerator(style: .soft)
-    private static let lightGenerator = UIImpactFeedbackGenerator(style: .light)
+    private static let tapGenerator = UIImpactFeedbackGenerator(style: .medium)
+    private static let firmGenerator = UIImpactFeedbackGenerator(style: .rigid)
+    private static let heavyGenerator = UIImpactFeedbackGenerator(style: .heavy)
 
-    static func soft() {
-        softGenerator.impactOccurred()
-        softGenerator.prepare()
+    /// The everyday tap: buttons, links, toolbar actions.
+    static func tap() {
+        tapGenerator.impactOccurred()
+        tapGenerator.prepare()
     }
 
-    static func light() {
-        lightGenerator.impactOccurred()
-        lightGenerator.prepare()
+    /// A sharper click for arming something (the swipe delete panel).
+    static func firm() {
+        firmGenerator.impactOccurred()
+        firmGenerator.prepare()
+    }
+
+    /// Destructive or transport-defining actions (start a take, delete).
+    static func heavy() {
+        heavyGenerator.impactOccurred()
+        heavyGenerator.prepare()
     }
 }
 
@@ -90,45 +99,32 @@ struct SettingsSectionHeader: View {
     }
 }
 
-/// Navigation row: icon chip, bold rounded title, optional description,
-/// chevron. Soft haptic on tap, press-scale while held.
+/// Navigation row: icon chip, bold rounded title, chevron. Soft haptic on
+/// tap, press-scale while held.
 struct SettingsLinkRow: View {
     var iconName: String
     var title: String
-    var description: String = ""
     var chevronIconName: String = "chevron.forward"
     var navigateTo: () -> Void
 
     var body: some View {
         Button {
-            Haptics.soft()
+            Haptics.tap()
             navigateTo()
         } label: {
             HStack(alignment: .center) {
-                HStack(alignment: description.isEmpty ? .center : .top) {
-                    Image(systemName: iconName)
-                        .font(.system(size: 16))
-                        .bold()
-                        .foregroundStyle(.white.opacity(0.4))
-                        .frame(width: 28)
-                        .padding(.trailing, 5)
+                Image(systemName: iconName)
+                    .font(.system(size: 16))
+                    .bold()
+                    .foregroundStyle(.white.opacity(0.4))
+                    .frame(width: 28)
+                    .padding(.trailing, 5)
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(title)
-                            .fontDesign(.rounded)
-                            .font(.system(size: 16))
-                            .foregroundStyle(.white)
-                            .bold()
-
-                        if !description.isEmpty {
-                            Text(description)
-                                .fontDesign(.rounded)
-                                .font(.system(size: 12))
-                                .foregroundStyle(.white.opacity(0.6))
-                                .multilineTextAlignment(.leading)
-                        }
-                    }
-                }
+                Text(title)
+                    .fontDesign(.rounded)
+                    .font(.system(size: 16))
+                    .foregroundStyle(.white)
+                    .bold()
 
                 Spacer()
 
@@ -200,7 +196,7 @@ struct SettingsOptionRow: View {
     var body: some View {
         Button {
             guard enabled else { return }
-            Haptics.soft()
+            Haptics.tap()
             action()
         } label: {
             HStack {

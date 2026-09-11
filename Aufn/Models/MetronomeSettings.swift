@@ -18,7 +18,7 @@ enum ClickSound: String, Codable, CaseIterable {
 /// it has no audio file, peaks cache, or export presence — just click
 /// parameters plus the same mute/solo flags the mix rules understand.
 struct MetronomeSettings: Codable, Equatable, Hashable {
-    /// Stable row identity for SwipeToDeleteRow/ForEach — a project has at
+    /// Stable row identity for SwipeRow/ForEach — a project has at
     /// most one metronome.
     static let rowID = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
 

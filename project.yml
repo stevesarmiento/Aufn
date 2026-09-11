@@ -17,6 +17,7 @@ targets:
         UIBackgroundModes: [audio]
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UILaunchScreen: {}
+        ITSAppUsesNonExemptEncryption: false
     postCompileScripts:
       # Alternate icons compiled into Assets.car can't be loaded by name, so
       # the App Icon picker previews come from a copy of each appiconset's PNG

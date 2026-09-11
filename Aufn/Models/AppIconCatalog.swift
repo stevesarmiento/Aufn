@@ -18,11 +18,18 @@ enum AppIconCatalog {
     static let primaryKey = "AppIcon"
     static let primaryDisplayName = "Default"
 
-    /// Optional pretty names, keyed by appiconset name.
-    static let displayNames: [String: String] = [:]
+    /// Optional pretty names, keyed by appiconset name. Without one a set
+    /// falls back to its own name, which reads as "Aufn Retro" — the app name
+    /// is redundant inside Aufn's own picker.
+    static let displayNames: [String: String] = [
+        "aufn-retro": "Retro",
+        "aufn-blueprint": "Blueprint",
+    ]
 
-    /// Icons listed here come first, in this order; the rest follow alphabetically.
-    static let preferredOrder: [String] = []
+    /// Icons listed here come first, in this order; the rest follow
+    /// alphabetically. Retro is drawn from the current mark, Blueprint from
+    /// the v1 one, so they sit in that order after the default.
+    static let preferredOrder: [String] = ["aufn-retro", "aufn-blueprint"]
 
     static var options: [AppIconOption] {
         options(from: Bundle.main.infoDictionary ?? [:])

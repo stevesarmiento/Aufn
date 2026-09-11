@@ -44,7 +44,7 @@ struct ProjectAppearanceSheet: View {
                 ForEach(ProjectTint.allCases, id: \.self) { tint in
                     let isSelected = tint == selected
                     Button {
-                        Haptics.soft()
+                        Haptics.tap()
                         update { $0.tint = tint }
                     } label: {
                         Circle()
@@ -82,6 +82,7 @@ struct ProjectAppearanceSheet: View {
         .sheet(isPresented: .constant(true)) {
             ProjectAppearanceSheet(projectID: PreviewData.demoProject(in: store).id)
                 .environment(store)
+                .environment(AudioEngineController(store: store))
         }
         .fontDesign(.rounded)
         .preferredColorScheme(.dark)

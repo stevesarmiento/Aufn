@@ -64,6 +64,12 @@ final class AudioSessionController {
         // .default for normal output behavior.
         let mode: AVAudioSession.Mode = recording ? .measurement : .default
         try session.setCategory(.playAndRecord, mode: mode, options: categoryOptions)
+        // Haptics ride on the audio system. Without this iOS reconfigures the
+        // IO unit to mute them the moment recording starts — a configuration
+        // change landing under a freshly started take (the transport's own
+        // taps fire right before Record). It also keeps the transport's
+        // haptics alive while a take runs. Must precede activation.
+        try? session.setAllowHapticsAndSystemSoundsDuringRecording(true)
         try? session.setPreferredSampleRate(preferredSampleRate)
         try? session.setPreferredIOBufferDuration(0.005)
         try session.setActive(true)

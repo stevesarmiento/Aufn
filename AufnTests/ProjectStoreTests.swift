@@ -85,4 +85,57 @@ struct ProjectStoreTests {
         #expect(c.tint == ProjectTint.rotating(index: 2))
         #expect(Set([a.tint, b.tint, c.tint]).count == 3)
     }
+
+    @Test func deleteTracksBatchRemovesFilesAndMetronomeInOnePersist() throws {
+        let root = makeRoot()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = ProjectStore(rootDirectory: root)
+        var project = try store.createProject(named: "Batch")
+        let keep = Track(name: "Keep", fileName: "keep.caf", durationSeconds: 0.1, sampleRate: 48_000)
+        let a = Track(name: "A", fileName: "a.caf", durationSeconds: 0.1, sampleRate: 48_000)
+        let b = Track(name: "B", fileName: "b.caf", durationSeconds: 0.1, sampleRate: 48_000)
+        for track in [keep, a, b] {
+            store.addTrack(track, to: project)
+            try writeCAF(at: store.tracksDirectory(for: project).appending(path: track.fileName), seconds: 0.1)
+            try Data([0, 0, 0, 0]).write(to: store.peaksURL(for: track, in: project))
+        }
+        project = try #require(store.project(id: project.id))
+        project.metronome = MetronomeSettings()
+        store.update(project)
+
+        // A stale snapshot plus an unknown id: both must be harmless.
+        store.deleteTracks(ids: [a.id, b.id, UUID()], removingMetronome: true, from: project)
+
+        let after = try #require(store.project(id: project.id))
+        #expect(after.tracks.map(\.id) == [keep.id])
+        #expect(after.metronome == nil)
+        let fm = FileManager.default
+        #expect(fm.fileExists(atPath: store.audioURL(for: keep, in: after).path))
+        #expect(fm.fileExists(atPath: store.peaksURL(for: keep, in: after).path))
+        for gone in [a, b] {
+            #expect(!fm.fileExists(atPath: store.audioURL(for: gone, in: after).path))
+            #expect(!fm.fileExists(atPath: store.peaksURL(for: gone, in: after).path))
+        }
+
+        // Persisted, not just in memory.
+        let reloaded = ProjectStore(rootDirectory: root)
+        #expect(reloaded.project(id: project.id)?.tracks.map(\.id) == [keep.id])
+        #expect(reloaded.project(id: project.id)?.metronome == nil)
+    }
+
+    @Test func deleteTracksWithNothingToRemoveIsANoOp() throws {
+        let root = makeRoot()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = ProjectStore(rootDirectory: root)
+        let project = try store.createProject(named: "Untouched")
+        let track = Track(name: "Only", fileName: "only.caf", durationSeconds: 0.1, sampleRate: 48_000)
+        store.addTrack(track, to: project)
+        try writeCAF(at: store.tracksDirectory(for: project).appending(path: track.fileName), seconds: 0.1)
+
+        store.deleteTracks(ids: [UUID()], from: project)
+
+        let after = try #require(store.project(id: project.id))
+        #expect(after.tracks.map(\.id) == [track.id])
+        #expect(FileManager.default.fileExists(atPath: store.audioURL(for: track, in: after).path))
+    }
 }

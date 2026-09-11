@@ -149,6 +149,31 @@ struct ModelCodableTests {
         #expect(outOfRange.countInBars == 2)
     }
 
+    @Test func combinedMixPeaksSumsAtEffectiveVolumeAndClips() {
+        let loud = Track(name: "Loud", fileName: "a.caf", sampleRate: 48_000, volume: 1)
+        let quiet = Track(name: "Quiet", fileName: "b.caf", sampleRate: 48_000, volume: 0.5)
+        let muted = Track(name: "Muted", fileName: "c.caf", isMuted: true, sampleRate: 48_000, volume: 1)
+        let project = Project(name: "P", tracks: [loud, quiet, muted])
+        let peaks: [UUID: [Float]] = [
+            loud.id: [0.8, 0.2],
+            quiet.id: [0.6, 0.6, 0.4],   // longest cache sets the bin count
+            muted.id: [1, 1, 1],         // silent: contributes nothing
+        ]
+        let mix = project.combinedMixPeaks(from: peaks)
+        #expect(mix.count == 3)
+        #expect(mix[0] == 1)                       // 0.8 + 0.3 clipped
+        #expect(abs(mix[1] - 0.5) < 0.0001)        // 0.2 + 0.3
+        #expect(abs(mix[2] - 0.2) < 0.0001)        // quiet's tail alone
+        #expect(project.combinedMixPeaks(from: [:]).isEmpty)
+
+        // A solo silences the others in the picture too.
+        var soloed = project
+        soloed.tracks[0].isSoloed = true
+        let soloMix = soloed.combinedMixPeaks(from: peaks)
+        #expect(abs(soloMix[0] - 0.8) < 0.0001)
+        #expect(soloMix[2] == 0)
+    }
+
     @Test func mixRulesWithMetronome() {
         let plain = Track(name: "A", fileName: "a.caf", sampleRate: 48_000)
 

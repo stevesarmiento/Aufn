@@ -38,7 +38,7 @@ struct AppIconPickerView: View {
     private func tile(for option: AppIconOption) -> some View {
         let isActive = activeAppIcon == option.storageKey
         return Button {
-            Haptics.soft()
+            Haptics.tap()
             Task { await select(option) }
         } label: {
             VStack(spacing: 8) {

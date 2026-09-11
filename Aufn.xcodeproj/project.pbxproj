@@ -14,11 +14,14 @@
 		0F1D98DC77C99CC49DD3BB9D /* MetronomeClickTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A23EF8819D114AE7462032A /* MetronomeClickTests.swift */; };
 		10CDC308F9E3B95DF768E5B0 /* ProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E0F36D39180002A95932DF /* ProjectDetailView.swift */; };
 		13020CA1318F985FFFC6F519 /* MetronomeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694BCA64B54AF085C7FDBF06 /* MetronomeSettings.swift */; };
+		130786F9E7DB518BF025BFD4 /* SelectionDeleteCopyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FD979EA2C36CFC4159D78A /* SelectionDeleteCopyTests.swift */; };
 		188F1216E9962D6D9A5D89DA /* AudioEngineController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E39CE7F3C52065E3CFCF6 /* AudioEngineController.swift */; };
+		1D15711D8774713BF2E3193D /* HorizontalPanGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = A017545ED20CC32071E00D1B /* HorizontalPanGesture.swift */; };
 		225F74BFE0D21E2CA1733100 /* TrackRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADB93826B8AD141909A69E59 /* TrackRecorder.swift */; };
 		25E2FAA37E11DD3D3D480409 /* TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AEB2116153E60C0B264C44 /* TransportBar.swift */; };
 		289950537087B652C93AAB38 /* ExportDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9B4EE5FE9120DAFB64C1C /* ExportDrawer.swift */; };
 		2BE9D8AD76358E6B96D73365 /* GradeProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16A3B48461C89E19FEEAF661 /* GradeProcessor.swift */; };
+		2E677C1AEE5B1B80CE44DDB6 /* SwipeRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59665E426A645A3705173AB /* SwipeRules.swift */; };
 		3078C24E266A76C9E368178B /* CaptureWheel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1A9BC9F1428107D922B018 /* CaptureWheel.swift */; };
 		33AD13941191E3A4304D7408 /* GradeProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71229EB44028DA1220359516 /* GradeProcessorTests.swift */; };
 		36BE1CD2FD2A47873296AA02 /* WorkspaceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16240E5F3C99DF4634FA22B /* WorkspaceSettingsView.swift */; };
@@ -28,13 +31,15 @@
 		3EDBF79CDA39B65862E62631 /* ProjectAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8DB4274448D3B4D34688DF /* ProjectAppearance.swift */; };
 		3F5820A4BA0B3BEBF2A55F13 /* FittedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F29F36DC7179183A9532339 /* FittedSheet.swift */; };
 		417A0285956B5D7B56E242A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62678A3ACAC43AD644B8F77C /* Assets.xcassets */; };
+		42803F3BB04E83742828CA2C /* SelectionFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83D14137206DF3451725DF0F /* SelectionFlowUITests.swift */; };
 		46BCB4DB3E7C64E1DA815533 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FB0BB77CED728DB965323E /* WaveformView.swift */; };
+		46C576589B0F9D075CBD117B /* SwipeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EA2483AED3E39BBC9E8CEB /* SwipeRow.swift */; };
+		47DBF4CDA6CD876552B487AC /* WaveformPlayheadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487B88342BAB205C454C0C0F /* WaveformPlayheadTests.swift */; };
 		4AB727D851FD6740046417F5 /* InputPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */; };
 		54B8D1E923CDC6E421D40653 /* AppIconCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6923897A5CA2924D48C154 /* AppIconCatalog.swift */; };
 		5F1C187BE36B4515AECFCD09 /* PeakStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3E31CC0386771ECD012FD /* PeakStoreTests.swift */; };
 		62E391C189B53DAEC5D4F59C /* TapeWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */; };
 		69B837ECCD61C20D70E10DBB /* GradeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB9C8E3DA8C1103FED2725F /* GradeSettings.swift */; };
-		6A2CC8F4F9E0323DA05C2575 /* SwipeToDeleteRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113635C994053FA0433FE156 /* SwipeToDeleteRow.swift */; };
 		6E31C7A0B9A5C17FFC816175 /* TrackCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 875FC223D2F40A915B1311C5 /* TrackCard.swift */; };
 		6EEA7A385C4ADEA43921F3B5 /* MixWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */; };
 		73B1827ED7FD7D2CF5E60C3A /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5AA0A3C78D261AAA26F172 /* Project.swift */; };
@@ -48,13 +53,16 @@
 		9A20CF41E6028B2CCAD8689A /* TrackRecorderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3765D9494AA852719FF60240 /* TrackRecorderTests.swift */; };
 		9A3D256FBA9A746433866A9F /* AppIconCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C143C60BD7A069E2152104 /* AppIconCatalogTests.swift */; };
 		9B9CF4A6003B61B4DB218774 /* TransportRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B064AC527A1B6AD409B769 /* TransportRules.swift */; };
+		9BC7BD5C78EA6792D82F5CF8 /* SelectionActionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D5215892F06A219B576FE2 /* SelectionActionBar.swift */; };
 		9D82AC66E26D0C0A6D059FF8 /* MicPositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF1C1E167C37F36DC1A9B45 /* MicPositionTests.swift */; };
 		A25179BD9EE57D1CB68319FC /* MixRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5B60D01674003C1EADF75F /* MixRules.swift */; };
 		A38B185C8F3A3D161D11D198 /* AufnApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711EA42EDE83F0D800EE54A /* AufnApp.swift */; };
+		A805C04E7F67F1C5F9D793B9 /* CaptureModeFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D2A6863FF55BACCE2E9E30 /* CaptureModeFlowUITests.swift */; };
 		A9E7AFA81A0ED309071257A9 /* CaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1461DE290A21792CE5928EC /* CaptureMode.swift */; };
 		AD994ED964F5C382FDA43B2D /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAC1082458BADE454C9C6839 /* Track.swift */; };
 		B6B0B7DA3DFE671E448029AA /* CaptureModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59A2EB7A004F39AD53F6BFC /* CaptureModeTests.swift */; };
 		BA859AE312D2E3FF64AAD409 /* MicPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD02489BC12CA4735469D827 /* MicPosition.swift */; };
+		BF291FF1A4726158D3C40117 /* SelectionDeleteCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB5C08C019E4462D5F1D2F8 /* SelectionDeleteCopy.swift */; };
 		C6B4B4D05177C3B85D19ED8D /* Motion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3384746C65D8D3FD415463B /* Motion.swift */; };
 		C74E613D29ACDBF431F79FC4 /* Exporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C339619CA7533837060A4F /* Exporter.swift */; };
 		CBFE6509948F3F7522DBA04A /* ProjectStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB15403DD69C7D8337DBFB9 /* ProjectStoreTests.swift */; };
@@ -70,6 +78,7 @@
 		EE6D752E0F732D8F41837F14 /* ProjectCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BFB5C7753CD4D6C0C8BC40 /* ProjectCard.swift */; };
 		F15E7B25CFE527A0C9937638 /* ProjectAppearanceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6869C53535DA3669F1ACB27 /* ProjectAppearanceSheet.swift */; };
 		F83FEBAD683A5D2220342AEE /* GradeTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3629B289172794B61C6797 /* GradeTestSupport.swift */; };
+		FC934DAFB76AA180F48EF9E8 /* SwipeRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79799B45D315F08D7DD7A32 /* SwipeRulesTests.swift */; };
 		FEA4725FA91B8FF3A3BD56E0 /* MetronomeBeatGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F603810D03C315FAE0550CD /* MetronomeBeatGridView.swift */; };
 		FF0A1C537F108DCF8508D11A /* TransportRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DA58E8A2C777B3AC339146 /* TransportRulesTests.swift */; };
 /* End PBXBuildFile section */
@@ -97,19 +106,22 @@
 		08AEB2116153E60C0B264C44 /* TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportBar.swift; sourceTree = "<group>"; };
 		0DB9C8E3DA8C1103FED2725F /* GradeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeSettings.swift; sourceTree = "<group>"; };
 		0ED5C9583A7472CADB35BDC8 /* AppIconPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconPickerView.swift; sourceTree = "<group>"; };
-		113635C994053FA0433FE156 /* SwipeToDeleteRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeToDeleteRow.swift; sourceTree = "<group>"; };
 		12BCEE49143C0E2CCF63420D /* PeakStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeakStore.swift; sourceTree = "<group>"; };
+		15FD979EA2C36CFC4159D78A /* SelectionDeleteCopyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionDeleteCopyTests.swift; sourceTree = "<group>"; };
 		16A3B48461C89E19FEEAF661 /* GradeProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeProcessor.swift; sourceTree = "<group>"; };
 		1A23EF8819D114AE7462032A /* MetronomeClickTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeClickTests.swift; sourceTree = "<group>"; };
 		1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapeWaveformView.swift; sourceTree = "<group>"; };
 		29C339619CA7533837060A4F /* Exporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exporter.swift; sourceTree = "<group>"; };
 		2A3629B289172794B61C6797 /* GradeTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeTestSupport.swift; sourceTree = "<group>"; };
+		2FB5C08C019E4462D5F1D2F8 /* SelectionDeleteCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionDeleteCopy.swift; sourceTree = "<group>"; };
 		30191CB3D17D8B80C74791E6 /* SettingsControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsControls.swift; sourceTree = "<group>"; };
 		32A520395A415465ECDA8922 /* ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListView.swift; sourceTree = "<group>"; };
 		3765D9494AA852719FF60240 /* TrackRecorderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRecorderTests.swift; sourceTree = "<group>"; };
 		38DA58E8A2C777B3AC339146 /* TransportRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportRulesTests.swift; sourceTree = "<group>"; };
 		39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordFlowUITests.swift; sourceTree = "<group>"; };
 		3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRowView.swift; sourceTree = "<group>"; };
+		44EA2483AED3E39BBC9E8CEB /* SwipeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeRow.swift; sourceTree = "<group>"; };
+		487B88342BAB205C454C0C0F /* WaveformPlayheadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformPlayheadTests.swift; sourceTree = "<group>"; };
 		4AE70FC29BBD993DDA3530CD /* MeterTapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterTapTests.swift; sourceTree = "<group>"; };
 		4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleRatePicker.swift; sourceTree = "<group>"; };
 		5BB15403DD69C7D8337DBFB9 /* ProjectStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStoreTests.swift; sourceTree = "<group>"; };
@@ -124,6 +136,7 @@
 		7F29F36DC7179183A9532339 /* FittedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FittedSheet.swift; sourceTree = "<group>"; };
 		80233F83100DBD15AD06CE76 /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
 		81F8DDF60047B1F191D12CA8 /* MicPositionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicPositionPicker.swift; sourceTree = "<group>"; };
+		83D14137206DF3451725DF0F /* SelectionFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionFlowUITests.swift; sourceTree = "<group>"; };
 		875FC223D2F40A915B1311C5 /* TrackCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackCard.swift; sourceTree = "<group>"; };
 		90E0F36D39180002A95932DF /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
 		94E9B4EE5FE9120DAFB64C1C /* ExportDrawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportDrawer.swift; sourceTree = "<group>"; };
@@ -131,6 +144,7 @@
 		9AF1C1E167C37F36DC1A9B45 /* MicPositionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicPositionTests.swift; sourceTree = "<group>"; };
 		9CB153B8D25AA800D8D238B2 /* MeterTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterTap.swift; sourceTree = "<group>"; };
 		9F6923897A5CA2924D48C154 /* AppIconCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconCatalog.swift; sourceTree = "<group>"; };
+		A017545ED20CC32071E00D1B /* HorizontalPanGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalPanGesture.swift; sourceTree = "<group>"; };
 		A16240E5F3C99DF4634FA22B /* WorkspaceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSettingsView.swift; sourceTree = "<group>"; };
 		A3384746C65D8D3FD415463B /* Motion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Motion.swift; sourceTree = "<group>"; };
 		A6C143C60BD7A069E2152104 /* AppIconCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconCatalogTests.swift; sourceTree = "<group>"; };
@@ -138,12 +152,15 @@
 		ADB93826B8AD141909A69E59 /* TrackRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRecorder.swift; sourceTree = "<group>"; };
 		AE90A8C9B28F3B30E090FBD7 /* MetronomeClick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeClick.swift; sourceTree = "<group>"; };
 		B1461DE290A21792CE5928EC /* CaptureMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureMode.swift; sourceTree = "<group>"; };
+		B9D2A6863FF55BACCE2E9E30 /* CaptureModeFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureModeFlowUITests.swift; sourceTree = "<group>"; };
 		BE5B60D01674003C1EADF75F /* MixRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixRules.swift; sourceTree = "<group>"; };
 		BFD0D0A6A8DDD04341E32410 /* WorkspaceFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFlowUITests.swift; sourceTree = "<group>"; };
+		C1D5215892F06A219B576FE2 /* SelectionActionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionActionBar.swift; sourceTree = "<group>"; };
 		C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputPicker.swift; sourceTree = "<group>"; };
 		C37B6BCF8C4EF20E3A2CB96B /* ExportPipelineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportPipelineTests.swift; sourceTree = "<group>"; };
 		C59A2EB7A004F39AD53F6BFC /* CaptureModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureModeTests.swift; sourceTree = "<group>"; };
 		C6869C53535DA3669F1ACB27 /* ProjectAppearanceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectAppearanceSheet.swift; sourceTree = "<group>"; };
+		C79799B45D315F08D7DD7A32 /* SwipeRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeRulesTests.swift; sourceTree = "<group>"; };
 		CC5AA0A3C78D261AAA26F172 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
 		CD353F7FF70F7D2567FD63C5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CE5212E762185BF2862EBD8B /* Aufn.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Aufn.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -159,6 +176,7 @@
 		E9349C45AC65E7E803D41997 /* AudioSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionController.swift; sourceTree = "<group>"; };
 		EAC1082458BADE454C9C6839 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
 		EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelMeterView.swift; sourceTree = "<group>"; };
+		F59665E426A645A3705173AB /* SwipeRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeRules.swift; sourceTree = "<group>"; };
 		F711EA42EDE83F0D800EE54A /* AufnApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AufnApp.swift; sourceTree = "<group>"; };
 		FA8DB4274448D3B4D34688DF /* ProjectAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectAppearance.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -206,6 +224,7 @@
 				CC5AA0A3C78D261AAA26F172 /* Project.swift */,
 				FA8DB4274448D3B4D34688DF /* ProjectAppearance.swift */,
 				80233F83100DBD15AD06CE76 /* ProjectStore.swift */,
+				2FB5C08C019E4462D5F1D2F8 /* SelectionDeleteCopy.swift */,
 				EAC1082458BADE454C9C6839 /* Track.swift */,
 			);
 			path = Models;
@@ -214,8 +233,10 @@
 		81AAE2898AFADC81CB54185D /* AufnUITests */ = {
 			isa = PBXGroup;
 			children = (
+				B9D2A6863FF55BACCE2E9E30 /* CaptureModeFlowUITests.swift */,
 				CFC66CF3E2B5E61332B8065F /* ProjectsGridUITests.swift */,
 				39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */,
+				83D14137206DF3451725DF0F /* SelectionFlowUITests.swift */,
 				BFD0D0A6A8DDD04341E32410 /* WorkspaceFlowUITests.swift */,
 			);
 			path = AufnUITests;
@@ -246,8 +267,11 @@
 				6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */,
 				E2C3E31CC0386771ECD012FD /* PeakStoreTests.swift */,
 				5BB15403DD69C7D8337DBFB9 /* ProjectStoreTests.swift */,
+				15FD979EA2C36CFC4159D78A /* SelectionDeleteCopyTests.swift */,
+				C79799B45D315F08D7DD7A32 /* SwipeRulesTests.swift */,
 				3765D9494AA852719FF60240 /* TrackRecorderTests.swift */,
 				38DA58E8A2C777B3AC339146 /* TransportRulesTests.swift */,
+				487B88342BAB205C454C0C0F /* WaveformPlayheadTests.swift */,
 			);
 			path = AufnTests;
 			sourceTree = "<group>";
@@ -270,6 +294,7 @@
 				DA1A9BC9F1428107D922B018 /* CaptureWheel.swift */,
 				94E9B4EE5FE9120DAFB64C1C /* ExportDrawer.swift */,
 				7F29F36DC7179183A9532339 /* FittedSheet.swift */,
+				A017545ED20CC32071E00D1B /* HorizontalPanGesture.swift */,
 				C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */,
 				EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */,
 				5F603810D03C315FAE0550CD /* MetronomeBeatGridView.swift */,
@@ -283,8 +308,10 @@
 				90E0F36D39180002A95932DF /* ProjectDetailView.swift */,
 				32A520395A415465ECDA8922 /* ProjectListView.swift */,
 				4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */,
+				C1D5215892F06A219B576FE2 /* SelectionActionBar.swift */,
 				30191CB3D17D8B80C74791E6 /* SettingsControls.swift */,
-				113635C994053FA0433FE156 /* SwipeToDeleteRow.swift */,
+				44EA2483AED3E39BBC9E8CEB /* SwipeRow.swift */,
+				F59665E426A645A3705173AB /* SwipeRules.swift */,
 				1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */,
 				875FC223D2F40A915B1311C5 /* TrackCard.swift */,
 				3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */,
@@ -440,8 +467,11 @@
 				7F52C940B17018BCB4D030B1 /* ModelCodableTests.swift in Sources */,
 				5F1C187BE36B4515AECFCD09 /* PeakStoreTests.swift in Sources */,
 				CBFE6509948F3F7522DBA04A /* ProjectStoreTests.swift in Sources */,
+				130786F9E7DB518BF025BFD4 /* SelectionDeleteCopyTests.swift in Sources */,
+				FC934DAFB76AA180F48EF9E8 /* SwipeRulesTests.swift in Sources */,
 				9A20CF41E6028B2CCAD8689A /* TrackRecorderTests.swift in Sources */,
 				FF0A1C537F108DCF8508D11A /* TransportRulesTests.swift in Sources */,
+				47DBF4CDA6CD876552B487AC /* WaveformPlayheadTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,8 +479,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A805C04E7F67F1C5F9D793B9 /* CaptureModeFlowUITests.swift in Sources */,
 				79F284E29899E839188E529D /* ProjectsGridUITests.swift in Sources */,
 				3D8E7563C0A132A4C6DE6631 /* RecordFlowUITests.swift in Sources */,
+				42803F3BB04E83742828CA2C /* SelectionFlowUITests.swift in Sources */,
 				8B99672C7FD0789DFB03C9F6 /* WorkspaceFlowUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -473,6 +505,7 @@
 				9573EAF392500DD233185966 /* GradeDSP.swift in Sources */,
 				2BE9D8AD76358E6B96D73365 /* GradeProcessor.swift in Sources */,
 				69B837ECCD61C20D70E10DBB /* GradeSettings.swift in Sources */,
+				1D15711D8774713BF2E3193D /* HorizontalPanGesture.swift in Sources */,
 				4AB727D851FD6740046417F5 /* InputPicker.swift in Sources */,
 				DECE386A0BB6D862F705AAF5 /* LevelMeterView.swift in Sources */,
 				EA1FF872BA1372FDCEBB6B76 /* MeterTap.swift in Sources */,
@@ -495,8 +528,11 @@
 				0820CCC8D50347F23F06F9B1 /* ProjectListView.swift in Sources */,
 				CFF682E5BD092D8BCB51E8AA /* ProjectStore.swift in Sources */,
 				0A1C3E4246FF7C7436E160D8 /* SampleRatePicker.swift in Sources */,
+				9BC7BD5C78EA6792D82F5CF8 /* SelectionActionBar.swift in Sources */,
+				BF291FF1A4726158D3C40117 /* SelectionDeleteCopy.swift in Sources */,
 				88C9D7A9549513BD6ECD724F /* SettingsControls.swift in Sources */,
-				6A2CC8F4F9E0323DA05C2575 /* SwipeToDeleteRow.swift in Sources */,
+				46C576589B0F9D075CBD117B /* SwipeRow.swift in Sources */,
+				2E677C1AEE5B1B80CE44DDB6 /* SwipeRules.swift in Sources */,
 				62E391C189B53DAEC5D4F59C /* TapeWaveformView.swift in Sources */,
 				AD994ED964F5C382FDA43B2D /* Track.swift in Sources */,
 				6E31C7A0B9A5C17FFC816175 /* TrackCard.swift in Sources */,

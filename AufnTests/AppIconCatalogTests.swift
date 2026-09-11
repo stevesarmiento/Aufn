@@ -31,4 +31,22 @@ struct AppIconCatalogTests {
         #expect(options.map(\.name) == [nil, "mono", "zed", "aufn-dark", "aufn_gold"])
         #expect(options.map(\.displayName) == ["Default", "Mono", "Zed", "Aufn Dark", "Aufn Gold"])
     }
+
+    /// A typo in `preferredOrder` would silently drop the icon back into the
+    /// alphabetical tail with a fallback name instead of failing loudly.
+    @Test func everyPreferredIconHasADisplayName() {
+        for name in AppIconCatalog.preferredOrder {
+            #expect(AppIconCatalog.displayNames[name] != nil, "\(name) is ordered but unnamed")
+        }
+    }
+
+    /// The names shipped in the catalog must match real appiconset folders,
+    /// which is what the built plist lists.
+    @Test func shippedIconsResolveInOrderWithTheirNames() {
+        let options = AppIconCatalog.options(
+            from: info(alternates: ["aufn-blueprint", "aufn-retro"])
+        )
+        #expect(options.map(\.name) == [nil, "aufn-retro", "aufn-blueprint"])
+        #expect(options.map(\.displayName) == ["Default", "Retro", "Blueprint"])
+    }
 }

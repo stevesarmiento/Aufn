@@ -60,6 +60,10 @@ final class AudioEngineController {
     /// One restart per user-initiated play, so a device that really does
     /// reconfigure on every start can't loop.
     private var playbackRetried = false
+    /// One-shot retry for a take whose start was stopped by our own session
+    /// reconfigure (mirror of `playbackRetried`).
+    private var recordingRetried = false
+    private var recordingProject: Project?
     /// Players stopped by a mid-transport delete. They stay attached until
     /// `stopTransport` so the graph is never mutated under a live input tap.
     private var retiredPlayers: [AVAudioPlayerNode] = []
@@ -289,6 +293,11 @@ final class AudioEngineController {
     // MARK: - Recording
 
     func startRecording(into project: Project) async {
+        recordingRetried = false
+        await beginRecording(into: project)
+    }
+
+    private func beginRecording(into project: Project) async {
         guard !isStarting else { return }
         isStarting = true
         defer { isStarting = false }
@@ -301,6 +310,11 @@ final class AudioEngineController {
         var createdFileURL: URL?
         do {
             try session.configure(preferredSampleRate: project.sampleRate ?? UserDefaults.standard.preferredSampleRate, output: .standard, recording: true)
+            // The mode flip (.default → .measurement) can stop the engine
+            // after start; handleConfigurationChange uses this to tell that
+            // self-inflicted change from a real device change.
+            selfReconfigureDate = .now
+            recordingProject = project
 
             schedulePlayers(for: project)
             scheduleClick(for: project)
@@ -605,10 +619,36 @@ final class AudioEngineController {
             beginPlayback(of: project)
             return
         }
+        if state == .recording, !recordingRetried, let project = recordingProject,
+           let configured = selfReconfigureDate, Date.now.timeIntervalSince(configured) < 2 {
+            // Our own mode flip stopped the engine right as the take began.
+            // The recorder's gate hasn't opened yet (start lead), so nothing
+            // is lost: drop the empty file and start once more with the mode
+            // already settled, instead of blaming a device change.
+            recordingRetried = true
+            discardStartingTake()
+            Task { @MainActor [weak self] in
+                await self?.beginRecording(into: project)
+            }
+            return
+        }
         let wasRecording = state == .recording
         stopForLifecycle()
         if wasRecording {
             lastError = AufnError.deviceChanged.localizedDescription
+        }
+    }
+
+    /// Throws away a take that never got going (no track, no file).
+    private func discardStartingTake() {
+        let fileURL = pendingTrack?.fileURL
+        removeTapIfInstalled()
+        _ = recorder?.finalize()
+        recorder = nil
+        pendingTrack = nil
+        stopTransport()
+        if let fileURL {
+            try? FileManager.default.removeItem(at: fileURL)
         }
     }
 

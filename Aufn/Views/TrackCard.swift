@@ -3,13 +3,34 @@ import SwiftUI
 /// Flat container for track rows (glass proved heavy with many rows). Clips
 /// full-bleed content (the dot-matrix waveform) to the card shape.
 struct TrackCard<Content: View>: View {
+    var selected = false
     @ViewBuilder let content: () -> Content
 
     var body: some View {
         content()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.white.opacity(0.06), in: .rect(cornerRadius: 16))
+            // One notch brighter when selected — the same ratio the settings
+            // kit uses for a chosen option row.
+            .background(.white.opacity(selected ? 0.10 : 0.06), in: .rect(cornerRadius: 16))
             .clipShape(.rect(cornerRadius: 16))
+            .animation(.snappy, value: selected)
+    }
+}
+
+/// Leading check in a card header while the list is in selection mode: a
+/// filled accent check when selected, a dashed ring otherwise, morphing the
+/// same way the settings option rows do. The row carries the accessibility
+/// trait, so this is decorative.
+struct SelectionCheck: View {
+    let isSelected: Bool
+
+    var body: some View {
+        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle.dashed")
+            .font(.system(size: 18, weight: .semibold))
+            .foregroundStyle(isSelected ? Color.accentColor : Color.secondary.opacity(0.5))
+            .contentTransition(.symbolEffect(.replace.offUp.byLayer))
+            .animation(.snappy, value: isSelected)
+            .accessibilityHidden(true)
     }
 }
 
@@ -22,6 +43,8 @@ struct RoundToggle: View {
     let tint: Color
     let label: String
     let action: () -> Void
+
+    @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
         Button(action: action) {
@@ -43,8 +66,11 @@ struct RoundToggle: View {
             .contentShape(Circle())
         }
         .buttonStyle(.plain)
+        // Quiet while the row is in selection mode (the card is disabled).
+        .opacity(isEnabled ? 1 : 0.4)
         .animation(.snappy, value: isOn)
-        .sensoryFeedback(.selection, trigger: isOn)
+        .animation(.snappy, value: isEnabled)
+        .sensoryFeedback(.impact(weight: .medium), trigger: isOn)
         .accessibilityLabel(label)
         .accessibilityAddTraits(isOn ? .isSelected : [])
     }

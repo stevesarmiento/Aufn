@@ -8,6 +8,14 @@ struct ProjectDetailView: View {
 
     @State private var showingSettings = false
     @State private var openSwipeTrackID: UUID?
+    // Multi-select: row ids (tracks plus the metronome sentinel). Non-empty
+    // means "selection mode": rows toggle on tap, the transport becomes the
+    // action bar. Idle-only — the head is Stop while the transport runs.
+    @State private var selectedRowIDs: Set<UUID> = []
+    @State private var confirmingSelectionDelete = false
+    @State private var exportingSelection = false
+
+    private var isSelecting: Bool { !selectedRowIDs.isEmpty }
 
     var body: some View {
         Group {
@@ -43,9 +51,12 @@ struct ProjectDetailView: View {
                     emptyState
                 }
                 if let settings = project.metronome {
-                    SwipeToDeleteRow(
+                    SwipeRow(
                         id: MetronomeSettings.rowID,
                         openRowID: $openSwipeTrackID,
+                        isSelected: selectedRowIDs.contains(MetronomeSettings.rowID),
+                        inSelectionMode: isSelecting,
+                        onToggleSelection: { toggleSelection(MetronomeSettings.rowID) },
                         deleteTitle: "Remove Metronome?",
                         deleteButtonTitle: "Remove Metronome",
                         deleteMessage: "You can add it back from the menu.",
@@ -63,13 +74,21 @@ struct ProjectDetailView: View {
                             }
                         }
                     ) {
-                        MetronomeRowView(settings: settings, project: project)
+                        MetronomeRowView(
+                            settings: settings,
+                            project: project,
+                            isSelected: selectedRowIDs.contains(MetronomeSettings.rowID),
+                            inSelectionMode: isSelecting
+                        )
                     }
                 }
                 ForEach(project.tracks) { track in
-                    SwipeToDeleteRow(
+                    SwipeRow(
                         id: track.id,
                         openRowID: $openSwipeTrackID,
+                        isSelected: selectedRowIDs.contains(track.id),
+                        inSelectionMode: isSelecting,
+                        onToggleSelection: { toggleSelection(track.id) },
                         deleteTitle: "Delete \"\(track.name)\"?",
                         onDelete: {
                             withAnimation(.snappy) {
@@ -79,7 +98,12 @@ struct ProjectDetailView: View {
                             }
                         }
                     ) {
-                        TrackRowView(track: track, project: project)
+                        TrackRowView(
+                            track: track,
+                            project: project,
+                            isSelected: selectedRowIDs.contains(track.id),
+                            inSelectionMode: isSelecting
+                        )
                     }
                 }
                 if engine.state == .recording {
@@ -94,7 +118,20 @@ struct ProjectDetailView: View {
                 withAnimation(.snappy) { openSwipeTrackID = nil }
             }
         }
-        .navigationTitle(project.name)
+        .onChange(of: engine.state) { _, state in
+            // The head becomes Stop the moment the transport runs; selection
+            // can't coexist with it.
+            if state != .idle, isSelecting {
+                withAnimation(.snappy) { selectedRowIDs = [] }
+            }
+        }
+        .onChange(of: rowIDs(in: project)) { _, ids in
+            // A row that vanished underneath us (take landed, metronome
+            // removed elsewhere) drops out of the selection.
+            selectedRowIDs.formIntersection(ids)
+        }
+        // Photos-style: the title carries the count while selecting.
+        .navigationTitle(isSelecting ? "\(selectedRowIDs.count) Selected" : project.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             // A pill of two: + creates workspace content (metronome now,
@@ -103,6 +140,7 @@ struct ProjectDetailView: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 Menu {
                     Button("Metronome", systemImage: "metronome") {
+                        Haptics.tap()
                         withAnimation(.snappy) {
                             if var fresh = store.project(id: projectID) {
                                 fresh.metronome = MetronomeSettings()
@@ -116,6 +154,7 @@ struct ProjectDetailView: View {
                 }
                 .accessibilityLabel("Add")
                 Button {
+                    Haptics.tap()
                     showingSettings = true
                 } label: {
                     Image(systemName: "ellipsis")
@@ -132,8 +171,25 @@ struct ProjectDetailView: View {
                         .padding(.vertical, 6)
                         .glassEffect(.regular, in: .capsule)
                 }
-                TransportBar(engine: engine, project: project)
+                // The transport steps aside for the action pill while rows
+                // are selected; both grow out of the bottom edge.
+                if isSelecting {
+                    SelectionActionBar(
+                        canExport: project.tracks.contains { selectedRowIDs.contains($0.id) },
+                        onCancel: { withAnimation(.snappy) { selectedRowIDs = [] } },
+                        onDelete: { confirmingSelectionDelete = true },
+                        onExport: { exportingSelection = true }
+                    )
+                    .transition(.disclose(anchor: .bottom, edge: .bottom))
+                } else {
+                    TransportBar(engine: engine, project: project)
+                        .transition(.disclose(anchor: .bottom))
+                }
             }
+            .animation(.snappy, value: isSelecting)
+            // Full width regardless of what the inset holds (the action pill
+            // hugs its content), so the scrim below always spans the screen.
+            .frame(maxWidth: .infinity)
             .padding(.bottom, 8)
             // Scrim so track cards fade out under the floating transport
             // instead of colliding with the tape dots. Overshoots the inset's
@@ -157,10 +213,63 @@ struct ProjectDetailView: View {
         .sheet(isPresented: $showingSettings) {
             WorkspaceSettingsView(projectID: projectID)
         }
+        .sheet(isPresented: $exportingSelection) {
+            // The drawer declares its own detents and glass; over the black
+            // workspace it reads the same as over the settings sheet.
+            if let fresh = store.project(id: projectID) {
+                ExportDrawer(project: fresh, trackIDs: selectedRowIDs.subtracting([MetronomeSettings.rowID]))
+            }
+        }
+        .alert(deleteCopy(for: project).title, isPresented: $confirmingSelectionDelete) {
+            Button("Cancel", role: .cancel) {}
+            Button(deleteCopy(for: project).button, role: .destructive) { deleteSelection() }
+        } message: {
+            Text(deleteCopy(for: project).message)
+        }
         .alert("Audio Error", isPresented: engineErrorShown) {
             Button("OK", role: .cancel) { engine.clearError() }
         } message: {
             Text(engine.lastError ?? "")
+        }
+    }
+
+    // MARK: - Selection
+
+    private func toggleSelection(_ id: UUID) {
+        guard engine.state == .idle else { return }
+        withAnimation(.snappy) {
+            openSwipeTrackID = nil
+            selectedRowIDs.formSymmetricDifference([id])
+        }
+    }
+
+    /// Every selectable row id the project currently has.
+    private func rowIDs(in project: Project) -> Set<UUID> {
+        var ids = Set(project.tracks.map(\.id))
+        if project.metronome != nil { ids.insert(MetronomeSettings.rowID) }
+        return ids
+    }
+
+    private func deleteCopy(for project: Project) -> SelectionDeleteCopy {
+        SelectionDeleteCopy(
+            trackNames: project.tracks.filter { selectedRowIDs.contains($0.id) }.map(\.name),
+            includesMetronome: selectedRowIDs.contains(MetronomeSettings.rowID)
+        )
+    }
+
+    private func deleteSelection() {
+        // Fresh copy, not the render-time snapshot (same reason as the row
+        // delete). removeTrack is a no-op while idle but keeps the
+        // orchestration right if selection ever becomes allowed mid-transport.
+        guard engine.state == .idle, let fresh = store.project(id: projectID) else { return }
+        let removingMetronome = selectedRowIDs.contains(MetronomeSettings.rowID)
+        let trackIDs = selectedRowIDs.subtracting([MetronomeSettings.rowID])
+        withAnimation(.snappy) {
+            for id in trackIDs { engine.removeTrack(trackID: id) }
+            if removingMetronome { engine.removeMetronome() }
+            store.deleteTracks(ids: trackIDs, removingMetronome: removingMetronome, from: fresh)
+            selectedRowIDs = []
+            openSwipeTrackID = nil
         }
     }
 
