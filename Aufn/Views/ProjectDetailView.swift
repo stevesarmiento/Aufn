@@ -115,7 +115,7 @@ struct ProjectDetailView: View {
         }
         .onScrollPhaseChange { _, newPhase in
             if newPhase == .interacting, openSwipeTrackID != nil {
-                withAnimation(.snappy) { openSwipeTrackID = nil }
+                withAnimation(.discloseClose) { openSwipeTrackID = nil }
             }
         }
         .onChange(of: engine.state) { _, state in

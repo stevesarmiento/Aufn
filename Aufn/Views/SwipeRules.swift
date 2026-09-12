@@ -45,12 +45,6 @@ enum SwipeRules {
         max(0, travel) + panelTuck
     }
 
-    /// The panel's icon fades/scales in across 12→40 pt of travel; invisible
-    /// for the first 12 so nothing peeks out beside the card edge.
-    static func iconProgress(travel: CGFloat) -> CGFloat {
-        min(1, max(0, (travel - 12) / 28))
-    }
-
     /// How far the panel has gone from its resting dark grey to its action
     /// colour: 0 closed, 1 at the full reveal.
     static func fillProgress(travel: CGFloat) -> CGFloat {

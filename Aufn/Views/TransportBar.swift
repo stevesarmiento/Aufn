@@ -10,6 +10,9 @@ struct TransportBar: View {
     // sample-rate picker changes the preference.
     @AppStorage(CaptureMode.storageKey) private var captureMode = CaptureMode.raw.rawValue
     @State private var choosingMode = false
+    /// The row under the wheel's indicator while it scrolls; nil when the
+    /// wheel is closed (the callout then describes the committed mode).
+    @State private var highlightedMode: CaptureMode?
 
     private var isRecording: Bool { engine.state == .recording }
     private var isPlaying: Bool { engine.state == .playing }
@@ -34,6 +37,7 @@ struct TransportBar: View {
     private func setChoosingMode(_ choosing: Bool) {
         withAnimation(choosing ? .discloseOpen : .discloseClose) {
             choosingMode = choosing
+            if !choosing { highlightedMode = nil }
         }
     }
 
@@ -62,6 +66,36 @@ struct TransportBar: View {
         }
         .frame(height: 96)
         .animation(.snappy, value: engine.state)
+        // The grade's character floats above the record head while the wheel
+        // is out — an overlay, not a row, so the deck never shifts.
+        .overlay(alignment: .top) {
+            if choosingMode && engine.state == .idle {
+                gradeCallout
+                    .offset(y: -44)
+                    .transition(.disclose(anchor: .bottom))
+            }
+        }
+    }
+
+    /// One line on what the highlighted grade does to the take. Re-identified
+    /// per mode so the copy blurs between grades as the wheel turns.
+    private var gradeCallout: some View {
+        let mode = highlightedMode ?? currentMode
+        return ZStack {
+            Text(mode.caption)
+                .font(.footnote.weight(.semibold))
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .glassEffect(.regular, in: .capsule)
+                .id(mode)
+                .transition(.blurReplace)
+        }
+        .frame(maxWidth: 260)
+        .animation(.snappy, value: mode)
+        .allowsHitTesting(false)
+        .accessibilityLabel("\(mode.label): \(mode.caption)")
     }
 
     /// Play at rest; the selected mode's description while choosing (in the
@@ -130,7 +164,11 @@ struct TransportBar: View {
     /// on the left into the tape dots; the selected row sits on black (no gray
     /// bubble) like the timer.
     private var captureModeWheel: some View {
-        CaptureWheel(modes: CaptureMode.allCases, selection: $captureMode) {
+        CaptureWheel(
+            modes: CaptureMode.allCases,
+            selection: $captureMode,
+            onHighlight: { mode in highlightedMode = mode }
+        ) {
             setChoosingMode(false)
         }
             .frame(width: 130, height: 96)

@@ -17,6 +17,10 @@ struct TrackRowView: View {
     var body: some View {
         TrackCard(selected: isSelected) {
             VStack(spacing: 8) {
+                // Header + waveform together are the tap target that opens
+                // the mixer; the sliders below are deliberately outside it so
+                // a tap that lands on a slider can't fold the panel away.
+                VStack(spacing: 8) {
                 HStack(spacing: 6) {
                     if inSelectionMode {
                         SelectionCheck(isSelected: isSelected)
@@ -53,9 +57,7 @@ struct TrackRowView: View {
                         persistAndUpdateMix(updated)
                     }
                     RoundToggle(systemImage: "slider.horizontal.3", isOn: isMixerExpanded, tint: .accentColor, label: "Mixer for \(track.name)") {
-                        withAnimation(isMixerExpanded ? .discloseClose : .discloseOpen) {
-                            isMixerExpanded.toggle()
-                        }
+                        toggleMixer()
                     }
                 }
                 .padding(.horizontal, 12)
@@ -78,6 +80,9 @@ struct TrackRowView: View {
                 .frame(height: 48)
                 .opacity(project.isAudible(track) ? 1 : 0.4)
                 .padding(.bottom, isMixerExpanded ? 0 : 12)
+                }
+                .contentShape(.rect)
+                .onTapGesture { toggleMixer() }
 
                 if isMixerExpanded {
                     mixerControls
@@ -160,6 +165,13 @@ struct TrackRowView: View {
                     persistLevels()
                 }
             }
+        }
+    }
+
+    /// Tapping the card or its mixer chip unfolds the sliders.
+    private func toggleMixer() {
+        withAnimation(isMixerExpanded ? .discloseClose : .discloseOpen) {
+            isMixerExpanded.toggle()
         }
     }
 

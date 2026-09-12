@@ -17,11 +17,13 @@
 		130786F9E7DB518BF025BFD4 /* SelectionDeleteCopyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FD979EA2C36CFC4159D78A /* SelectionDeleteCopyTests.swift */; };
 		188F1216E9962D6D9A5D89DA /* AudioEngineController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E39CE7F3C52065E3CFCF6 /* AudioEngineController.swift */; };
 		1D15711D8774713BF2E3193D /* HorizontalPanGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = A017545ED20CC32071E00D1B /* HorizontalPanGesture.swift */; };
+		217E2CFED5F91EE50B34FA38 /* RecentlyDeletedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EA2DDFC0275E900BD28AB02 /* RecentlyDeletedView.swift */; };
 		225F74BFE0D21E2CA1733100 /* TrackRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADB93826B8AD141909A69E59 /* TrackRecorder.swift */; };
 		25E2FAA37E11DD3D3D480409 /* TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AEB2116153E60C0B264C44 /* TransportBar.swift */; };
 		289950537087B652C93AAB38 /* ExportDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9B4EE5FE9120DAFB64C1C /* ExportDrawer.swift */; };
 		2BE9D8AD76358E6B96D73365 /* GradeProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16A3B48461C89E19FEEAF661 /* GradeProcessor.swift */; };
 		2E677C1AEE5B1B80CE44DDB6 /* SwipeRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59665E426A645A3705173AB /* SwipeRules.swift */; };
+		2EBC143FD94E570D94A8EA63 /* RecentlyDeletedFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA33EB246435AD7342314677 /* RecentlyDeletedFlowUITests.swift */; };
 		3078C24E266A76C9E368178B /* CaptureWheel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1A9BC9F1428107D922B018 /* CaptureWheel.swift */; };
 		33AD13941191E3A4304D7408 /* GradeProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71229EB44028DA1220359516 /* GradeProcessorTests.swift */; };
 		36BE1CD2FD2A47873296AA02 /* WorkspaceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16240E5F3C99DF4634FA22B /* WorkspaceSettingsView.swift */; };
@@ -42,6 +44,8 @@
 		69B837ECCD61C20D70E10DBB /* GradeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB9C8E3DA8C1103FED2725F /* GradeSettings.swift */; };
 		6E31C7A0B9A5C17FFC816175 /* TrackCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 875FC223D2F40A915B1311C5 /* TrackCard.swift */; };
 		6EEA7A385C4ADEA43921F3B5 /* MixWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */; };
+		6EEF7861B7854E81D5AE0CD0 /* TapTempoRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8164FF8E73909EA0507A6180 /* TapTempoRules.swift */; };
+		6F9CA4BD77EED3AF9EFED234 /* DeletedTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B469EA63BB537E2C4BEF21 /* DeletedTrack.swift */; };
 		73B1827ED7FD7D2CF5E60C3A /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5AA0A3C78D261AAA26F172 /* Project.swift */; };
 		79F284E29899E839188E529D /* ProjectsGridUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC66CF3E2B5E61332B8065F /* ProjectsGridUITests.swift */; };
 		7F52C940B17018BCB4D030B1 /* ModelCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */; };
@@ -59,6 +63,7 @@
 		A38B185C8F3A3D161D11D198 /* AufnApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711EA42EDE83F0D800EE54A /* AufnApp.swift */; };
 		A805C04E7F67F1C5F9D793B9 /* CaptureModeFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D2A6863FF55BACCE2E9E30 /* CaptureModeFlowUITests.swift */; };
 		A9E7AFA81A0ED309071257A9 /* CaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1461DE290A21792CE5928EC /* CaptureMode.swift */; };
+		AB433A2812C4D1C324D57F2F /* TapTempoRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07800F9CDD0CC40E289F384B /* TapTempoRulesTests.swift */; };
 		AD994ED964F5C382FDA43B2D /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAC1082458BADE454C9C6839 /* Track.swift */; };
 		B6B0B7DA3DFE671E448029AA /* CaptureModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59A2EB7A004F39AD53F6BFC /* CaptureModeTests.swift */; };
 		BA859AE312D2E3FF64AAD409 /* MicPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD02489BC12CA4735469D827 /* MicPosition.swift */; };
@@ -102,7 +107,9 @@
 
 /* Begin PBXFileReference section */
 		00FB0BB77CED728DB965323E /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
+		02B469EA63BB537E2C4BEF21 /* DeletedTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletedTrack.swift; sourceTree = "<group>"; };
 		04BFB5C7753CD4D6C0C8BC40 /* ProjectCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCard.swift; sourceTree = "<group>"; };
+		07800F9CDD0CC40E289F384B /* TapTempoRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapTempoRulesTests.swift; sourceTree = "<group>"; };
 		08AEB2116153E60C0B264C44 /* TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportBar.swift; sourceTree = "<group>"; };
 		0DB9C8E3DA8C1103FED2725F /* GradeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeSettings.swift; sourceTree = "<group>"; };
 		0ED5C9583A7472CADB35BDC8 /* AppIconPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconPickerView.swift; sourceTree = "<group>"; };
@@ -120,6 +127,7 @@
 		38DA58E8A2C777B3AC339146 /* TransportRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportRulesTests.swift; sourceTree = "<group>"; };
 		39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordFlowUITests.swift; sourceTree = "<group>"; };
 		3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRowView.swift; sourceTree = "<group>"; };
+		3EA2DDFC0275E900BD28AB02 /* RecentlyDeletedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyDeletedView.swift; sourceTree = "<group>"; };
 		44EA2483AED3E39BBC9E8CEB /* SwipeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeRow.swift; sourceTree = "<group>"; };
 		487B88342BAB205C454C0C0F /* WaveformPlayheadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformPlayheadTests.swift; sourceTree = "<group>"; };
 		4AE70FC29BBD993DDA3530CD /* MeterTapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterTapTests.swift; sourceTree = "<group>"; };
@@ -135,6 +143,7 @@
 		779BC3C818373BF3A2B9C3F9 /* AppSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsView.swift; sourceTree = "<group>"; };
 		7F29F36DC7179183A9532339 /* FittedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FittedSheet.swift; sourceTree = "<group>"; };
 		80233F83100DBD15AD06CE76 /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
+		8164FF8E73909EA0507A6180 /* TapTempoRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapTempoRules.swift; sourceTree = "<group>"; };
 		81F8DDF60047B1F191D12CA8 /* MicPositionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicPositionPicker.swift; sourceTree = "<group>"; };
 		83D14137206DF3451725DF0F /* SelectionFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionFlowUITests.swift; sourceTree = "<group>"; };
 		875FC223D2F40A915B1311C5 /* TrackCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackCard.swift; sourceTree = "<group>"; };
@@ -174,6 +183,7 @@
 		DD02489BC12CA4735469D827 /* MicPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicPosition.swift; sourceTree = "<group>"; };
 		E2C3E31CC0386771ECD012FD /* PeakStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeakStoreTests.swift; sourceTree = "<group>"; };
 		E9349C45AC65E7E803D41997 /* AudioSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionController.swift; sourceTree = "<group>"; };
+		EA33EB246435AD7342314677 /* RecentlyDeletedFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyDeletedFlowUITests.swift; sourceTree = "<group>"; };
 		EAC1082458BADE454C9C6839 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
 		EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelMeterView.swift; sourceTree = "<group>"; };
 		F59665E426A645A3705173AB /* SwipeRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeRules.swift; sourceTree = "<group>"; };
@@ -196,6 +206,7 @@
 				AE90A8C9B28F3B30E090FBD7 /* MetronomeClick.swift */,
 				DD02489BC12CA4735469D827 /* MicPosition.swift */,
 				12BCEE49143C0E2CCF63420D /* PeakStore.swift */,
+				8164FF8E73909EA0507A6180 /* TapTempoRules.swift */,
 				ADB93826B8AD141909A69E59 /* TrackRecorder.swift */,
 				D7B064AC527A1B6AD409B769 /* TransportRules.swift */,
 			);
@@ -219,6 +230,7 @@
 			isa = PBXGroup;
 			children = (
 				9F6923897A5CA2924D48C154 /* AppIconCatalog.swift */,
+				02B469EA63BB537E2C4BEF21 /* DeletedTrack.swift */,
 				694BCA64B54AF085C7FDBF06 /* MetronomeSettings.swift */,
 				BE5B60D01674003C1EADF75F /* MixRules.swift */,
 				CC5AA0A3C78D261AAA26F172 /* Project.swift */,
@@ -235,6 +247,7 @@
 			children = (
 				B9D2A6863FF55BACCE2E9E30 /* CaptureModeFlowUITests.swift */,
 				CFC66CF3E2B5E61332B8065F /* ProjectsGridUITests.swift */,
+				EA33EB246435AD7342314677 /* RecentlyDeletedFlowUITests.swift */,
 				39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */,
 				83D14137206DF3451725DF0F /* SelectionFlowUITests.swift */,
 				BFD0D0A6A8DDD04341E32410 /* WorkspaceFlowUITests.swift */,
@@ -269,6 +282,7 @@
 				5BB15403DD69C7D8337DBFB9 /* ProjectStoreTests.swift */,
 				15FD979EA2C36CFC4159D78A /* SelectionDeleteCopyTests.swift */,
 				C79799B45D315F08D7DD7A32 /* SwipeRulesTests.swift */,
+				07800F9CDD0CC40E289F384B /* TapTempoRulesTests.swift */,
 				3765D9494AA852719FF60240 /* TrackRecorderTests.swift */,
 				38DA58E8A2C777B3AC339146 /* TransportRulesTests.swift */,
 				487B88342BAB205C454C0C0F /* WaveformPlayheadTests.swift */,
@@ -307,6 +321,7 @@
 				04BFB5C7753CD4D6C0C8BC40 /* ProjectCard.swift */,
 				90E0F36D39180002A95932DF /* ProjectDetailView.swift */,
 				32A520395A415465ECDA8922 /* ProjectListView.swift */,
+				3EA2DDFC0275E900BD28AB02 /* RecentlyDeletedView.swift */,
 				4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */,
 				C1D5215892F06A219B576FE2 /* SelectionActionBar.swift */,
 				30191CB3D17D8B80C74791E6 /* SettingsControls.swift */,
@@ -469,6 +484,7 @@
 				CBFE6509948F3F7522DBA04A /* ProjectStoreTests.swift in Sources */,
 				130786F9E7DB518BF025BFD4 /* SelectionDeleteCopyTests.swift in Sources */,
 				FC934DAFB76AA180F48EF9E8 /* SwipeRulesTests.swift in Sources */,
+				AB433A2812C4D1C324D57F2F /* TapTempoRulesTests.swift in Sources */,
 				9A20CF41E6028B2CCAD8689A /* TrackRecorderTests.swift in Sources */,
 				FF0A1C537F108DCF8508D11A /* TransportRulesTests.swift in Sources */,
 				47DBF4CDA6CD876552B487AC /* WaveformPlayheadTests.swift in Sources */,
@@ -481,6 +497,7 @@
 			files = (
 				A805C04E7F67F1C5F9D793B9 /* CaptureModeFlowUITests.swift in Sources */,
 				79F284E29899E839188E529D /* ProjectsGridUITests.swift in Sources */,
+				2EBC143FD94E570D94A8EA63 /* RecentlyDeletedFlowUITests.swift in Sources */,
 				3D8E7563C0A132A4C6DE6631 /* RecordFlowUITests.swift in Sources */,
 				42803F3BB04E83742828CA2C /* SelectionFlowUITests.swift in Sources */,
 				8B99672C7FD0789DFB03C9F6 /* WorkspaceFlowUITests.swift in Sources */,
@@ -499,6 +516,7 @@
 				A38B185C8F3A3D161D11D198 /* AufnApp.swift in Sources */,
 				A9E7AFA81A0ED309071257A9 /* CaptureMode.swift in Sources */,
 				3078C24E266A76C9E368178B /* CaptureWheel.swift in Sources */,
+				6F9CA4BD77EED3AF9EFED234 /* DeletedTrack.swift in Sources */,
 				289950537087B652C93AAB38 /* ExportDrawer.swift in Sources */,
 				C74E613D29ACDBF431F79FC4 /* Exporter.swift in Sources */,
 				3F5820A4BA0B3BEBF2A55F13 /* FittedSheet.swift in Sources */,
@@ -527,12 +545,14 @@
 				10CDC308F9E3B95DF768E5B0 /* ProjectDetailView.swift in Sources */,
 				0820CCC8D50347F23F06F9B1 /* ProjectListView.swift in Sources */,
 				CFF682E5BD092D8BCB51E8AA /* ProjectStore.swift in Sources */,
+				217E2CFED5F91EE50B34FA38 /* RecentlyDeletedView.swift in Sources */,
 				0A1C3E4246FF7C7436E160D8 /* SampleRatePicker.swift in Sources */,
 				9BC7BD5C78EA6792D82F5CF8 /* SelectionActionBar.swift in Sources */,
 				BF291FF1A4726158D3C40117 /* SelectionDeleteCopy.swift in Sources */,
 				88C9D7A9549513BD6ECD724F /* SettingsControls.swift in Sources */,
 				46C576589B0F9D075CBD117B /* SwipeRow.swift in Sources */,
 				2E677C1AEE5B1B80CE44DDB6 /* SwipeRules.swift in Sources */,
+				6EEF7861B7854E81D5AE0CD0 /* TapTempoRules.swift in Sources */,
 				62E391C189B53DAEC5D4F59C /* TapeWaveformView.swift in Sources */,
 				AD994ED964F5C382FDA43B2D /* Track.swift in Sources */,
 				6E31C7A0B9A5C17FFC816175 /* TrackCard.swift in Sources */,
@@ -759,7 +779,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = GZ2BM4VMQU;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = Aufn/Info.plist;
@@ -783,7 +803,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = GZ2BM4VMQU;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = Aufn/Info.plist;

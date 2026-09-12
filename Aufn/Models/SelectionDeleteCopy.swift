@@ -18,19 +18,19 @@ struct SelectionDeleteCopy: Equatable {
         case (1, false):
             title = "Delete \"\(trackNames[0])\"?"
             button = "Delete Track"
-            message = "This removes the audio file permanently."
+            message = "You can restore it from Recently Deleted for 30 days."
         case (_, false):
             title = "Delete \(count) tracks?"
             button = "Delete \(count) Tracks"
-            message = "This removes their audio files permanently."
+            message = "You can restore them from Recently Deleted for 30 days."
         case (1, true):
             title = "Delete \"\(trackNames[0])\" and the metronome?"
             button = "Delete Selected"
-            message = "This removes the audio file permanently. You can add the metronome back from the menu."
+            message = "You can restore it from Recently Deleted for 30 days. You can add the metronome back from the menu."
         default:
             title = "Delete \(count) tracks and the metronome?"
             button = "Delete Selected"
-            message = "This removes their audio files permanently. You can add the metronome back from the menu."
+            message = "You can restore them from Recently Deleted for 30 days. You can add the metronome back from the menu."
         }
     }
 }

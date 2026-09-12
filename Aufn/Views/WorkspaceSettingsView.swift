@@ -19,6 +19,7 @@ struct WorkspaceSettingsView: View {
     enum Route: Hashable {
         case sampleRate
         case microphone
+        case recentlyDeleted
     }
 
     private var isIdle: Bool { engine.state == .idle }
@@ -46,6 +47,14 @@ struct WorkspaceSettingsView: View {
                 if !isIdle {
                     SettingsFootnote("Capture settings are locked while the transport is running.", systemImageName: "lock")
                 }
+
+                // Browsing the trash is harmless mid-transport; restoring
+                // gates itself inside the page.
+                SettingsSectionHeader("Tracks")
+                SettingsLinkRow(iconName: "trash", title: "Recently Deleted") {
+                    path.append(Route.recentlyDeleted)
+                }
+                SettingsFootnote("Deleted tracks are kept for 30 days, then removed for good.")
             }
             // Pushed steps would otherwise paint an opaque navigation
             // background over the sheet; keep it clear so the shade never
@@ -81,6 +90,8 @@ struct WorkspaceSettingsView: View {
                     SampleRatePicker(lockedRate: store.project(id: projectID)?.sampleRate)
                 case .microphone:
                     MicrophoneSettingsView()
+                case .recentlyDeleted:
+                    RecentlyDeletedView(projectID: projectID)
                 }
             }
         }

@@ -31,14 +31,6 @@ struct SwipeRulesTests {
         #expect(SwipeRules.panelWidth(travel: -5) == 16)
     }
 
-    @Test func iconRampsInOver12To40Points() {
-        #expect(SwipeRules.iconProgress(travel: 0) == 0)
-        #expect(SwipeRules.iconProgress(travel: 12) == 0)
-        #expect(SwipeRules.iconProgress(travel: 26) == 0.5)
-        #expect(SwipeRules.iconProgress(travel: 40) == 1)
-        #expect(SwipeRules.iconProgress(travel: 200) == 1)
-    }
-
     @Test func fillReachesTheActionColourAtTheReveal() {
         #expect(SwipeRules.fillProgress(travel: 0) == 0)
         #expect(SwipeRules.fillProgress(travel: reveal / 2) == 0.5)

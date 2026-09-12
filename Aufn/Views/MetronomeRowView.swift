@@ -15,6 +15,9 @@ struct MetronomeRowView: View {
     @State private var isExpanded = false
     @State private var bpm: Double = 120
     @State private var volume: Float = 0.8
+    @State private var tapTempo = TapTempo()
+
+    private static let bpmRange = Double(MetronomeSettings.bpmRange.lowerBound)...Double(MetronomeSettings.bpmRange.upperBound)
 
     var body: some View {
         TrackCard(selected: isSelected) {
@@ -51,14 +54,17 @@ struct MetronomeRowView: View {
                         persist(updated)
                     }
                     RoundToggle(systemImage: "slider.horizontal.3", isOn: isExpanded, tint: .accentColor, label: "Metronome settings") {
-                        withAnimation(isExpanded ? .discloseClose : .discloseOpen) {
-                            isExpanded.toggle()
-                        }
+                        toggleExpanded()
                     }
                 }
                 .padding(.horizontal, 12)
                 .padding(.top, 12)
                 .padding(.bottom, isExpanded ? 0 : 12)
+                // The header is the tap target, like a track card; the
+                // controls below stay outside it so a slider tap can't fold
+                // the panel.
+                .contentShape(.rect)
+                .onTapGesture { toggleExpanded() }
 
                 if isExpanded {
                     settingsControls
@@ -91,12 +97,9 @@ struct MetronomeRowView: View {
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
                     .frame(width: 16)
-                Slider(value: $bpm, in: 40...240, step: 1) { editing in
+                Slider(value: $bpm, in: Self.bpmRange, step: 1) { editing in
                     if !editing {
-                        var updated = settings
-                        updated.bpm = Int(bpm)
-                        persist(updated)
-                        engine.updateMetronome(updated)
+                        commitTempo(Int(bpm))
                     }
                 }
                 .tint(.white.opacity(0.6))
@@ -105,6 +108,7 @@ struct MetronomeRowView: View {
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
                     .frame(width: 30, alignment: .trailing)
+                tapTempoButton
             }
             HStack(spacing: 8) {
                 Image(systemName: "speaker.wave.2")
@@ -155,6 +159,42 @@ struct MetronomeRowView: View {
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    /// Tap tempo: each press feeds the tap rules; once two taps are in the
+    /// phrase the tempo follows the hand, live on the click and on disk.
+    private var tapTempoButton: some View {
+        Button {
+            Haptics.tap()
+            if let tapped = tapTempo.register(at: Date.timeIntervalSinceReferenceDate) {
+                bpm = Double(tapped)
+                commitTempo(tapped)
+            }
+        } label: {
+            Text("TAP")
+                .font(.caption2.weight(.heavy))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(.white.opacity(0.08), in: .capsule)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Tap tempo")
+    }
+
+    private func commitTempo(_ tempo: Int) {
+        var updated = settings
+        updated.bpm = tempo
+        persist(updated)
+        engine.updateMetronome(updated)
+    }
+
+    private func toggleExpanded() {
+        withAnimation(isExpanded ? .discloseClose : .discloseOpen) {
+            isExpanded.toggle()
+        }
+        // A fresh phrase next time the panel opens.
+        if !isExpanded { tapTempo.reset() }
     }
 
     private func pickerRow(systemImage: String, label: String, @ViewBuilder picker: () -> some View) -> some View {

@@ -41,6 +41,7 @@ struct ModelCodableTests {
         #expect(project.metronome == nil)
         #expect(project.repeatPlayback == false)
         #expect(project.tint == .graphite)
+        #expect(project.deletedTracks.isEmpty)
     }
 
     @Test func appearanceRoundTrips() throws {
@@ -201,5 +202,33 @@ struct ModelCodableTests {
         let none = Project(name: "P", tracks: [plain])
         #expect(!none.isAnySoloed)
         #expect(none.metronomeEffectiveVolume == 0)
+    }
+
+    @Test func deletedTracksRoundTrip() throws {
+        let track = Track(name: "Gone", fileName: "gone.caf", sampleRate: 48_000, volume: 0.3, pan: 0.5, captureMode: .glue)
+        let deletedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        let project = Project(name: "P", deletedTracks: [DeletedTrack(track: track, deletedAt: deletedAt)])
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(Project.self, from: encoder.encode(project))
+        #expect(decoded.deletedTracks.count == 1)
+        #expect(decoded.deletedTracks[0].id == track.id)
+        #expect(decoded.deletedTracks[0].deletedAt == deletedAt)
+        #expect(decoded.deletedTracks[0].track.volume == 0.3)
+        #expect(decoded.deletedTracks[0].track.captureMode == .glue)
+    }
+
+    @Test func malformedDeletedTracksDoesNotDropTheProject() throws {
+        let json = legacyProjectJSON.replacingOccurrences(
+            of: "\"name\" : \"Legacy Project\",",
+            with: "\"name\" : \"Legacy Project\", \"deletedTracks\" : [ { \"bogus\" : 1 } ],"
+        )
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let project = try decoder.decode(Project.self, from: Data(json.utf8))
+        #expect(project.name == "Legacy Project")
+        #expect(project.deletedTracks.isEmpty)
     }
 }

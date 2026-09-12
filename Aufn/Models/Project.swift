@@ -14,6 +14,8 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
     var repeatPlayback: Bool
     /// Grid card fill; cosmetic only.
     var tint: ProjectTint
+    /// Deleted takes waiting in the trash, restorable until they expire.
+    var deletedTracks: [DeletedTrack]
 
     init(
         id: UUID = UUID(),
@@ -24,7 +26,8 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
         masterVolume: Float = 1,
         metronome: MetronomeSettings? = nil,
         repeatPlayback: Bool = false,
-        tint: ProjectTint = .graphite
+        tint: ProjectTint = .graphite,
+        deletedTracks: [DeletedTrack] = []
     ) {
         self.id = id
         self.name = name
@@ -35,6 +38,7 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
         self.metronome = metronome
         self.repeatPlayback = repeatPlayback
         self.tint = tint
+        self.deletedTracks = deletedTracks
     }
 
     // Tolerates project.json files written before masterVolume existed.
@@ -52,6 +56,8 @@ struct Project: Identifiable, Codable, Equatable, Hashable {
         // failing the decode.
         let tintName = try container.decodeIfPresent(String.self, forKey: .tint)
         tint = tintName.flatMap(ProjectTint.init(rawValue:)) ?? .graphite
+        // A malformed trash list must never take the whole project with it.
+        deletedTracks = (try? container.decodeIfPresent([DeletedTrack].self, forKey: .deletedTracks)) ?? []
     }
 }
 

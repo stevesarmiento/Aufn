@@ -53,6 +53,15 @@ final class WorkspaceFlowUITests: XCTestCase {
         attach(app, name: "sample-rate-page")
         app.navigationBars.buttons.firstMatch.tap() // back
 
+        // Recently Deleted pushes the trash feed — empty for a fresh project,
+        // with Delete All disabled.
+        XCTAssertTrue(app.buttons["Recently Deleted"].waitForExistence(timeout: 5))
+        app.buttons["Recently Deleted"].tap()
+        XCTAssertTrue(app.staticTexts["Nothing deleted"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Delete All"].isEnabled)
+        attach(app, name: "recently-deleted-page")
+        app.navigationBars.buttons.firstMatch.tap() // back
+
         // Close returns to the project.
         XCTAssertTrue(app.buttons["Close"].waitForExistence(timeout: 5))
         app.buttons["Close"].tap()

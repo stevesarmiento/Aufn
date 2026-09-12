@@ -1,10 +1,10 @@
 import SwiftUI
 
-/// One tile on the projects grid: the project's tint, a dot-matrix thumbnail
-/// of the mix beside a play/stop circle, and the name over a tracks/length
-/// caption. The whole card opens the project; the circle is an overlay so its
-/// taps never reach the card. A project with no tracks has nothing to play or
-/// draw, so its top row is empty.
+/// One tile on the projects grid: the project's tint, the name over a
+/// tracks/length caption, and along the bottom a play/stop circle beside a
+/// dot-matrix thumbnail of the mix. The whole card opens the project; the
+/// circle is an overlay so its taps never reach the card. A project with no
+/// tracks has nothing to play or draw, so its bottom row is empty.
 struct ProjectCard: View {
     let project: Project
     var isPlaying = false
@@ -24,6 +24,15 @@ struct ProjectCard: View {
             onOpen()
         } label: {
             VStack(alignment: .leading, spacing: 0) {
+                Text(project.name)
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                Text(project.caption)
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .lineLimit(1)
+                Spacer(minLength: 8)
                 HStack(spacing: 10) {
                     if canPlay {
                         // Stand-in for the overlaid play button, so the
@@ -36,15 +45,6 @@ struct ProjectCard: View {
                             .frame(height: Self.buttonSize)
                     }
                 }
-                Spacer(minLength: 8)
-                Text(project.name)
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-                Text(project.caption)
-                    .font(.system(size: 14, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.6))
-                    .lineLimit(1)
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -54,7 +54,7 @@ struct ProjectCard: View {
         .buttonStyle(CardPressStyle())
         .accessibilityLabel(project.name)
         .accessibilityIdentifier("ProjectCard")
-        .overlay(alignment: .topLeading) {
+        .overlay(alignment: .bottomLeading) {
             if canPlay {
                 playButton
                     .padding(16)

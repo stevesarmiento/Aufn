@@ -32,7 +32,7 @@ struct SwipeRow<Content: View>: View {
     var onToggleSelection: () -> Void = {}
     let deleteTitle: String
     var deleteButtonTitle: String = "Delete Track"
-    var deleteMessage: String = "This removes the audio file permanently."
+    var deleteMessage: String = "You can restore it from Recently Deleted for 30 days."
     var deleteAccessibilityLabel: String = "Delete track"
     let onDelete: () -> Void
     @ViewBuilder let content: () -> Content
@@ -123,7 +123,7 @@ struct SwipeRow<Content: View>: View {
             .onChange(of: confirmingDelete) { _, showing in
                 // Cancel/dismiss: don't leave the row sitting armed.
                 if !showing && isOpen {
-                    withAnimation(.snappy) { openRowID = nil }
+                    withAnimation(.discloseClose) { openRowID = nil }
                 }
             }
     }
@@ -159,15 +159,15 @@ struct SwipeRow<Content: View>: View {
 
     /// Full row height, rounded only on its outer edge (`edge`) and square
     /// where it meets the card, extending under the card so no gap shows
-    /// through the card's corner. The icon is centered in the VISIBLE travel
-    /// only and ramps in over the first stretch of travel.
+    /// through the card's corner. The icon is always full size, centered in
+    /// the VISIBLE travel and clipped to the panel, so it slides out from
+    /// under the card edge rather than fading or growing in.
     private func panel(
         travel: CGFloat,
         fill: Color,
         edge: HorizontalEdge,
         @ViewBuilder icon: () -> some View
     ) -> some View {
-        let progress = SwipeRules.iconProgress(travel: travel)
         let outer: CGFloat = 16
         let shape = UnevenRoundedRectangle(
             topLeadingRadius: edge == .leading ? outer : 0,
@@ -180,10 +180,9 @@ struct SwipeRow<Content: View>: View {
             .frame(width: SwipeRules.panelWidth(travel: travel))
             .overlay(alignment: edge == .leading ? .leading : .trailing) {
                 icon()
-                    .opacity(progress)
-                    .scaleEffect(0.6 + 0.4 * progress)
-                    .frame(width: travel)
+                    .frame(width: max(0, travel))
             }
+            .clipShape(shape)
     }
 
     /// Entering the mode never leaves a delete row armed.
@@ -197,7 +196,7 @@ struct SwipeRow<Content: View>: View {
             onBegan: { x in
                 // A clearly horizontal drag on this row closes any OTHER open row.
                 if openRowID != nil, openRowID != id {
-                    withAnimation(.snappy) { openRowID = nil }
+                    withAnimation(.discloseClose) { openRowID = nil }
                 }
                 translation = x
             },
@@ -211,7 +210,10 @@ struct SwipeRow<Content: View>: View {
                     canDelete: canDelete,
                     canSelect: true
                 )
-                withAnimation(.snappy) {
+                // Same motion as the transport: a row settling INTO its
+                // revealed state lands with the disclose spring; anything
+                // closing snaps shut with the decisive ease-out.
+                withAnimation(outcome == .commitDelete ? .discloseOpen : .discloseClose) {
                     translation = 0
                     switch outcome {
                     case .commitDelete:
@@ -226,7 +228,7 @@ struct SwipeRow<Content: View>: View {
                 }
             },
             onCancelled: {
-                withAnimation(.snappy) { translation = 0 }
+                withAnimation(.discloseClose) { translation = 0 }
             },
             onPressChanged: { pressed in
                 // Off the touch callback: mutating view state synchronously
