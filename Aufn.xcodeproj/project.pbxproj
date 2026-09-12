@@ -3,298 +3,610 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F31CB4292B645AC500271C90 /* ContentBlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31CB4282B645AC500271C90 /* ContentBlurView.swift */; };
-		F31CB42B2B64885900271C90 /* WaveformSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31CB42A2B64885900271C90 /* WaveformSliderView.swift */; };
-		F34D457F2A03412E004EDF1B /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF802A033B6C00DBC761 /* WaveformView.swift */; };
-		F3947B1A2B636F06002FE28B /* AnimationUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3947B192B636F06002FE28B /* AnimationUtility.swift */; };
-		F3D568BE2B60AD830097B079 /* HalfModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D568BD2B60AD830097B079 /* HalfModalView.swift */; };
-		F3EEBF602A03162300DBC761 /* AufnApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF5F2A03162300DBC761 /* AufnApp.swift */; };
-		F3EEBF622A03162300DBC761 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF612A03162300DBC761 /* MainView.swift */; };
-		F3EEBF642A03162400DBC761 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3EEBF632A03162400DBC761 /* Assets.xcassets */; };
-		F3EEBF672A03162400DBC761 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3EEBF662A03162400DBC761 /* Preview Assets.xcassets */; };
-		F3EEBF832A033B6C00DBC761 /* EditableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF6D2A033B6B00DBC761 /* EditableText.swift */; };
-		F3EEBF852A033B6C00DBC761 /* AudioFileViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF6F2A033B6B00DBC761 /* AudioFileViewModal.swift */; };
-		F3EEBF862A033B6C00DBC761 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF702A033B6B00DBC761 /* GeneralSettingsView.swift */; };
-		F3EEBF872A033B6C00DBC761 /* PluginEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF712A033B6B00DBC761 /* PluginEffects.swift */; };
-		F3EEBF882A033B6C00DBC761 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF722A033B6B00DBC761 /* ActivityView.swift */; };
-		F3EEBF892A033B6C00DBC761 /* MicrophonePresetEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF732A033B6B00DBC761 /* MicrophonePresetEffects.swift */; };
-		F3EEBF8A2A033B6C00DBC761 /* AudioProcessingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF742A033B6B00DBC761 /* AudioProcessingManager.swift */; };
-		F3EEBF8B2A033B6C00DBC761 /* MetronomeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF752A033B6B00DBC761 /* MetronomeSettingsView.swift */; };
-		F3EEBF8C2A033B6C00DBC761 /* PlaybackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF762A033B6B00DBC761 /* PlaybackView.swift */; };
-		F3EEBF8D2A033B6C00DBC761 /* RecordingDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF772A033B6B00DBC761 /* RecordingDetailsView.swift */; };
-		F3EEBF8E2A033B6C00DBC761 /* RecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF782A033B6B00DBC761 /* RecordingSettingsView.swift */; };
-		F3EEBF8F2A033B6C00DBC761 /* RecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF792A033B6C00DBC761 /* RecordingView.swift */; };
-		F3EEBF902A033B6C00DBC761 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF7A2A033B6C00DBC761 /* AppSettings.swift */; };
-		F3EEBF912A033B6C00DBC761 /* UserDefaults+Extentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF7B2A033B6C00DBC761 /* UserDefaults+Extentions.swift */; };
-		F3EEBF922A033B6C00DBC761 /* PluginManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF7C2A033B6C00DBC761 /* PluginManagementView.swift */; };
-		F3EEBF932A033B6C00DBC761 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF7D2A033B6C00DBC761 /* ShareSheet.swift */; };
-		F3EEBF942A033B6C00DBC761 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF7E2A033B6C00DBC761 /* AudioPlayer.swift */; };
-		F3EEBF952A033B6C00DBC761 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF7F2A033B6C00DBC761 /* AudioRecorder.swift */; };
-		F3EEBF972A033B6C00DBC761 /* MicrophonePreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF812A033B6C00DBC761 /* MicrophonePreset.swift */; };
-		F3EEBF982A033B6C00DBC761 /* Plugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EEBF822A033B6C00DBC761 /* Plugin.swift */; };
+		0820CCC8D50347F23F06F9B1 /* ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A520395A415465ECDA8922 /* ProjectListView.swift */; };
+		090A23C73C4AB8679342F518 /* MeterTapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE70FC29BBD993DDA3530CD /* MeterTapTests.swift */; };
+		0A1C3E4246FF7C7436E160D8 /* SampleRatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */; };
+		0CFFEDE6ED09EA23F0021DC1 /* AudioSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9349C45AC65E7E803D41997 /* AudioSessionController.swift */; };
+		0F1D98DC77C99CC49DD3BB9D /* MetronomeClickTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A23EF8819D114AE7462032A /* MetronomeClickTests.swift */; };
+		10CDC308F9E3B95DF768E5B0 /* ProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E0F36D39180002A95932DF /* ProjectDetailView.swift */; };
+		13020CA1318F985FFFC6F519 /* MetronomeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694BCA64B54AF085C7FDBF06 /* MetronomeSettings.swift */; };
+		130786F9E7DB518BF025BFD4 /* SelectionDeleteCopyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FD979EA2C36CFC4159D78A /* SelectionDeleteCopyTests.swift */; };
+		188F1216E9962D6D9A5D89DA /* AudioEngineController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0E39CE7F3C52065E3CFCF6 /* AudioEngineController.swift */; };
+		1D15711D8774713BF2E3193D /* HorizontalPanGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = A017545ED20CC32071E00D1B /* HorizontalPanGesture.swift */; };
+		217E2CFED5F91EE50B34FA38 /* RecentlyDeletedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EA2DDFC0275E900BD28AB02 /* RecentlyDeletedView.swift */; };
+		225F74BFE0D21E2CA1733100 /* TrackRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADB93826B8AD141909A69E59 /* TrackRecorder.swift */; };
+		25E2FAA37E11DD3D3D480409 /* TransportBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AEB2116153E60C0B264C44 /* TransportBar.swift */; };
+		289950537087B652C93AAB38 /* ExportDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9B4EE5FE9120DAFB64C1C /* ExportDrawer.swift */; };
+		2BE9D8AD76358E6B96D73365 /* GradeProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16A3B48461C89E19FEEAF661 /* GradeProcessor.swift */; };
+		2E677C1AEE5B1B80CE44DDB6 /* SwipeRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59665E426A645A3705173AB /* SwipeRules.swift */; };
+		2EBC143FD94E570D94A8EA63 /* RecentlyDeletedFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA33EB246435AD7342314677 /* RecentlyDeletedFlowUITests.swift */; };
+		3078C24E266A76C9E368178B /* CaptureWheel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1A9BC9F1428107D922B018 /* CaptureWheel.swift */; };
+		33AD13941191E3A4304D7408 /* GradeProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71229EB44028DA1220359516 /* GradeProcessorTests.swift */; };
+		36BE1CD2FD2A47873296AA02 /* WorkspaceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16240E5F3C99DF4634FA22B /* WorkspaceSettingsView.swift */; };
+		373D6D965219F9D8487F10DA /* TrackRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */; };
+		383473AADA66DEE9D9B83121 /* MetronomeRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC102DCD8BF33666A79EC3E7 /* MetronomeRowView.swift */; };
+		3D8E7563C0A132A4C6DE6631 /* RecordFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */; };
+		3EDBF79CDA39B65862E62631 /* ProjectAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8DB4274448D3B4D34688DF /* ProjectAppearance.swift */; };
+		3F5820A4BA0B3BEBF2A55F13 /* FittedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F29F36DC7179183A9532339 /* FittedSheet.swift */; };
+		417A0285956B5D7B56E242A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62678A3ACAC43AD644B8F77C /* Assets.xcassets */; };
+		42803F3BB04E83742828CA2C /* SelectionFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83D14137206DF3451725DF0F /* SelectionFlowUITests.swift */; };
+		46BCB4DB3E7C64E1DA815533 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FB0BB77CED728DB965323E /* WaveformView.swift */; };
+		46C576589B0F9D075CBD117B /* SwipeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EA2483AED3E39BBC9E8CEB /* SwipeRow.swift */; };
+		47DBF4CDA6CD876552B487AC /* WaveformPlayheadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487B88342BAB205C454C0C0F /* WaveformPlayheadTests.swift */; };
+		4AB727D851FD6740046417F5 /* InputPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */; };
+		54B8D1E923CDC6E421D40653 /* AppIconCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6923897A5CA2924D48C154 /* AppIconCatalog.swift */; };
+		5F1C187BE36B4515AECFCD09 /* PeakStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C3E31CC0386771ECD012FD /* PeakStoreTests.swift */; };
+		62E391C189B53DAEC5D4F59C /* TapeWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */; };
+		69B837ECCD61C20D70E10DBB /* GradeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB9C8E3DA8C1103FED2725F /* GradeSettings.swift */; };
+		6E31C7A0B9A5C17FFC816175 /* TrackCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 875FC223D2F40A915B1311C5 /* TrackCard.swift */; };
+		6EEA7A385C4ADEA43921F3B5 /* MixWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */; };
+		6EEF7861B7854E81D5AE0CD0 /* TapTempoRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8164FF8E73909EA0507A6180 /* TapTempoRules.swift */; };
+		6F9CA4BD77EED3AF9EFED234 /* DeletedTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B469EA63BB537E2C4BEF21 /* DeletedTrack.swift */; };
+		73B1827ED7FD7D2CF5E60C3A /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5AA0A3C78D261AAA26F172 /* Project.swift */; };
+		79F284E29899E839188E529D /* ProjectsGridUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFC66CF3E2B5E61332B8065F /* ProjectsGridUITests.swift */; };
+		7F52C940B17018BCB4D030B1 /* ModelCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */; };
+		80827C7451DDFAFEC6331831 /* PreviewSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */; };
+		88C9D7A9549513BD6ECD724F /* SettingsControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30191CB3D17D8B80C74791E6 /* SettingsControls.swift */; };
+		8B99672C7FD0789DFB03C9F6 /* WorkspaceFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD0D0A6A8DDD04341E32410 /* WorkspaceFlowUITests.swift */; };
+		907456A2EB8A1ABAB713C38D /* ExportPipelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37B6BCF8C4EF20E3A2CB96B /* ExportPipelineTests.swift */; };
+		9573EAF392500DD233185966 /* GradeDSP.swift in Sources */ = {isa = PBXBuildFile; fileRef = D204AE024C94395AE9A212E7 /* GradeDSP.swift */; };
+		9A20CF41E6028B2CCAD8689A /* TrackRecorderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3765D9494AA852719FF60240 /* TrackRecorderTests.swift */; };
+		9A3D256FBA9A746433866A9F /* AppIconCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C143C60BD7A069E2152104 /* AppIconCatalogTests.swift */; };
+		9B9CF4A6003B61B4DB218774 /* TransportRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B064AC527A1B6AD409B769 /* TransportRules.swift */; };
+		9BC7BD5C78EA6792D82F5CF8 /* SelectionActionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D5215892F06A219B576FE2 /* SelectionActionBar.swift */; };
+		9D82AC66E26D0C0A6D059FF8 /* MicPositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF1C1E167C37F36DC1A9B45 /* MicPositionTests.swift */; };
+		A25179BD9EE57D1CB68319FC /* MixRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5B60D01674003C1EADF75F /* MixRules.swift */; };
+		A38B185C8F3A3D161D11D198 /* AufnApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711EA42EDE83F0D800EE54A /* AufnApp.swift */; };
+		A805C04E7F67F1C5F9D793B9 /* CaptureModeFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D2A6863FF55BACCE2E9E30 /* CaptureModeFlowUITests.swift */; };
+		A9E7AFA81A0ED309071257A9 /* CaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1461DE290A21792CE5928EC /* CaptureMode.swift */; };
+		AB433A2812C4D1C324D57F2F /* TapTempoRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07800F9CDD0CC40E289F384B /* TapTempoRulesTests.swift */; };
+		AD994ED964F5C382FDA43B2D /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAC1082458BADE454C9C6839 /* Track.swift */; };
+		B6B0B7DA3DFE671E448029AA /* CaptureModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59A2EB7A004F39AD53F6BFC /* CaptureModeTests.swift */; };
+		BA859AE312D2E3FF64AAD409 /* MicPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD02489BC12CA4735469D827 /* MicPosition.swift */; };
+		BF291FF1A4726158D3C40117 /* SelectionDeleteCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB5C08C019E4462D5F1D2F8 /* SelectionDeleteCopy.swift */; };
+		C6B4B4D05177C3B85D19ED8D /* Motion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3384746C65D8D3FD415463B /* Motion.swift */; };
+		C74E613D29ACDBF431F79FC4 /* Exporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C339619CA7533837060A4F /* Exporter.swift */; };
+		CBFE6509948F3F7522DBA04A /* ProjectStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB15403DD69C7D8337DBFB9 /* ProjectStoreTests.swift */; };
+		CC6F1545E9896CE275C4D4EC /* AppIconPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED5C9583A7472CADB35BDC8 /* AppIconPickerView.swift */; };
+		CFF682E5BD092D8BCB51E8AA /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80233F83100DBD15AD06CE76 /* ProjectStore.swift */; };
+		D221290AA1E1B10A7534EE27 /* MetronomeClick.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE90A8C9B28F3B30E090FBD7 /* MetronomeClick.swift */; };
+		D6716A9CBD1F2D9171C3A41B /* MicPositionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8DDF60047B1F191D12CA8 /* MicPositionPicker.swift */; };
+		DECE386A0BB6D862F705AAF5 /* LevelMeterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */; };
+		E3BA6A51F2534F52306AB145 /* PeakStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BCEE49143C0E2CCF63420D /* PeakStore.swift */; };
+		E7B2122EB9AE58CE6DDBB9C2 /* GradeDSPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966BF9255A56ACDED555976D /* GradeDSPTests.swift */; };
+		EA1FF872BA1372FDCEBB6B76 /* MeterTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB153B8D25AA800D8D238B2 /* MeterTap.swift */; };
+		EB8087493AA41ABC6454B014 /* AppSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 779BC3C818373BF3A2B9C3F9 /* AppSettingsView.swift */; };
+		EE6D752E0F732D8F41837F14 /* ProjectCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BFB5C7753CD4D6C0C8BC40 /* ProjectCard.swift */; };
+		F15E7B25CFE527A0C9937638 /* ProjectAppearanceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6869C53535DA3669F1ACB27 /* ProjectAppearanceSheet.swift */; };
+		F83FEBAD683A5D2220342AEE /* GradeTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3629B289172794B61C6797 /* GradeTestSupport.swift */; };
+		FC934DAFB76AA180F48EF9E8 /* SwipeRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79799B45D315F08D7DD7A32 /* SwipeRulesTests.swift */; };
+		FEA4725FA91B8FF3A3BD56E0 /* MetronomeBeatGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F603810D03C315FAE0550CD /* MetronomeBeatGridView.swift */; };
+		FF0A1C537F108DCF8508D11A /* TransportRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DA58E8A2C777B3AC339146 /* TransportRulesTests.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		25261C9495521891B72D23B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9035A926876EC6B4893254F0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AC7C1A6AB04C64E0B99D9710;
+			remoteInfo = Aufn;
+		};
+		64D22D9ABCBFBDFDE2FEC192 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9035A926876EC6B4893254F0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AC7C1A6AB04C64E0B99D9710;
+			remoteInfo = Aufn;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
-		F31CB4282B645AC500271C90 /* ContentBlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentBlurView.swift; sourceTree = "<group>"; };
-		F31CB42A2B64885900271C90 /* WaveformSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformSliderView.swift; sourceTree = "<group>"; };
-		F34D45802A03729D004EDF1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		F3947B192B636F06002FE28B /* AnimationUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationUtility.swift; sourceTree = "<group>"; };
-		F3D568BD2B60AD830097B079 /* HalfModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfModalView.swift; sourceTree = "<group>"; };
-		F3EEBF5C2A03162300DBC761 /* Aufn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aufn.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F3EEBF5F2A03162300DBC761 /* AufnApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AufnApp.swift; sourceTree = "<group>"; };
-		F3EEBF612A03162300DBC761 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
-		F3EEBF632A03162400DBC761 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F3EEBF662A03162400DBC761 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		F3EEBF6D2A033B6B00DBC761 /* EditableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditableText.swift; sourceTree = "<group>"; };
-		F3EEBF6F2A033B6B00DBC761 /* AudioFileViewModal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioFileViewModal.swift; sourceTree = "<group>"; };
-		F3EEBF702A033B6B00DBC761 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
-		F3EEBF712A033B6B00DBC761 /* PluginEffects.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginEffects.swift; sourceTree = "<group>"; };
-		F3EEBF722A033B6B00DBC761 /* ActivityView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
-		F3EEBF732A033B6B00DBC761 /* MicrophonePresetEffects.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MicrophonePresetEffects.swift; sourceTree = "<group>"; };
-		F3EEBF742A033B6B00DBC761 /* AudioProcessingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioProcessingManager.swift; sourceTree = "<group>"; };
-		F3EEBF752A033B6B00DBC761 /* MetronomeSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetronomeSettingsView.swift; sourceTree = "<group>"; };
-		F3EEBF762A033B6B00DBC761 /* PlaybackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaybackView.swift; sourceTree = "<group>"; };
-		F3EEBF772A033B6B00DBC761 /* RecordingDetailsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordingDetailsView.swift; sourceTree = "<group>"; };
-		F3EEBF782A033B6B00DBC761 /* RecordingSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordingSettingsView.swift; sourceTree = "<group>"; };
-		F3EEBF792A033B6C00DBC761 /* RecordingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordingView.swift; sourceTree = "<group>"; };
-		F3EEBF7A2A033B6C00DBC761 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
-		F3EEBF7B2A033B6C00DBC761 /* UserDefaults+Extentions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Extentions.swift"; sourceTree = "<group>"; };
-		F3EEBF7C2A033B6C00DBC761 /* PluginManagementView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluginManagementView.swift; sourceTree = "<group>"; };
-		F3EEBF7D2A033B6C00DBC761 /* ShareSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
-		F3EEBF7E2A033B6C00DBC761 /* AudioPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
-		F3EEBF7F2A033B6C00DBC761 /* AudioRecorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
-		F3EEBF802A033B6C00DBC761 /* WaveformView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
-		F3EEBF812A033B6C00DBC761 /* MicrophonePreset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MicrophonePreset.swift; sourceTree = "<group>"; };
-		F3EEBF822A033B6C00DBC761 /* Plugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plugin.swift; sourceTree = "<group>"; };
+		00FB0BB77CED728DB965323E /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
+		02B469EA63BB537E2C4BEF21 /* DeletedTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletedTrack.swift; sourceTree = "<group>"; };
+		04BFB5C7753CD4D6C0C8BC40 /* ProjectCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCard.swift; sourceTree = "<group>"; };
+		07800F9CDD0CC40E289F384B /* TapTempoRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapTempoRulesTests.swift; sourceTree = "<group>"; };
+		08AEB2116153E60C0B264C44 /* TransportBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportBar.swift; sourceTree = "<group>"; };
+		0DB9C8E3DA8C1103FED2725F /* GradeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeSettings.swift; sourceTree = "<group>"; };
+		0ED5C9583A7472CADB35BDC8 /* AppIconPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconPickerView.swift; sourceTree = "<group>"; };
+		12BCEE49143C0E2CCF63420D /* PeakStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeakStore.swift; sourceTree = "<group>"; };
+		15FD979EA2C36CFC4159D78A /* SelectionDeleteCopyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionDeleteCopyTests.swift; sourceTree = "<group>"; };
+		16A3B48461C89E19FEEAF661 /* GradeProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeProcessor.swift; sourceTree = "<group>"; };
+		1A23EF8819D114AE7462032A /* MetronomeClickTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeClickTests.swift; sourceTree = "<group>"; };
+		1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapeWaveformView.swift; sourceTree = "<group>"; };
+		29C339619CA7533837060A4F /* Exporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exporter.swift; sourceTree = "<group>"; };
+		2A3629B289172794B61C6797 /* GradeTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeTestSupport.swift; sourceTree = "<group>"; };
+		2FB5C08C019E4462D5F1D2F8 /* SelectionDeleteCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionDeleteCopy.swift; sourceTree = "<group>"; };
+		30191CB3D17D8B80C74791E6 /* SettingsControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsControls.swift; sourceTree = "<group>"; };
+		32A520395A415465ECDA8922 /* ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListView.swift; sourceTree = "<group>"; };
+		3765D9494AA852719FF60240 /* TrackRecorderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRecorderTests.swift; sourceTree = "<group>"; };
+		38DA58E8A2C777B3AC339146 /* TransportRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportRulesTests.swift; sourceTree = "<group>"; };
+		39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordFlowUITests.swift; sourceTree = "<group>"; };
+		3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRowView.swift; sourceTree = "<group>"; };
+		3EA2DDFC0275E900BD28AB02 /* RecentlyDeletedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyDeletedView.swift; sourceTree = "<group>"; };
+		44EA2483AED3E39BBC9E8CEB /* SwipeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeRow.swift; sourceTree = "<group>"; };
+		487B88342BAB205C454C0C0F /* WaveformPlayheadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformPlayheadTests.swift; sourceTree = "<group>"; };
+		4AE70FC29BBD993DDA3530CD /* MeterTapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterTapTests.swift; sourceTree = "<group>"; };
+		4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleRatePicker.swift; sourceTree = "<group>"; };
+		5BB15403DD69C7D8337DBFB9 /* ProjectStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStoreTests.swift; sourceTree = "<group>"; };
+		5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSupport.swift; sourceTree = "<group>"; };
+		5F603810D03C315FAE0550CD /* MetronomeBeatGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeBeatGridView.swift; sourceTree = "<group>"; };
+		62678A3ACAC43AD644B8F77C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		642BD84573D886156BD58DFD /* AufnTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AufnTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		694BCA64B54AF085C7FDBF06 /* MetronomeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeSettings.swift; sourceTree = "<group>"; };
+		6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelCodableTests.swift; sourceTree = "<group>"; };
+		71229EB44028DA1220359516 /* GradeProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeProcessorTests.swift; sourceTree = "<group>"; };
+		779BC3C818373BF3A2B9C3F9 /* AppSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsView.swift; sourceTree = "<group>"; };
+		7F29F36DC7179183A9532339 /* FittedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FittedSheet.swift; sourceTree = "<group>"; };
+		80233F83100DBD15AD06CE76 /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
+		8164FF8E73909EA0507A6180 /* TapTempoRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapTempoRules.swift; sourceTree = "<group>"; };
+		81F8DDF60047B1F191D12CA8 /* MicPositionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicPositionPicker.swift; sourceTree = "<group>"; };
+		83D14137206DF3451725DF0F /* SelectionFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionFlowUITests.swift; sourceTree = "<group>"; };
+		875FC223D2F40A915B1311C5 /* TrackCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackCard.swift; sourceTree = "<group>"; };
+		90E0F36D39180002A95932DF /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
+		94E9B4EE5FE9120DAFB64C1C /* ExportDrawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportDrawer.swift; sourceTree = "<group>"; };
+		966BF9255A56ACDED555976D /* GradeDSPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeDSPTests.swift; sourceTree = "<group>"; };
+		9AF1C1E167C37F36DC1A9B45 /* MicPositionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicPositionTests.swift; sourceTree = "<group>"; };
+		9CB153B8D25AA800D8D238B2 /* MeterTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterTap.swift; sourceTree = "<group>"; };
+		9F6923897A5CA2924D48C154 /* AppIconCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconCatalog.swift; sourceTree = "<group>"; };
+		A017545ED20CC32071E00D1B /* HorizontalPanGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalPanGesture.swift; sourceTree = "<group>"; };
+		A16240E5F3C99DF4634FA22B /* WorkspaceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSettingsView.swift; sourceTree = "<group>"; };
+		A3384746C65D8D3FD415463B /* Motion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Motion.swift; sourceTree = "<group>"; };
+		A6C143C60BD7A069E2152104 /* AppIconCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconCatalogTests.swift; sourceTree = "<group>"; };
+		AC102DCD8BF33666A79EC3E7 /* MetronomeRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeRowView.swift; sourceTree = "<group>"; };
+		ADB93826B8AD141909A69E59 /* TrackRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRecorder.swift; sourceTree = "<group>"; };
+		AE90A8C9B28F3B30E090FBD7 /* MetronomeClick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeClick.swift; sourceTree = "<group>"; };
+		B1461DE290A21792CE5928EC /* CaptureMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureMode.swift; sourceTree = "<group>"; };
+		B9D2A6863FF55BACCE2E9E30 /* CaptureModeFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureModeFlowUITests.swift; sourceTree = "<group>"; };
+		BE5B60D01674003C1EADF75F /* MixRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixRules.swift; sourceTree = "<group>"; };
+		BFD0D0A6A8DDD04341E32410 /* WorkspaceFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFlowUITests.swift; sourceTree = "<group>"; };
+		C1D5215892F06A219B576FE2 /* SelectionActionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionActionBar.swift; sourceTree = "<group>"; };
+		C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputPicker.swift; sourceTree = "<group>"; };
+		C37B6BCF8C4EF20E3A2CB96B /* ExportPipelineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportPipelineTests.swift; sourceTree = "<group>"; };
+		C59A2EB7A004F39AD53F6BFC /* CaptureModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureModeTests.swift; sourceTree = "<group>"; };
+		C6869C53535DA3669F1ACB27 /* ProjectAppearanceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectAppearanceSheet.swift; sourceTree = "<group>"; };
+		C79799B45D315F08D7DD7A32 /* SwipeRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeRulesTests.swift; sourceTree = "<group>"; };
+		CC5AA0A3C78D261AAA26F172 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		CD353F7FF70F7D2567FD63C5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CE5212E762185BF2862EBD8B /* Aufn.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Aufn.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixWaveformView.swift; sourceTree = "<group>"; };
+		CFC66CF3E2B5E61332B8065F /* ProjectsGridUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsGridUITests.swift; sourceTree = "<group>"; };
+		D204AE024C94395AE9A212E7 /* GradeDSP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeDSP.swift; sourceTree = "<group>"; };
+		D5A4A4430704E975A8D5F748 /* AufnUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AufnUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D7B064AC527A1B6AD409B769 /* TransportRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportRules.swift; sourceTree = "<group>"; };
+		DA0E39CE7F3C52065E3CFCF6 /* AudioEngineController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngineController.swift; sourceTree = "<group>"; };
+		DA1A9BC9F1428107D922B018 /* CaptureWheel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureWheel.swift; sourceTree = "<group>"; };
+		DD02489BC12CA4735469D827 /* MicPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicPosition.swift; sourceTree = "<group>"; };
+		E2C3E31CC0386771ECD012FD /* PeakStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeakStoreTests.swift; sourceTree = "<group>"; };
+		E9349C45AC65E7E803D41997 /* AudioSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionController.swift; sourceTree = "<group>"; };
+		EA33EB246435AD7342314677 /* RecentlyDeletedFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyDeletedFlowUITests.swift; sourceTree = "<group>"; };
+		EAC1082458BADE454C9C6839 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
+		EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelMeterView.swift; sourceTree = "<group>"; };
+		F59665E426A645A3705173AB /* SwipeRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeRules.swift; sourceTree = "<group>"; };
+		F711EA42EDE83F0D800EE54A /* AufnApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AufnApp.swift; sourceTree = "<group>"; };
+		FA8DB4274448D3B4D34688DF /* ProjectAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectAppearance.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFrameworksBuildPhase section */
-		F3EEBF592A03162300DBC761 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
 /* Begin PBXGroup section */
-		F3D568B82B60A9C90097B079 /* Core */ = {
+		181B707EAD9D4CFA9F8B99C7 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
-				F3D568BA2B60A9FF0097B079 /* Main */,
-				F3D568B92B60A9F90097B079 /* Settings */,
-				F3D568BB2B60AA1C0097B079 /* Utilities */,
+				DA0E39CE7F3C52065E3CFCF6 /* AudioEngineController.swift */,
+				E9349C45AC65E7E803D41997 /* AudioSessionController.swift */,
+				B1461DE290A21792CE5928EC /* CaptureMode.swift */,
+				29C339619CA7533837060A4F /* Exporter.swift */,
+				D204AE024C94395AE9A212E7 /* GradeDSP.swift */,
+				16A3B48461C89E19FEEAF661 /* GradeProcessor.swift */,
+				0DB9C8E3DA8C1103FED2725F /* GradeSettings.swift */,
+				9CB153B8D25AA800D8D238B2 /* MeterTap.swift */,
+				AE90A8C9B28F3B30E090FBD7 /* MetronomeClick.swift */,
+				DD02489BC12CA4735469D827 /* MicPosition.swift */,
+				12BCEE49143C0E2CCF63420D /* PeakStore.swift */,
+				8164FF8E73909EA0507A6180 /* TapTempoRules.swift */,
+				ADB93826B8AD141909A69E59 /* TrackRecorder.swift */,
+				D7B064AC527A1B6AD409B769 /* TransportRules.swift */,
 			);
-			path = Core;
+			path = Audio;
 			sourceTree = "<group>";
 		};
-		F3D568B92B60A9F90097B079 /* Settings */ = {
+		1C8A14C0A4B76616FD6CB884 /* Aufn */ = {
 			isa = PBXGroup;
 			children = (
-				F3EEBF702A033B6B00DBC761 /* GeneralSettingsView.swift */,
-				F3EEBF7C2A033B6C00DBC761 /* PluginManagementView.swift */,
-				F3EEBF782A033B6B00DBC761 /* RecordingSettingsView.swift */,
-				F3EEBF752A033B6B00DBC761 /* MetronomeSettingsView.swift */,
-				F3EEBF7A2A033B6C00DBC761 /* AppSettings.swift */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
-		F3D568BA2B60A9FF0097B079 /* Main */ = {
-			isa = PBXGroup;
-			children = (
-				F3D568BC2B60AA760097B079 /* Components */,
-				F3EEBF762A033B6B00DBC761 /* PlaybackView.swift */,
-				F3EEBF792A033B6C00DBC761 /* RecordingView.swift */,
-			);
-			path = Main;
-			sourceTree = "<group>";
-		};
-		F3D568BB2B60AA1C0097B079 /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				F3EEBF812A033B6C00DBC761 /* MicrophonePreset.swift */,
-				F31CB4282B645AC500271C90 /* ContentBlurView.swift */,
-				F3EEBF732A033B6B00DBC761 /* MicrophonePresetEffects.swift */,
-				F3EEBF822A033B6C00DBC761 /* Plugin.swift */,
-				F3EEBF712A033B6B00DBC761 /* PluginEffects.swift */,
-				F3EEBF7D2A033B6C00DBC761 /* ShareSheet.swift */,
-				F3EEBF7B2A033B6C00DBC761 /* UserDefaults+Extentions.swift */,
-				F3EEBF6F2A033B6B00DBC761 /* AudioFileViewModal.swift */,
-				F3EEBF742A033B6B00DBC761 /* AudioProcessingManager.swift */,
-				F3EEBF7F2A033B6C00DBC761 /* AudioRecorder.swift */,
-				F3947B192B636F06002FE28B /* AnimationUtility.swift */,
-			);
-			path = Utilities;
-			sourceTree = "<group>";
-		};
-		F3D568BC2B60AA760097B079 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				F3EEBF722A033B6B00DBC761 /* ActivityView.swift */,
-				F31CB42A2B64885900271C90 /* WaveformSliderView.swift */,
-				F3EEBF772A033B6B00DBC761 /* RecordingDetailsView.swift */,
-				F3EEBF802A033B6C00DBC761 /* WaveformView.swift */,
-				F3EEBF6D2A033B6B00DBC761 /* EditableText.swift */,
-				F3EEBF7E2A033B6C00DBC761 /* AudioPlayer.swift */,
-				F3D568BD2B60AD830097B079 /* HalfModalView.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
-		F3EEBF532A03162300DBC761 = {
-			isa = PBXGroup;
-			children = (
-				F3EEBF5E2A03162300DBC761 /* Aufn */,
-				F3EEBF5D2A03162300DBC761 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		F3EEBF5D2A03162300DBC761 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F3EEBF5C2A03162300DBC761 /* Aufn.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		F3EEBF5E2A03162300DBC761 /* Aufn */ = {
-			isa = PBXGroup;
-			children = (
-				F34D45802A03729D004EDF1B /* Info.plist */,
-				F3D568B82B60A9C90097B079 /* Core */,
-				F3EEBF5F2A03162300DBC761 /* AufnApp.swift */,
-				F3EEBF612A03162300DBC761 /* MainView.swift */,
-				F3EEBF632A03162400DBC761 /* Assets.xcassets */,
-				F3EEBF652A03162400DBC761 /* Preview Content */,
+				62678A3ACAC43AD644B8F77C /* Assets.xcassets */,
+				F711EA42EDE83F0D800EE54A /* AufnApp.swift */,
+				CD353F7FF70F7D2567FD63C5 /* Info.plist */,
+				181B707EAD9D4CFA9F8B99C7 /* Audio */,
+				5C0F41E46571F02786F95FFC /* Models */,
+				FA246EF01356691050164EC7 /* Views */,
 			);
 			path = Aufn;
 			sourceTree = "<group>";
 		};
-		F3EEBF652A03162400DBC761 /* Preview Content */ = {
+		5C0F41E46571F02786F95FFC /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F3EEBF662A03162400DBC761 /* Preview Assets.xcassets */,
+				9F6923897A5CA2924D48C154 /* AppIconCatalog.swift */,
+				02B469EA63BB537E2C4BEF21 /* DeletedTrack.swift */,
+				694BCA64B54AF085C7FDBF06 /* MetronomeSettings.swift */,
+				BE5B60D01674003C1EADF75F /* MixRules.swift */,
+				CC5AA0A3C78D261AAA26F172 /* Project.swift */,
+				FA8DB4274448D3B4D34688DF /* ProjectAppearance.swift */,
+				80233F83100DBD15AD06CE76 /* ProjectStore.swift */,
+				2FB5C08C019E4462D5F1D2F8 /* SelectionDeleteCopy.swift */,
+				EAC1082458BADE454C9C6839 /* Track.swift */,
 			);
-			path = "Preview Content";
+			path = Models;
+			sourceTree = "<group>";
+		};
+		81AAE2898AFADC81CB54185D /* AufnUITests */ = {
+			isa = PBXGroup;
+			children = (
+				B9D2A6863FF55BACCE2E9E30 /* CaptureModeFlowUITests.swift */,
+				CFC66CF3E2B5E61332B8065F /* ProjectsGridUITests.swift */,
+				EA33EB246435AD7342314677 /* RecentlyDeletedFlowUITests.swift */,
+				39C7563CA5782E86C690D5BC /* RecordFlowUITests.swift */,
+				83D14137206DF3451725DF0F /* SelectionFlowUITests.swift */,
+				BFD0D0A6A8DDD04341E32410 /* WorkspaceFlowUITests.swift */,
+			);
+			path = AufnUITests;
+			sourceTree = "<group>";
+		};
+		DCA1F668F70A17CED1B28614 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CE5212E762185BF2862EBD8B /* Aufn.app */,
+				642BD84573D886156BD58DFD /* AufnTests.xctest */,
+				D5A4A4430704E975A8D5F748 /* AufnUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E4F90E2C88AEF85B256E1439 /* AufnTests */ = {
+			isa = PBXGroup;
+			children = (
+				A6C143C60BD7A069E2152104 /* AppIconCatalogTests.swift */,
+				C59A2EB7A004F39AD53F6BFC /* CaptureModeTests.swift */,
+				C37B6BCF8C4EF20E3A2CB96B /* ExportPipelineTests.swift */,
+				966BF9255A56ACDED555976D /* GradeDSPTests.swift */,
+				71229EB44028DA1220359516 /* GradeProcessorTests.swift */,
+				2A3629B289172794B61C6797 /* GradeTestSupport.swift */,
+				4AE70FC29BBD993DDA3530CD /* MeterTapTests.swift */,
+				1A23EF8819D114AE7462032A /* MetronomeClickTests.swift */,
+				9AF1C1E167C37F36DC1A9B45 /* MicPositionTests.swift */,
+				6D849E04CFCF78EB79A60A48 /* ModelCodableTests.swift */,
+				E2C3E31CC0386771ECD012FD /* PeakStoreTests.swift */,
+				5BB15403DD69C7D8337DBFB9 /* ProjectStoreTests.swift */,
+				15FD979EA2C36CFC4159D78A /* SelectionDeleteCopyTests.swift */,
+				C79799B45D315F08D7DD7A32 /* SwipeRulesTests.swift */,
+				07800F9CDD0CC40E289F384B /* TapTempoRulesTests.swift */,
+				3765D9494AA852719FF60240 /* TrackRecorderTests.swift */,
+				38DA58E8A2C777B3AC339146 /* TransportRulesTests.swift */,
+				487B88342BAB205C454C0C0F /* WaveformPlayheadTests.swift */,
+			);
+			path = AufnTests;
+			sourceTree = "<group>";
+		};
+		F389FE08B5045160D7EB04B3 = {
+			isa = PBXGroup;
+			children = (
+				1C8A14C0A4B76616FD6CB884 /* Aufn */,
+				E4F90E2C88AEF85B256E1439 /* AufnTests */,
+				81AAE2898AFADC81CB54185D /* AufnUITests */,
+				DCA1F668F70A17CED1B28614 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FA246EF01356691050164EC7 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0ED5C9583A7472CADB35BDC8 /* AppIconPickerView.swift */,
+				779BC3C818373BF3A2B9C3F9 /* AppSettingsView.swift */,
+				DA1A9BC9F1428107D922B018 /* CaptureWheel.swift */,
+				94E9B4EE5FE9120DAFB64C1C /* ExportDrawer.swift */,
+				7F29F36DC7179183A9532339 /* FittedSheet.swift */,
+				A017545ED20CC32071E00D1B /* HorizontalPanGesture.swift */,
+				C36C3745E92ADB6E7C83AF8D /* InputPicker.swift */,
+				EC9B8C04B29EE2F9989E9A1F /* LevelMeterView.swift */,
+				5F603810D03C315FAE0550CD /* MetronomeBeatGridView.swift */,
+				AC102DCD8BF33666A79EC3E7 /* MetronomeRowView.swift */,
+				81F8DDF60047B1F191D12CA8 /* MicPositionPicker.swift */,
+				CE9A949C705FD2F0D1B2C8A8 /* MixWaveformView.swift */,
+				A3384746C65D8D3FD415463B /* Motion.swift */,
+				5C6DBE4685A5651BA59D4EF6 /* PreviewSupport.swift */,
+				C6869C53535DA3669F1ACB27 /* ProjectAppearanceSheet.swift */,
+				04BFB5C7753CD4D6C0C8BC40 /* ProjectCard.swift */,
+				90E0F36D39180002A95932DF /* ProjectDetailView.swift */,
+				32A520395A415465ECDA8922 /* ProjectListView.swift */,
+				3EA2DDFC0275E900BD28AB02 /* RecentlyDeletedView.swift */,
+				4F30422F378F761EC5C9DFBE /* SampleRatePicker.swift */,
+				C1D5215892F06A219B576FE2 /* SelectionActionBar.swift */,
+				30191CB3D17D8B80C74791E6 /* SettingsControls.swift */,
+				44EA2483AED3E39BBC9E8CEB /* SwipeRow.swift */,
+				F59665E426A645A3705173AB /* SwipeRules.swift */,
+				1F58D487E9EA29DB5E88BDB2 /* TapeWaveformView.swift */,
+				875FC223D2F40A915B1311C5 /* TrackCard.swift */,
+				3B6F83FD6580BE516FEA4A95 /* TrackRowView.swift */,
+				08AEB2116153E60C0B264C44 /* TransportBar.swift */,
+				00FB0BB77CED728DB965323E /* WaveformView.swift */,
+				A16240E5F3C99DF4634FA22B /* WorkspaceSettingsView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F3EEBF5B2A03162300DBC761 /* Aufn */ = {
+		AC7C1A6AB04C64E0B99D9710 /* Aufn */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F3EEBF6A2A03162400DBC761 /* Build configuration list for PBXNativeTarget "Aufn" */;
+			buildConfigurationList = A19A63593C08E16589EC01C5 /* Build configuration list for PBXNativeTarget "Aufn" */;
 			buildPhases = (
-				F3EEBF582A03162300DBC761 /* Sources */,
-				F3EEBF592A03162300DBC761 /* Frameworks */,
-				F3EEBF5A2A03162300DBC761 /* Resources */,
+				3A0D76836569ADFECEC169CC /* Sources */,
+				CDAE3D6117DDAEB8FA0B55EE /* Copy app icon previews */,
+				444E7BCF1B30AEF9DF2FBEC3 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Aufn;
+			packageProductDependencies = (
+			);
 			productName = Aufn;
-			productReference = F3EEBF5C2A03162300DBC761 /* Aufn.app */;
+			productReference = CE5212E762185BF2862EBD8B /* Aufn.app */;
 			productType = "com.apple.product-type.application";
+		};
+		E4B0B6D0CFF09CF1968000E0 /* AufnUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 50A06B04838AAAD3CD64C851 /* Build configuration list for PBXNativeTarget "AufnUITests" */;
+			buildPhases = (
+				395086B4D653398AFC5ACA6E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F5E5B6A8D0A7582A58FDE914 /* PBXTargetDependency */,
+			);
+			name = AufnUITests;
+			packageProductDependencies = (
+			);
+			productName = AufnUITests;
+			productReference = D5A4A4430704E975A8D5F748 /* AufnUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		F900F3B11556062815A3BEC2 /* AufnTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9624A24578D24A5C8CABBA9B /* Build configuration list for PBXNativeTarget "AufnTests" */;
+			buildPhases = (
+				2F6EF5678DD1601C2461FEDA /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ADAD914550D37779B7E2DA92 /* PBXTargetDependency */,
+			);
+			name = AufnTests;
+			packageProductDependencies = (
+			);
+			productName = AufnTests;
+			productReference = 642BD84573D886156BD58DFD /* AufnTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		F3EEBF542A03162300DBC761 /* Project object */ = {
+		9035A926876EC6B4893254F0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1500;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
-					F3EEBF5B2A03162300DBC761 = {
-						CreatedOnToolsVersion = 14.3;
+					AC7C1A6AB04C64E0B99D9710 = {
+						DevelopmentTeam = GZ2BM4VMQU;
+					};
+					E4B0B6D0CFF09CF1968000E0 = {
+						TestTargetID = AC7C1A6AB04C64E0B99D9710;
 					};
 				};
 			};
-			buildConfigurationList = F3EEBF572A03162300DBC761 /* Build configuration list for PBXProject "Aufn" */;
-			compatibilityVersion = "Xcode 14.0";
+			buildConfigurationList = BA08A120E037E857E1E5308A /* Build configuration list for PBXProject "Aufn" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
+				en,
 			);
-			mainGroup = F3EEBF532A03162300DBC761;
-			productRefGroup = F3EEBF5D2A03162300DBC761 /* Products */;
+			mainGroup = F389FE08B5045160D7EB04B3;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = DCA1F668F70A17CED1B28614 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F3EEBF5B2A03162300DBC761 /* Aufn */,
+				AC7C1A6AB04C64E0B99D9710 /* Aufn */,
+				F900F3B11556062815A3BEC2 /* AufnTests */,
+				E4B0B6D0CFF09CF1968000E0 /* AufnUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		F3EEBF5A2A03162300DBC761 /* Resources */ = {
+		444E7BCF1B30AEF9DF2FBEC3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F3EEBF672A03162400DBC761 /* Preview Assets.xcassets in Resources */,
-				F3EEBF642A03162400DBC761 /* Assets.xcassets in Resources */,
+				417A0285956B5D7B56E242A0 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		CDAE3D6117DDAEB8FA0B55EE /* Copy app icon previews */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy app icon previews";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nOUT=\"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nmkdir -p \"$OUT\"\nrm -f \"$OUT\"/*-icon-preview.png\nfor set in \"$SRCROOT/Aufn/Assets.xcassets\"/*.appiconset; do\n  name=$(basename \"$set\" .appiconset)\n  png=$(ls \"$set\"/*.png 2>/dev/null | head -n 1)\n  if [ -n \"$png\" ]; then cp \"$png\" \"$OUT/$name-icon-preview.png\"; fi\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		F3EEBF582A03162300DBC761 /* Sources */ = {
+		2F6EF5678DD1601C2461FEDA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F34D457F2A03412E004EDF1B /* WaveformView.swift in Sources */,
-				F3D568BE2B60AD830097B079 /* HalfModalView.swift in Sources */,
-				F3EEBF8C2A033B6C00DBC761 /* PlaybackView.swift in Sources */,
-				F3EEBF8A2A033B6C00DBC761 /* AudioProcessingManager.swift in Sources */,
-				F3EEBF622A03162300DBC761 /* MainView.swift in Sources */,
-				F3EEBF8D2A033B6C00DBC761 /* RecordingDetailsView.swift in Sources */,
-				F3EEBF982A033B6C00DBC761 /* Plugin.swift in Sources */,
-				F3EEBF8B2A033B6C00DBC761 /* MetronomeSettingsView.swift in Sources */,
-				F3EEBF862A033B6C00DBC761 /* GeneralSettingsView.swift in Sources */,
-				F31CB4292B645AC500271C90 /* ContentBlurView.swift in Sources */,
-				F3EEBF852A033B6C00DBC761 /* AudioFileViewModal.swift in Sources */,
-				F3EEBF932A033B6C00DBC761 /* ShareSheet.swift in Sources */,
-				F3EEBF872A033B6C00DBC761 /* PluginEffects.swift in Sources */,
-				F3EEBF902A033B6C00DBC761 /* AppSettings.swift in Sources */,
-				F3EEBF882A033B6C00DBC761 /* ActivityView.swift in Sources */,
-				F3EEBF832A033B6C00DBC761 /* EditableText.swift in Sources */,
-				F3EEBF942A033B6C00DBC761 /* AudioPlayer.swift in Sources */,
-				F3947B1A2B636F06002FE28B /* AnimationUtility.swift in Sources */,
-				F3EEBF912A033B6C00DBC761 /* UserDefaults+Extentions.swift in Sources */,
-				F3EEBF952A033B6C00DBC761 /* AudioRecorder.swift in Sources */,
-				F3EEBF8F2A033B6C00DBC761 /* RecordingView.swift in Sources */,
-				F31CB42B2B64885900271C90 /* WaveformSliderView.swift in Sources */,
-				F3EEBF602A03162300DBC761 /* AufnApp.swift in Sources */,
-				F3EEBF892A033B6C00DBC761 /* MicrophonePresetEffects.swift in Sources */,
-				F3EEBF8E2A033B6C00DBC761 /* RecordingSettingsView.swift in Sources */,
-				F3EEBF972A033B6C00DBC761 /* MicrophonePreset.swift in Sources */,
-				F3EEBF922A033B6C00DBC761 /* PluginManagementView.swift in Sources */,
+				9A3D256FBA9A746433866A9F /* AppIconCatalogTests.swift in Sources */,
+				B6B0B7DA3DFE671E448029AA /* CaptureModeTests.swift in Sources */,
+				907456A2EB8A1ABAB713C38D /* ExportPipelineTests.swift in Sources */,
+				E7B2122EB9AE58CE6DDBB9C2 /* GradeDSPTests.swift in Sources */,
+				33AD13941191E3A4304D7408 /* GradeProcessorTests.swift in Sources */,
+				F83FEBAD683A5D2220342AEE /* GradeTestSupport.swift in Sources */,
+				090A23C73C4AB8679342F518 /* MeterTapTests.swift in Sources */,
+				0F1D98DC77C99CC49DD3BB9D /* MetronomeClickTests.swift in Sources */,
+				9D82AC66E26D0C0A6D059FF8 /* MicPositionTests.swift in Sources */,
+				7F52C940B17018BCB4D030B1 /* ModelCodableTests.swift in Sources */,
+				5F1C187BE36B4515AECFCD09 /* PeakStoreTests.swift in Sources */,
+				CBFE6509948F3F7522DBA04A /* ProjectStoreTests.swift in Sources */,
+				130786F9E7DB518BF025BFD4 /* SelectionDeleteCopyTests.swift in Sources */,
+				FC934DAFB76AA180F48EF9E8 /* SwipeRulesTests.swift in Sources */,
+				AB433A2812C4D1C324D57F2F /* TapTempoRulesTests.swift in Sources */,
+				9A20CF41E6028B2CCAD8689A /* TrackRecorderTests.swift in Sources */,
+				FF0A1C537F108DCF8508D11A /* TransportRulesTests.swift in Sources */,
+				47DBF4CDA6CD876552B487AC /* WaveformPlayheadTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		395086B4D653398AFC5ACA6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A805C04E7F67F1C5F9D793B9 /* CaptureModeFlowUITests.swift in Sources */,
+				79F284E29899E839188E529D /* ProjectsGridUITests.swift in Sources */,
+				2EBC143FD94E570D94A8EA63 /* RecentlyDeletedFlowUITests.swift in Sources */,
+				3D8E7563C0A132A4C6DE6631 /* RecordFlowUITests.swift in Sources */,
+				42803F3BB04E83742828CA2C /* SelectionFlowUITests.swift in Sources */,
+				8B99672C7FD0789DFB03C9F6 /* WorkspaceFlowUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A0D76836569ADFECEC169CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				54B8D1E923CDC6E421D40653 /* AppIconCatalog.swift in Sources */,
+				CC6F1545E9896CE275C4D4EC /* AppIconPickerView.swift in Sources */,
+				EB8087493AA41ABC6454B014 /* AppSettingsView.swift in Sources */,
+				188F1216E9962D6D9A5D89DA /* AudioEngineController.swift in Sources */,
+				0CFFEDE6ED09EA23F0021DC1 /* AudioSessionController.swift in Sources */,
+				A38B185C8F3A3D161D11D198 /* AufnApp.swift in Sources */,
+				A9E7AFA81A0ED309071257A9 /* CaptureMode.swift in Sources */,
+				3078C24E266A76C9E368178B /* CaptureWheel.swift in Sources */,
+				6F9CA4BD77EED3AF9EFED234 /* DeletedTrack.swift in Sources */,
+				289950537087B652C93AAB38 /* ExportDrawer.swift in Sources */,
+				C74E613D29ACDBF431F79FC4 /* Exporter.swift in Sources */,
+				3F5820A4BA0B3BEBF2A55F13 /* FittedSheet.swift in Sources */,
+				9573EAF392500DD233185966 /* GradeDSP.swift in Sources */,
+				2BE9D8AD76358E6B96D73365 /* GradeProcessor.swift in Sources */,
+				69B837ECCD61C20D70E10DBB /* GradeSettings.swift in Sources */,
+				1D15711D8774713BF2E3193D /* HorizontalPanGesture.swift in Sources */,
+				4AB727D851FD6740046417F5 /* InputPicker.swift in Sources */,
+				DECE386A0BB6D862F705AAF5 /* LevelMeterView.swift in Sources */,
+				EA1FF872BA1372FDCEBB6B76 /* MeterTap.swift in Sources */,
+				FEA4725FA91B8FF3A3BD56E0 /* MetronomeBeatGridView.swift in Sources */,
+				D221290AA1E1B10A7534EE27 /* MetronomeClick.swift in Sources */,
+				383473AADA66DEE9D9B83121 /* MetronomeRowView.swift in Sources */,
+				13020CA1318F985FFFC6F519 /* MetronomeSettings.swift in Sources */,
+				BA859AE312D2E3FF64AAD409 /* MicPosition.swift in Sources */,
+				D6716A9CBD1F2D9171C3A41B /* MicPositionPicker.swift in Sources */,
+				A25179BD9EE57D1CB68319FC /* MixRules.swift in Sources */,
+				6EEA7A385C4ADEA43921F3B5 /* MixWaveformView.swift in Sources */,
+				C6B4B4D05177C3B85D19ED8D /* Motion.swift in Sources */,
+				E3BA6A51F2534F52306AB145 /* PeakStore.swift in Sources */,
+				80827C7451DDFAFEC6331831 /* PreviewSupport.swift in Sources */,
+				73B1827ED7FD7D2CF5E60C3A /* Project.swift in Sources */,
+				3EDBF79CDA39B65862E62631 /* ProjectAppearance.swift in Sources */,
+				F15E7B25CFE527A0C9937638 /* ProjectAppearanceSheet.swift in Sources */,
+				EE6D752E0F732D8F41837F14 /* ProjectCard.swift in Sources */,
+				10CDC308F9E3B95DF768E5B0 /* ProjectDetailView.swift in Sources */,
+				0820CCC8D50347F23F06F9B1 /* ProjectListView.swift in Sources */,
+				CFF682E5BD092D8BCB51E8AA /* ProjectStore.swift in Sources */,
+				217E2CFED5F91EE50B34FA38 /* RecentlyDeletedView.swift in Sources */,
+				0A1C3E4246FF7C7436E160D8 /* SampleRatePicker.swift in Sources */,
+				9BC7BD5C78EA6792D82F5CF8 /* SelectionActionBar.swift in Sources */,
+				BF291FF1A4726158D3C40117 /* SelectionDeleteCopy.swift in Sources */,
+				88C9D7A9549513BD6ECD724F /* SettingsControls.swift in Sources */,
+				46C576589B0F9D075CBD117B /* SwipeRow.swift in Sources */,
+				2E677C1AEE5B1B80CE44DDB6 /* SwipeRules.swift in Sources */,
+				6EEF7861B7854E81D5AE0CD0 /* TapTempoRules.swift in Sources */,
+				62E391C189B53DAEC5D4F59C /* TapeWaveformView.swift in Sources */,
+				AD994ED964F5C382FDA43B2D /* Track.swift in Sources */,
+				6E31C7A0B9A5C17FFC816175 /* TrackCard.swift in Sources */,
+				225F74BFE0D21E2CA1733100 /* TrackRecorder.swift in Sources */,
+				373D6D965219F9D8487F10DA /* TrackRowView.swift in Sources */,
+				25E2FAA37E11DD3D3D480409 /* TransportBar.swift in Sources */,
+				9B9CF4A6003B61B4DB218774 /* TransportRules.swift in Sources */,
+				46BCB4DB3E7C64E1DA815533 /* WaveformView.swift in Sources */,
+				36BE1CD2FD2A47873296AA02 /* WorkspaceSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		ADAD914550D37779B7E2DA92 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AC7C1A6AB04C64E0B99D9710 /* Aufn */;
+			targetProxy = 25261C9495521891B72D23B2 /* PBXContainerItemProxy */;
+		};
+		F5E5B6A8D0A7582A58FDE914 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AC7C1A6AB04C64E0B99D9710 /* Aufn */;
+			targetProxy = 64D22D9ABCBFBDFDE2FEC192 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		F3EEBF682A03162400DBC761 /* Debug */ = {
+		096DC7EB5E001CB3D5525D5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = co.lassidesign.AufnTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Aufn.app/Aufn";
+			};
+			name = Debug;
+		};
+		0FA03FCC32DFDD77031437F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -324,14 +636,13 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
 					"$(inherited)",
+					"DEBUG=1",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -339,24 +650,26 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
-		F3EEBF692A03162400DBC761 /* Release */ = {
+		73507DFAA97FA1EBE609C703 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -386,7 +699,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -395,106 +707,159 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				VALIDATE_PRODUCT = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
-		F3EEBF6B2A03162400DBC761 /* Debug */ = {
+		82C702F5608CD27DD56F1A5E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Aufn/Preview Content\"";
-				DEVELOPMENT_TEAM = GZ2BM4VMQU;
-				ENABLE_PREVIEWS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Aufn/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Aufn;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = co.lassidesign.Aufn;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				PRODUCT_BUNDLE_IDENTIFIER = co.lassidesign.AufnUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Aufn;
+			};
+			name = Release;
+		};
+		931BE4CE7644D3A510F7B22F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = co.lassidesign.AufnTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Aufn.app/Aufn";
+			};
+			name = Release;
+		};
+		9329B39F656459416F168D4A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = co.lassidesign.AufnUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Aufn;
 			};
 			name = Debug;
 		};
-		F3EEBF6C2A03162400DBC761 /* Release */ = {
+		A47C4E1384E3300735398ACB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Aufn/Preview Content\"";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = GZ2BM4VMQU;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = Aufn/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Aufn;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = co.lassidesign.Aufn;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		FD733B4E570E00612FB6CE44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = GZ2BM4VMQU;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				INFOPLIST_FILE = Aufn/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = co.lassidesign.Aufn;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F3EEBF572A03162300DBC761 /* Build configuration list for PBXProject "Aufn" */ = {
+		50A06B04838AAAD3CD64C851 /* Build configuration list for PBXNativeTarget "AufnUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F3EEBF682A03162400DBC761 /* Debug */,
-				F3EEBF692A03162400DBC761 /* Release */,
+				9329B39F656459416F168D4A /* Debug */,
+				82C702F5608CD27DD56F1A5E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
-		F3EEBF6A2A03162400DBC761 /* Build configuration list for PBXNativeTarget "Aufn" */ = {
+		9624A24578D24A5C8CABBA9B /* Build configuration list for PBXNativeTarget "AufnTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F3EEBF6B2A03162400DBC761 /* Debug */,
-				F3EEBF6C2A03162400DBC761 /* Release */,
+				096DC7EB5E001CB3D5525D5E /* Debug */,
+				931BE4CE7644D3A510F7B22F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
+		};
+		A19A63593C08E16589EC01C5 /* Build configuration list for PBXNativeTarget "Aufn" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A47C4E1384E3300735398ACB /* Debug */,
+				FD733B4E570E00612FB6CE44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BA08A120E037E857E1E5308A /* Build configuration list for PBXProject "Aufn" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0FA03FCC32DFDD77031437F8 /* Debug */,
+				73507DFAA97FA1EBE609C703 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = F3EEBF542A03162300DBC761 /* Project object */;
+	rootObject = 9035A926876EC6B4893254F0 /* Project object */;
 }
