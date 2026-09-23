@@ -1,0 +1,286 @@
+import SwiftUI
+
+struct TrackRowView: View {
+    @Environment(ProjectStore.self) private var store
+    @Environment(AudioEngineController.self) private var engine
+
+    let track: Track
+    let project: Project
+    var isSelected = false
+    var inSelectionMode = false
+
+    @State private var peaks: [Float] = []
+    @State private var isMixerExpanded = false
+    @State private var volume: Float = 1
+    @State private var pan: Float = 0
+
+    var body: some View {
+        TrackCard(selected: isSelected) {
+            VStack(spacing: 8) {
+                // Header + waveform together are the tap target that opens
+                // the mixer; the sliders below are deliberately outside it so
+                // a tap that lands on a slider can't fold the panel away.
+                VStack(spacing: 8) {
+                HStack(spacing: 6) {
+                    if inSelectionMode {
+                        SelectionCheck(isSelected: isSelected)
+                            .transition(.disclose(anchor: .leading, edge: .leading))
+                    }
+                    Text(track.name)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .layoutPriority(-1)
+                    if let letter = track.captureMode.badgeLetter {
+                        GradeSeal(letter: letter)
+                            .accessibilityLabel("Grade, \(track.captureMode.label)")
+                    }
+                    if track.channelCount == 2 {
+                        Text("ST")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .accessibilityLabel("Stereo")
+                    }
+                    Spacer(minLength: 8)
+                    Text(track.durationSeconds.timecode)
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .padding(.trailing, 4)
+                    RoundToggle(letter: "M", isOn: track.isMuted, tint: .orange, label: "Mute \(track.name)") {
+                        var updated = track
+                        updated.isMuted.toggle()
+                        persistAndUpdateMix(updated)
+                    }
+                    RoundToggle(letter: "S", isOn: track.isSoloed, tint: .yellow, label: "Solo \(track.name)") {
+                        var updated = track
+                        updated.isSoloed.toggle()
+                        persistAndUpdateMix(updated)
+                    }
+                    RoundToggle(systemImage: "slider.horizontal.3", isOn: isMixerExpanded, tint: .accentColor, label: "Mixer for \(track.name)") {
+                        toggleMixer()
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.top, 12)
+
+                // Redraws on a timeline while this project plays so the
+                // yellow playhead column tracks the transport; paused (and
+                // playhead-less) otherwise.
+                TimelineView(.animation(minimumInterval: 0.1, paused: engine.playingProjectID != project.id)) { _ in
+                    WaveformView(
+                        peaks: peaks,
+                        tint: .gray.opacity(0.45),
+                        progress: WaveformView.playbackProgress(
+                            elapsed: engine.elapsedSeconds,
+                            duration: track.durationSeconds,
+                            isActive: engine.playingProjectID == project.id
+                        )
+                    )
+                }
+                .frame(height: 48)
+                .opacity(project.isAudible(track) ? 1 : 0.4)
+                .padding(.bottom, isMixerExpanded ? 0 : 12)
+                }
+                .contentShape(.rect)
+                .onTapGesture { toggleMixer() }
+
+                if isMixerExpanded {
+                    mixerControls
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 12)
+                        // Unfolds down from under the waveform with the same
+                        // bouncy-in / snappy-out motion as the capture wheel.
+                        // The sliders wait a beat while the card grows so they
+                        // don't crowd the waveform before there's room.
+                        .transition(.disclose(anchor: .top, edge: .top, appearDelay: 0.06))
+                        // Below the header/waveform so the expand reveals from
+                        // underneath instead of sliding over the track.
+                        .zIndex(-1)
+                }
+            }
+        }
+        .task(id: track.id) {
+            volume = track.volume
+            pan = track.pan
+        }
+        // Re-keyed on the store's peaks revision so the accurate cache that
+        // lands after a take (or a recovered take) replaces the provisional
+        // one without the row being recreated.
+        .task(id: PeaksLoadKey(trackID: track.id, revision: store.peaksRevision)) {
+            let url = store.peaksURL(for: track, in: project)
+            let loaded = await Task.detached(priority: .utility) {
+                PeakStore.loadPeaks(from: url) ?? []
+            }.value
+            guard !Task.isCancelled else { return }
+            peaks = loaded
+        }
+    }
+
+    /// Slider ticks drive the live engine only; disk writes happen once per
+    /// gesture, on release.
+    private var mixerControls: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "speaker.wave.2")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .frame(width: 16)
+                Slider(
+                    value: Binding(
+                        get: { volume },
+                        // Push EFFECTIVE volume so dragging a muted/solo-silenced
+                        // track doesn't audibly unmute it; raw volume persists.
+                        set: { volume = $0; engine.setTrackVolume(project.isAudible(track) ? $0 : 0, trackID: track.id) }
+                    ),
+                    in: 0...1
+                ) { editing in
+                    if !editing { persistLevels() }
+                }
+                .tint(.white.opacity(0.6))
+                .accessibilityLabel("Volume for \(track.name)")
+            }
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.left.and.right")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .frame(width: 16)
+                Slider(
+                    value: Binding(
+                        get: { pan },
+                        set: { pan = $0; engine.setTrackPan($0, trackID: track.id) }
+                    ),
+                    in: -1...1,
+                    neutralValue: 0,
+                    label: { Text("Pan") },
+                    onEditingChanged: { editing in
+                        if !editing { persistLevels() }
+                    }
+                )
+                .labelsHidden()
+                .tint(.white.opacity(0.6))
+                .accessibilityLabel("Pan for \(track.name)")
+                .onTapGesture(count: 2) {
+                    pan = 0
+                    engine.setTrackPan(0, trackID: track.id)
+                    persistLevels()
+                }
+            }
+        }
+    }
+
+    /// Tapping the card or its mixer chip unfolds the sliders.
+    private func toggleMixer() {
+        withAnimation(isMixerExpanded ? .discloseClose : .discloseOpen) {
+            isMixerExpanded.toggle()
+        }
+    }
+
+    private func persistLevels() {
+        var updated = track
+        updated.volume = volume
+        updated.pan = pan
+        store.updateTrack(updated, in: project)
+    }
+
+    /// Persist, then live-update the engine mix from the FRESH project — solo
+    /// audibility derives from the whole track list, and the row's `project`
+    /// is a pre-toggle snapshot.
+    private func persistAndUpdateMix(_ updated: Track) {
+        store.updateTrack(updated, in: project)
+        if let fresh = store.project(id: project.id) {
+            engine.updateMix(for: fresh)
+        }
+    }
+}
+
+/// Identity for a peaks-cache load: the track plus the store's cache revision.
+struct PeaksLoadKey: Hashable {
+    let trackID: UUID
+    let revision: Int
+}
+
+/// The in-progress take: renders the engine's live peak bins as they arrive.
+struct LiveTrackRowView: View {
+    let engine: AudioEngineController
+
+    var body: some View {
+        TrackCard {
+            VStack(spacing: 8) {
+                HStack {
+                    Label("Recording", systemImage: "record.circle")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.red)
+                        .symbolEffect(.pulse)
+                    Spacer()
+                }
+                .padding(.horizontal, 12)
+                .padding(.top, 12)
+                WaveformView(peaks: engine.liveRecordingPeaks.suffix(600).map { $0 }, tint: .red)
+                    .frame(height: 48)
+                    .padding(.bottom, 12)
+            }
+        }
+    }
+}
+
+extension Double {
+    /// "m:ss" timecode for track durations and the transport clock.
+    var timecode: String {
+        let total = Int(self.rounded(.down))
+        return String(format: "%d:%02d", total / 60, total % 60)
+    }
+}
+
+#Preview("Track rows") {
+    @Previewable @State var openID: UUID?
+    @Previewable @State var selection: Set<UUID> = []
+    let store = PreviewData.store()
+    let project = PreviewData.demoProject(in: store)
+    let engine = AudioEngineController(store: store)
+    ScrollView {
+        LazyVStack(spacing: 12) {
+            ForEach(project.tracks) { track in
+                SwipeRow(
+                    id: track.id,
+                    openRowID: $openID,
+                    isSelected: selection.contains(track.id),
+                    inSelectionMode: !selection.isEmpty,
+                    onToggleSelection: { selection.formSymmetricDifference([track.id]) },
+                    deleteTitle: "Delete \"\(track.name)\"?",
+                    onDelete: {}
+                ) {
+                    TrackRowView(
+                        track: track,
+                        project: project,
+                        isSelected: selection.contains(track.id),
+                        inSelectionMode: !selection.isEmpty
+                    )
+                }
+            }
+            LiveTrackRowView(engine: engine)
+        }
+        .padding()
+    }
+    .fontDesign(.rounded)
+    .environment(store)
+    .environment(engine)
+    .preferredColorScheme(.dark)
+}
+
+/// The grade printed onto a take: a small seal with its letter, sitting
+/// beside the track name. RAW has no seal.
+struct GradeSeal: View {
+    let letter: String
+
+    var body: some View {
+        Text(letter)
+            .font(.system(size: 8, weight: .heavy, design: .rounded))
+            .foregroundStyle(Color(.systemBackground))
+            .frame(width: 15, height: 15)
+            .background {
+                Image(systemName: "seal.fill")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.secondary)
+            }
+    }
+}

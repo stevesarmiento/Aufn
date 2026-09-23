@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1500"
+   LastUpgradeVersion = "1430"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      runPostActionsOnFailure = "NO">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -14,9 +15,37 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F3EEBF5B2A03162300DBC761"
+               BlueprintIdentifier = "AC7C1A6AB04C64E0B99D9710"
                BuildableName = "Aufn.app"
                BlueprintName = "Aufn"
+               ReferencedContainer = "container:Aufn.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F900F3B11556062815A3BEC2"
+               BuildableName = "AufnTests.xctest"
+               BlueprintName = "AufnTests"
+               ReferencedContainer = "container:Aufn.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E4B0B6D0CFF09CF1968000E0"
+               BuildableName = "AufnUITests.xctest"
+               BlueprintName = "AufnUITests"
                ReferencedContainer = "container:Aufn.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -27,7 +56,42 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      shouldAutocreateTestPlan = "YES">
+      onlyGenerateCoverageForSpecifiedTargets = "NO">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "AC7C1A6AB04C64E0B99D9710"
+            BuildableName = "Aufn.app"
+            BlueprintName = "Aufn"
+            ReferencedContainer = "container:Aufn.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F900F3B11556062815A3BEC2"
+               BuildableName = "AufnTests.xctest"
+               BlueprintName = "AufnTests"
+               ReferencedContainer = "container:Aufn.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E4B0B6D0CFF09CF1968000E0"
+               BuildableName = "AufnUITests.xctest"
+               BlueprintName = "AufnUITests"
+               ReferencedContainer = "container:Aufn.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+      </Testables>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -43,12 +107,14 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F3EEBF5B2A03162300DBC761"
+            BlueprintIdentifier = "AC7C1A6AB04C64E0B99D9710"
             BuildableName = "Aufn.app"
             BlueprintName = "Aufn"
             ReferencedContainer = "container:Aufn.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -60,7 +126,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F3EEBF5B2A03162300DBC761"
+            BlueprintIdentifier = "AC7C1A6AB04C64E0B99D9710"
             BuildableName = "Aufn.app"
             BlueprintName = "Aufn"
             ReferencedContainer = "container:Aufn.xcodeproj">

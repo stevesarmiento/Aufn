@@ -1,0 +1,234 @@
+import Foundation
+import Testing
+@testable import Aufn
+
+/// Projects written before volume/pan/masterVolume existed must keep decoding
+/// (ProjectStore uses `try?`, so a decode failure silently drops the project).
+struct ModelCodableTests {
+    private let legacyProjectJSON = """
+    {
+      "createdAt" : "2026-09-09T01:16:33Z",
+      "id" : "061D7BB3-04B3-44A1-A7FD-FB54DF100DCB",
+      "name" : "Legacy Project",
+      "sampleRate" : 48000,
+      "tracks" : [
+        {
+          "createdAt" : "2026-09-09T01:16:43Z",
+          "durationSeconds" : 5.19,
+          "fileName" : "a.caf",
+          "id" : "DF71E210-8CBD-42CA-A009-2AC47185162B",
+          "isMuted" : false,
+          "latencyOffsetSamples" : 10,
+          "name" : "Track 1",
+          "sampleRate" : 48000
+        }
+      ]
+    }
+    """
+
+    @Test func legacyProjectDecodesWithDefaultLevels() throws {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let project = try decoder.decode(Project.self, from: Data(legacyProjectJSON.utf8))
+        #expect(project.name == "Legacy Project")
+        #expect(project.masterVolume == 1)
+        #expect(project.tracks.count == 1)
+        #expect(project.tracks[0].volume == 1)
+        #expect(project.tracks[0].pan == 0)
+        #expect(project.tracks[0].isSoloed == false)
+        #expect(project.tracks[0].channelCount == 1)
+        #expect(project.tracks[0].captureMode == .raw)
+        #expect(project.metronome == nil)
+        #expect(project.repeatPlayback == false)
+        #expect(project.tint == .graphite)
+        #expect(project.deletedTracks.isEmpty)
+    }
+
+    @Test func appearanceRoundTrips() throws {
+        let project = Project(name: "P", tint: .indigo)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(Project.self, from: encoder.encode(project))
+        #expect(decoded.tint == .indigo)
+    }
+
+    @Test func unknownTintFallsBack() throws {
+        let json = legacyProjectJSON.replacingOccurrences(
+            of: "\"name\" : \"Legacy Project\",",
+            with: "\"name\" : \"Legacy Project\", \"tint\" : \"chartreuse\","
+        )
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let project = try decoder.decode(Project.self, from: Data(json.utf8))
+        #expect(project.tint == .graphite)
+    }
+
+    @Test func retiredCaptureModeDecodesToTape() throws {
+        let json = legacyProjectJSON.replacingOccurrences(of: "\"name\" : \"Track 1\",", with: "\"name\" : \"Track 1\", \"captureMode\" : \"standard\",")
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let project = try decoder.decode(Project.self, from: Data(json.utf8))
+        #expect(project.tracks[0].captureMode == .tape)
+    }
+
+    @Test func nonDefaultLevelsRoundTrip() throws {
+        let track = Track(name: "T", fileName: "t.caf", isSoloed: true, sampleRate: 48_000, channelCount: 2, volume: 0.4, pan: -0.7, captureMode: .warm)
+        let project = Project(name: "P", sampleRate: 48_000, tracks: [track], masterVolume: 0.8, repeatPlayback: true)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(Project.self, from: encoder.encode(project))
+        #expect(decoded.masterVolume == 0.8)
+        #expect(decoded.tracks[0].volume == 0.4)
+        #expect(decoded.tracks[0].pan == -0.7)
+        #expect(decoded.tracks[0].isSoloed == true)
+        #expect(decoded.tracks[0].channelCount == 2)
+        #expect(decoded.tracks[0].captureMode == .warm)
+        #expect(decoded.repeatPlayback == true)
+    }
+
+    @Test func mixRulesAudibility() {
+        let plain = Track(name: "A", fileName: "a.caf", sampleRate: 48_000)
+        let muted = Track(name: "B", fileName: "b.caf", isMuted: true, sampleRate: 48_000)
+        let soloed = Track(name: "C", fileName: "c.caf", isSoloed: true, sampleRate: 48_000, volume: 0.5)
+        let mutedAndSoloed = Track(name: "D", fileName: "d.caf", isMuted: true, isSoloed: true, sampleRate: 48_000)
+
+        // No solo active: non-muted tracks are audible.
+        #expect(MixRules.isAudible(plain, anySoloed: false))
+        #expect(!MixRules.isAudible(muted, anySoloed: false))
+
+        // Solo active: only soloed tracks play, mute beats solo.
+        #expect(!MixRules.isAudible(plain, anySoloed: true))
+        #expect(MixRules.isAudible(soloed, anySoloed: true))
+        #expect(!MixRules.isAudible(mutedAndSoloed, anySoloed: true))
+
+        #expect(MixRules.effectiveVolume(for: soloed, anySoloed: true) == 0.5)
+        #expect(MixRules.effectiveVolume(for: plain, anySoloed: true) == 0)
+
+        let project = Project(name: "P", tracks: [plain, soloed])
+        #expect(project.isAnySoloed)
+        #expect(!project.isAudible(plain))
+        #expect(project.isAudible(soloed))
+    }
+
+    @Test func metronomeRoundTrip() throws {
+        let metronome = MetronomeSettings(bpm: 96, beatsPerBar: 3, sound: .wood, countInBars: 2, volume: 0.5, isSoloed: true)
+        let project = Project(name: "P", metronome: metronome)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(Project.self, from: encoder.encode(project))
+        #expect(decoded.metronome == metronome)
+
+        let plain = Project(name: "Q")
+        let decodedPlain = try decoder.decode(Project.self, from: encoder.encode(plain))
+        #expect(decodedPlain.metronome == nil)
+    }
+
+    @Test func metronomeDecodesWithMissingAndUnknownFields() throws {
+        // Partial/forward-schema JSON must fill defaults, not throw — a throw
+        // would silently drop the whole project via ProjectStore's try?.
+        let json = """
+        { "bpm": 100, "sound": "cowbell" }
+        """
+        let settings = try JSONDecoder().decode(MetronomeSettings.self, from: Data(json.utf8))
+        #expect(settings.bpm == 100)
+        #expect(settings.beatsPerBar == 4)
+        #expect(settings.sound == .click)
+        #expect(settings.countInBars == 0)
+        #expect(settings.volume == 0.8)
+        #expect(settings.isMuted == false)
+        #expect(settings.isSoloed == false)
+
+        let outOfRange = try JSONDecoder().decode(MetronomeSettings.self, from: Data("{ \"bpm\": 999, \"beatsPerBar\": 0, \"countInBars\": 9 }".utf8))
+        #expect(outOfRange.bpm == 240)
+        #expect(outOfRange.beatsPerBar == 1)
+        #expect(outOfRange.countInBars == 2)
+    }
+
+    @Test func combinedMixPeaksSumsAtEffectiveVolumeAndClips() {
+        let loud = Track(name: "Loud", fileName: "a.caf", sampleRate: 48_000, volume: 1)
+        let quiet = Track(name: "Quiet", fileName: "b.caf", sampleRate: 48_000, volume: 0.5)
+        let muted = Track(name: "Muted", fileName: "c.caf", isMuted: true, sampleRate: 48_000, volume: 1)
+        let project = Project(name: "P", tracks: [loud, quiet, muted])
+        let peaks: [UUID: [Float]] = [
+            loud.id: [0.8, 0.2],
+            quiet.id: [0.6, 0.6, 0.4],   // longest cache sets the bin count
+            muted.id: [1, 1, 1],         // silent: contributes nothing
+        ]
+        let mix = project.combinedMixPeaks(from: peaks)
+        #expect(mix.count == 3)
+        #expect(mix[0] == 1)                       // 0.8 + 0.3 clipped
+        #expect(abs(mix[1] - 0.5) < 0.0001)        // 0.2 + 0.3
+        #expect(abs(mix[2] - 0.2) < 0.0001)        // quiet's tail alone
+        #expect(project.combinedMixPeaks(from: [:]).isEmpty)
+
+        // A solo silences the others in the picture too.
+        var soloed = project
+        soloed.tracks[0].isSoloed = true
+        let soloMix = soloed.combinedMixPeaks(from: peaks)
+        #expect(abs(soloMix[0] - 0.8) < 0.0001)
+        #expect(soloMix[2] == 0)
+    }
+
+    @Test func mixRulesWithMetronome() {
+        let plain = Track(name: "A", fileName: "a.caf", sampleRate: 48_000)
+
+        // Metronome soloed: it plays, plain tracks don't.
+        let metronomeSoloed = Project(name: "P", tracks: [plain], metronome: MetronomeSettings(volume: 0.6, isSoloed: true))
+        #expect(metronomeSoloed.isAnySoloed)
+        #expect(!metronomeSoloed.isAudible(plain))
+        #expect(metronomeSoloed.isMetronomeAudible)
+        #expect(metronomeSoloed.metronomeEffectiveVolume == 0.6)
+
+        // A track soloed: the plain metronome goes silent.
+        var soloedTrack = plain
+        soloedTrack.isSoloed = true
+        let trackSoloed = Project(name: "P", tracks: [soloedTrack], metronome: MetronomeSettings())
+        #expect(!trackSoloed.isMetronomeAudible)
+        #expect(trackSoloed.metronomeEffectiveVolume == 0)
+
+        // Mute beats solo on the metronome too, but its solo still gates others.
+        let mutedAndSoloed = Project(name: "P", tracks: [plain], metronome: MetronomeSettings(isMuted: true, isSoloed: true))
+        #expect(mutedAndSoloed.isAnySoloed)
+        #expect(!mutedAndSoloed.isMetronomeAudible)
+        #expect(!mutedAndSoloed.isAudible(plain))
+
+        // No metronome: nothing changes.
+        let none = Project(name: "P", tracks: [plain])
+        #expect(!none.isAnySoloed)
+        #expect(none.metronomeEffectiveVolume == 0)
+    }
+
+    @Test func deletedTracksRoundTrip() throws {
+        let track = Track(name: "Gone", fileName: "gone.caf", sampleRate: 48_000, volume: 0.3, pan: 0.5, captureMode: .glue)
+        let deletedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        let project = Project(name: "P", deletedTracks: [DeletedTrack(track: track, deletedAt: deletedAt)])
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(Project.self, from: encoder.encode(project))
+        #expect(decoded.deletedTracks.count == 1)
+        #expect(decoded.deletedTracks[0].id == track.id)
+        #expect(decoded.deletedTracks[0].deletedAt == deletedAt)
+        #expect(decoded.deletedTracks[0].track.volume == 0.3)
+        #expect(decoded.deletedTracks[0].track.captureMode == .glue)
+    }
+
+    @Test func malformedDeletedTracksDoesNotDropTheProject() throws {
+        let json = legacyProjectJSON.replacingOccurrences(
+            of: "\"name\" : \"Legacy Project\",",
+            with: "\"name\" : \"Legacy Project\", \"deletedTracks\" : [ { \"bogus\" : 1 } ],"
+        )
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let project = try decoder.decode(Project.self, from: Data(json.utf8))
+        #expect(project.name == "Legacy Project")
+        #expect(project.deletedTracks.isEmpty)
+    }
+}
